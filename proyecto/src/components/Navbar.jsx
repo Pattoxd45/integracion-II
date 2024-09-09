@@ -9,9 +9,14 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-[#253237]">
-      <div className="flex justify-between items-center h-24 px-4 text-[#ddd] max-w-[1240px] mx-auto">
-        <h1 className="w-full text-3xl font-bold">Magic: The Gathering</h1>
+    <div className="bg-[#000] mb-6">
+      <div className="flex justify-between items-center h-18 px-4 text-[#ddd] max-w-[1240px] mx-auto">
+        {/* Reemplaza el texto por el logo usando la URL */}
+        <img
+          src="https://images.ctfassets.net/s5n2t79q9icq/3dB5uyWzUH95O1ZPBNNUX5/6cff7c65a809285755ea24b164b6ac65/magic-logo.png"
+          alt="Magic: The Gathering Logo"
+          className="w-[150px] h-auto"
+        />
         <ul className="hidden md:flex">
           <li className="p-4 hover:text-[#9DB4C0]">Inicio</li>
           <li className="p-4 hover:text-[#9DB4C0]">Cartas</li>
@@ -30,9 +35,12 @@ const Navbar = () => {
               : "fixed left-[-100%]"
           }
         >
-          <h1 className="w-full text-3xl font-bold text-[#E0FBFC] px-4 py-[30px]">
-            Magic: The Gathering
-          </h1>
+          {/* Reemplaza el texto por el logo usando la URL */}
+          <img
+            src="https://images.ctfassets.net/s5n2t79q9icq/3dB5uyWzUH95O1ZPBNNUX5/6cff7c65a809285755ea24b164b6ac65/magic-logo.png"
+            alt="Magic: The Gathering Logo"
+            className="w-[150px] h-auto px-4 py-[30px]"
+          />
           <ul className="uppercase p-4 text-[#E0FBFC]">
             <li className="p-4 border-b border-[#5C6B73]">Inicio</li>
             <li className="p-4 border-b border-[#5C6B73]">Cartas</li>
