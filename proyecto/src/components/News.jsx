@@ -2,9 +2,9 @@ import React from "react";
 
 const News = () => {
   return (
-    <div className="max-w-[1240px] mx-auto space-y-6 my-6 text-white">
+    <div className="max-w-[1200px] mx-auto space-y-6 my-6 text-white">
       {Array.from({ length: 3 }, (_, index) => (
-        <div key={index} className="flex bg-[#000] rounded-lg overflow-hidden h-[152px] shadow-md">
+        <div key={index} className="flex bg-[#000] rounded-lg overflow-hidden h-[152px] shadow-xl">
           <div className="w-[320px] bg-[#E83411]"></div>
           <div className="p-4 flex flex-col justify-center">
             <h2 className="text-2xl font-bold">Noticia {index + 1}</h2>
@@ -13,7 +13,7 @@ const News = () => {
               odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla
               quis sem at nibh elementum imperdiet. Duis sagittis ipsum.
             </p>
-            <p className="text-[#b8b8b8]">Ver más...</p>
+            <p className="text-[#b8b8b8] cursor-pointer hover:text-[#e85438]">Ver más...</p>
           </div>
         </div>
       ))}
