@@ -6,3 +6,30 @@ body {
   background-color: #ddd;
 }
 
+.card {
+  width: 220px;
+  height: 320px;
+}
+
+@media (max-width: 940px) {
+  .card {
+    width: 180px; /* Ajusta el ancho a 180px */
+    height: 280px; /* Ajusta el alto a 280px */
+  }
+}
+
+@media (max-width: 766px) {
+  .card {
+    width: 220px; /* Ajusta el ancho a 220px */
+    height: 320px; /* Ajusta el alto a 320px */
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    width: 300px; /* Ajusta el ancho a 300px */
+    height: 420px; /* Ajusta el alto a 420px */
+  }
+
+}
+

@@ -26,6 +26,7 @@ function App() {
             }
           />
           <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Router>
     </div>
