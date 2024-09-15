@@ -1,0 +1,35 @@
+Para agregar noticias externas a la página Principal,
+tenemos dos opciones:
+
+-Utilización de una API: esto nos permitiría una rápida 
+transferencia de los datos, además de un proceso automatico y 
+una reduccion de costos ya que no es necesario agregar los datos
+manualmente, reducen errores.
+Algunas desventajas de este método son que no todos los sitios web ofrecen una API 
+para acceder a sus datos, existencia de posibles riesgos de vulnerabilidad
+y posibles problemas de compatibilidad. Las limitaciones de las APIs igual pueden 
+significar un problema ya que algunas permiten un número limitado de consultas.
+
+-Utilización de Web scraping: este método consiste en navegar automaticamente una web 
+y extraer información de ella (bots).
+desventajas: ilicitud en algunos casos: Es ilegal scrapear info privada, extraer datos 
+que el propietarohaya indicado explicitamente que no da su autorización, copiar y pegar contenido sin citar,
+uso de datos para hacer spam.
+Además esto solo se pueden hacer en páginas que no tengan cambios con frecuencia,
+para que la información no quedé desfasada.
+Este método funciona de mejor manera cuando las páginas tienen una estructura similar, en caso 
+contrario los procesos suelen ralentizarse. Además hay que asegurarse de que el codgio al realizar 
+la comparativa sea similar, para no duplicar los esfuerzos, que pueden significar en un aumento de costo.
+
+-Método manual: Control total de lo que se publica, contenido perzonalizado y actualización inmediata sin dependencias
+de API o Scraping.
+Desventajas: esto requiere tiempo y esfuerza del equipo para mantener la sección actualizada,
+posible existencia de errores humanos, además que mantener el formato y el estilo, puede resultar dificil al realizarlo 
+con este método.
+
+La pagina oficial de Magic, no ofrece ninguna API para la extración de sus datos y cuenta con restricciones de minería, 
+por el momento la opción más viable parece ser la actualización de forma manual.
+
+
+
+
