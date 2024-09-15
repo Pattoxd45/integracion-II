@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vistas Parciales | Formulario de Registro</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="image-container">
+            <img src="backgr.jpg" alt="Imagen de Fondo">
+        </div>
+
+        <div class="form-container sign-up-container">
+            <form action="#">
+                <h1>Regístrate Ahora</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google"></i></a>
+                    <a href="#" class="social"><i class="fab fa-microsoft"></i></a>
+                </div>
+                <span>o usa tu correo electrónico para registrarte</span>
+                <input type="text" placeholder="Nombre" />
+                <input type="email" placeholder="Correo electrónico" />
+                <input type="password" placeholder="Contraseña" />
+                <button>Registrarse</button>
+            </form>
+        </div>
+        <div class="form-container sign-in-container">
+            <form action="#">
+                <h1>Inicia Sesión</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google"></i></a>
+                    <a href="#" class="social"><i class="fab fa-microsoft"></i></a>
+                </div>
+                <span>o usa tu cuenta</span>
+                <input type="email" placeholder="Correo electrónico" />
+                <input type="password" placeholder="Contraseña" />
+                <a href="#">¿Olvidaste tu contraseña?</a>
+                <button>Iniciar Sesión</button>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>¡Bienvenido de Nuevo!</h1>
+                    <p>Inicia sesión y disfruta de nuestros servicios</p>
+                    <button class="ghost" id="signIn">Iniciar Sesión</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>¡Saludos, Amigo!</h1>
+                    <p>Haz clic abajo y comienza a usar nuestros servicios</p>
+                    <button class="ghost" id="signUp">Regístrate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./main.js"></script>
+    <script src="https://kit.fontawesome.com/e2504ed527.js" crossorigin="anonymous"></script>
+</body>
+</html>
