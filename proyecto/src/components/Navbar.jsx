@@ -3,11 +3,13 @@ import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { Link } from "react-router-dom";
 import RegisterModal from "./RegisterModal";
+import LoginModal from "./LoginModal"; // Importa el modal de Login
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [profileMenu, setProfileMenu] = useState(false);
   const [showRegister, setShowRegister] = useState(false); // Controla el modal de registro
+  const [showLogin, setShowLogin] = useState(false); // Controla el modal de inicio de sesión (login)
   const profileRef = useRef(null); // Referencia para el dropdown del perfil
 
   const handleNav = () => {
@@ -26,6 +28,14 @@ const Navbar = () => {
     setShowRegister(false); // Cierra el modal de registro
   };
 
+  const openLoginModal = () => {
+    setShowLogin(true); // Abre el modal de inicio de sesión
+  };
+
+  const closeLoginModal = () => {
+    setShowLogin(false); // Cierra el modal de inicio de sesión
+  };
+
   // Cerrar el dropdown del perfil cuando se hace clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -40,14 +50,14 @@ const Navbar = () => {
     };
   }, [profileRef]);
 
-  // Bloquear el scroll cuando el modal de registro está abierto
+  // Bloquear el scroll cuando el modal de registro o de inicio de sesión está abierto
   useEffect(() => {
-    if (showRegister) {
+    if (showRegister || showLogin) {
       document.body.style.overflow = "hidden"; // Bloquea el scroll
     } else {
       document.body.style.overflow = "auto"; // Restaura el scroll
     }
-  }, [showRegister]);
+  }, [showRegister, showLogin]);
 
   return (
     <div className="bg-[#000] mb-6">
@@ -86,8 +96,8 @@ const Navbar = () => {
                   <li className="hover:text-[#e85438]" onClick={openRegisterModal}>
                     Register
                   </li>
-                  <li className="hover:text-[#e85438]">
-                    <Link to="/login">Login</Link>
+                  <li className="hover:text-[#e85438]" onClick={openLoginModal}>
+                    Login
                   </li>
                 </ul>
               </div>
@@ -96,29 +106,31 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center md:hidden space-x-2">
-          <CgProfile
-            onClick={handleProfileMenu}
-            size={30}
-            className="cursor-pointer text-[#ddd] hover:text-[#e85438]"
-          />
-          {profileMenu && (
-            <div className="absolute top-[60px] left-4 w-[150px] bg-[#1a1a1a] text-[#ddd] shadow-md rounded-lg z-50">
-              <ul className="flex flex-col p-2 space-y-2">
-                <li className="hover:text-[#e85438]">
-                  <Link to="/about">Acerca</Link>
-                </li>
-                <li className="hover:text-[#e85438]">
-                  <Link to="/support">Soporte</Link>
-                </li>
-                <li className="hover:text-[#e85438]" onClick={openRegisterModal}>
-                  Register
-                </li>
-                <li className="hover:text-[#e85438]">
-                  <Link to="/login">Login</Link>
-                </li>
-              </ul>
-            </div>
-          )}
+          <div className="relative" ref={profileRef}>
+            <CgProfile
+              onClick={handleProfileMenu}
+              size={30}
+              className="cursor-pointer text-[#ddd] hover:text-[#e85438]"
+            />
+            {profileMenu && (
+              <div className="absolute top-[60px] right-0 w-[150px] bg-[#1a1a1a] text-[#ddd] shadow-md rounded-lg z-50">
+                <ul className="flex flex-col p-2 space-y-2">
+                  <li className="hover:text-[#e85438]">
+                    <Link to="/about">Acerca</Link>
+                  </li>
+                  <li className="hover:text-[#e85438]">
+                    <Link to="/support">Soporte</Link>
+                  </li>
+                  <li className="hover:text-[#e85438]" onClick={openRegisterModal}>
+                    Register
+                  </li>
+                  <li className="hover:text-[#e85438]" onClick={openLoginModal}>
+                    Login
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
 
           <div onClick={handleNav} className="text-[#E0FBFC]">
             {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
@@ -159,6 +171,9 @@ const Navbar = () => {
 
       {showRegister && (
         <RegisterModal closeRegisterModal={closeRegisterModal} />
+      )}
+      {showLogin && (
+        <LoginModal closeLoginModal={closeLoginModal} />
       )}
     </div>
   );
