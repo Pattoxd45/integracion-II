@@ -1,5 +1,5 @@
 const express = require('express');
-const scrapeNews = require('./scrapeNews'); // Importa desde la carpeta actual
+const scrapeNews = require('./scrapeNews'); // Esta línea debe estar correcta
 const cors = require('cors');
 
 const app = express();
@@ -12,7 +12,8 @@ app.get('/api/news', async (req, res) => {
     const newsItems = await scrapeNews(); // Ejecuta la función scrapeNews
     res.json(newsItems);
   } catch (error) {
-    console.error('Error fetching the news:', error);
+    console.error('Error fetching the news:', error.message);
+    console.error(error);
     res.status(500).send('Error fetching the news');
   }
 });

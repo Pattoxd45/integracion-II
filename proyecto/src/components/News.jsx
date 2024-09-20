@@ -10,7 +10,7 @@ const NewsCarousel = () => {
   useEffect(() => {
     axios.get("http://localhost:3000/api/news")
       .then(response => {
-        setNews(response.data); // Guardar las noticias obtenidas
+        setNews(response.data);
       })
       .catch(error => {
         console.error("Error fetching news:", error);
@@ -33,24 +33,19 @@ const NewsCarousel = () => {
         {news.map((item, index) => (
           <div key={index} className="p-4">
             <div className="flex bg-[#000] rounded-lg overflow-hidden h-[400px] shadow-xl">
-              {/* Div naranja con la imagen */}
               <div className="flex-shrink-0 w-1/4 bg-[#E83411] flex items-center justify-center">
                 <img 
-                  src={item.imageUrl} // Usar la URL de la imagen obtenida del scraping
+                  src={item.imageUrl} 
                   alt={item.title} 
-                  className="w-full h-full object-cover" // Ajustar para que la imagen llene el espacio
+                  className="w-full h-full object-cover"
                 />
               </div>
               <div className="p-4 flex flex-col justify-center flex-grow">
                 <h2 className="text-2xl font-bold">{item.title}</h2>
                 <p className="mt-2 line-clamp-2 sm:line-clamp-3">
-                  {item.description}
+                  {item.description} {/* Cambié item.summary a item.description */}
                 </p>
-                <a href={item.link} target="_blank" rel="noopener noreferrer">
-                  <p className="text-[#b8b8b8] cursor-pointer hover:text-[#e85438] mt-2">
-                    Ver más...
-                  </p>
-                </a>
+                {/* Agregar un enlace si deseas mostrar un enlace */}
               </div>
             </div>
           </div>
