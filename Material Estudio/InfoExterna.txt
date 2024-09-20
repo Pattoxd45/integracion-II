@@ -27,9 +27,4 @@ Desventajas: esto requiere tiempo y esfuerza del equipo para mantener la secció
 posible existencia de errores humanos, además que mantener el formato y el estilo, puede resultar dificil al realizarlo 
 con este método.
 
-La pagina oficial de Magic, no ofrece ninguna API para la extración de sus datos y cuenta con restricciones de minería, 
-por el momento la opción más viable parece ser la actualización de forma manual.
-
-
-
 
