@@ -1,11 +1,17 @@
 import React from "react";
+<<<<<<< HEAD
 import { FaGithub, FaInstagram, FaFacebook, FaUniversity } from "react-icons/fa"; // Importamos los iconos
+=======
+>>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
 
 const Footer = () => {
   return (
     <div className="mx-auto py-6 text-white bg-[#000]">
       <div className="max-w-[1240px] px-4 mx-auto grid lg:grid-cols-3 gap-8">
+<<<<<<< HEAD
         {/* Logo y descripción */}
+=======
+>>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
         <div>
           <img
             src="https://images.ctfassets.net/s5n2t79q9icq/3dB5uyWzUH95O1ZPBNNUX5/6cff7c65a809285755ea24b164b6ac65/magic-logo.png"
@@ -16,6 +22,7 @@ const Footer = () => {
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, error
             consequuntur temporibus impedit et accusantium?
           </p>
+<<<<<<< HEAD
 
           {/* Iconos de GitHub, Instagram, Facebook y Universidad */}
           <div className="flex space-x-3">
@@ -92,10 +99,30 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+=======
+        </div>
+        <div className="lg:col-span-2 flex justify-between">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i}>
+              <h6 className="font-[14px]">Sección {i + 1}</h6>
+              <ul>
+                {Array.from({ length: 4 }, (_, j) => (
+                  <li key={j} className="py-2 text-sm hover:text-[#e85438]">
+                    Elemento {j + 1}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+>>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
         </div>
       </div>
     </div>
   );
 };
 
+<<<<<<< HEAD
 export default Footer;
+=======
+export default Footer;
+>>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
