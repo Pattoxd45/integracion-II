@@ -1,30 +1,27 @@
-const axios = require('axios');
 const cheerio = require('cheerio');
+const axios = require('axios');
 
-const fetchNews = async () => {
-    try {
-        const response = await axios.get('https://magic.wizards.com/es/news');
-        const html = response.data;
-        const $ = cheerio.load(html);
+const scrapeNews = async () => {
+  const { data } = await axios.get('URL_DE_TU_PAGINA'); // Reemplaza esto con la URL de la página que deseas scrapear
+  const $ = cheerio.load(data);
 
-        const newsItems = [];
+  const newsItems = [];
 
-        $('article.css-415ug').each((index, element) => {
-            const title = $(element).find('h3.css-9f4rq').text().trim();
-            const link = $(element).find('a').attr('href');
-            const summary = $(element).find('.css-p4BJO p').text().trim();
+  $('article.css-415ug').each((index, element) => {
+    const title = $(element).find('h3.css-9f4rq').text();
+    const summary = $(element).find('.css-p4BJO p').text();
+    const link = $(element).find('a.css-kId4u').attr('href');
+    const imageUrl = $(element).find('source').attr('srcset');
 
-            if (title && link && summary) {
-                newsItems.push({ title, link: `https://magic.wizards.com${link}`, summary });
-                console.log('Found news item:', { title, link, summary });
-            }
-        });
+    newsItems.push({
+      title,
+      summary,
+      imageUrl: `https:${imageUrl}`, // Asegúrate de agregar "https:" si falta
+      link,
+    });
+  });
 
-        console.log(`Total news items scraped: ${newsItems.length}`);
-        return newsItems;
-    } catch (error) {
-        console.error('Error fetching news:', error);
-    }
+  return newsItems;
 };
 
-module.exports = fetchNews;
+module.exports = scrapeNews;

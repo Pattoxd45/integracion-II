@@ -7,6 +7,7 @@ import News from "./components/News"
 import Footer from "./components/Footer";
 import Register from "./components/Register";
 import Login from "./components/Login"
+import Eventos from "./components/Eventos"
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
             element={
               <>
                 <Navbar />
+                <Eventos />
                 <Hero />
                 <Cards />
                 <News />
