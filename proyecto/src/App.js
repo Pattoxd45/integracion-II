@@ -5,6 +5,7 @@ import Hero from "./components/Hero";
 import Cards from "./components/Cards";
 import News from "./components/News";
 import Footer from "./components/Footer";
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               </>
             }
           />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </Router>
     </div>
