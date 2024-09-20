@@ -19,8 +19,8 @@ function App() {
             element={
               <>
                 <Navbar />
-                <Eventos />
                 <Hero />
+                <Eventos />
                 <Cards />
                 <News />
                 <Footer />
