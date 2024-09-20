@@ -39,7 +39,12 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
+<<<<<<< HEAD
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.12"
+=======
     "postcss": "^8.4.44",
     "tailwindcss": "^3.4.10"
+>>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
   }
 }
