@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect, useRef } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
@@ -12,20 +11,11 @@ const Navbar = () => {
   const [showRegister, setShowRegister] = useState(false); // Controla el modal de registro
   const [showLogin, setShowLogin] = useState(false); // Controla el modal de inicio de sesión (login)
   const profileRef = useRef(null); // Referencia para el dropdown del perfil
-=======
-import React, { useState } from "react";
-import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { Link } from "react-router-dom";
-
-const Navbar = () => {
-  const [nav, setNav] = useState(false);
->>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
 
   const handleNav = () => {
     setNav(!nav);
   };
 
-<<<<<<< HEAD
   const handleProfileMenu = () => {
     setProfileMenu(!profileMenu);
   };
@@ -69,8 +59,6 @@ const Navbar = () => {
     }
   }, [showRegister, showLogin]);
 
-=======
->>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
   return (
     <div className="bg-[#000] mb-6">
       <div className="flex justify-between items-center h-18 px-4 text-[#ddd] max-w-[1240px] mx-auto">
@@ -79,7 +67,6 @@ const Navbar = () => {
           alt="Magic: The Gathering Logo"
           className="w-[150px] h-auto"
         />
-<<<<<<< HEAD
 
         <div className="flex items-center space-x-2">
           <ul className="hidden md:flex">
@@ -156,26 +143,6 @@ const Navbar = () => {
           </div>
         </div>
 
-=======
-        <ul className="hidden md:flex">
-          <li className="p-4 hover:text-[#e85438] cursor-pointer">
-            <Link to="/">Inicio</Link>
-          </li>
-          <li className="p-4 hover:text-[#e85438] cursor-pointer">Cartas</li>
-          <li className="p-4 hover:text-[#e85438] cursor-pointer">Noticias</li>
-          <li className="p-4 hover:text-[#e85438] cursor-pointer">Acerca</li>
-          <li className="p-4 hover:text-[#e85438] cursor-pointer">Soporte</li>
-          <li className="p-4 hover:text-[#e85438] cursor-pointer">
-            <Link to="/register">Register</Link>
-          </li>
-          <li className="p-4 hover:text-[#e85438] cursor-pointer">
-            <Link to="/login">Login</Link>
-          </li>
-        </ul>
-        <div onClick={handleNav} className="block md:hidden text-[#E0FBFC]">
-          {nav ? <AiOutlineClose size={20} /> : <AiOutlineMenu size={20} />}
-        </div>
->>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
         <div
           className={
             nav
@@ -204,7 +171,6 @@ const Navbar = () => {
             <li className="p-4 border-b border-[#ddd] hover:text-[#e85438] cursor-pointer">
               Soporte
             </li>
-<<<<<<< HEAD
           </ul>
         </div>
       </div>
@@ -215,18 +181,8 @@ const Navbar = () => {
       {showLogin && (
         <LoginModal closeLoginModal={closeLoginModal} />
       )}
-=======
-            <li className="p-4 hover:text-[#e85438]">Register</li>
-          </ul>
-        </div>
-      </div>
->>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
     </div>
   );
 };
 
-<<<<<<< HEAD
 export default Navbar;
-=======
-export default Navbar;
->>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
