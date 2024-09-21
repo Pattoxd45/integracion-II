@@ -99,6 +99,9 @@ const Navbar = () => {
                   <li className="hover:text-[#e85438]" onClick={openLoginModal}>
                     Login
                   </li>
+                  <li className="hover:text-[#e85438]">
+                    <Link to="/Profile">Perfil</Link>
+                  </li>
                 </ul>
               </div>
             )}
@@ -126,6 +129,9 @@ const Navbar = () => {
                   </li>
                   <li className="hover:text-[#e85438]" onClick={openLoginModal}>
                     Login
+                  </li>
+                  <li className="hover:text-[#e85438]">
+                    <Link to="/Profile">Perfil</Link>
                   </li>
                 </ul>
               </div>
