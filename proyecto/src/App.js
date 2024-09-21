@@ -6,7 +6,9 @@ import Cards from "./components/Cards";
 import News from "./components/News"
 import Footer from "./components/Footer";
 import Register from "./components/Register";
-import Login from "./components/Login"
+import Login from "./components/Login";
+import Events from "./components/Events"
+
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
                 <Hero />
                 <Cards />
                 <News />
+                <Events />
                 <Footer />
               </>
             }
