@@ -47,34 +47,34 @@ const Creadores = () => {
   };
 
   const creators = [
-    { name: "Tolarian Community College", imgSrc: imagen1, link: "https://www.youtube.com/@TolarianCommunityCollege", description: "Enfocado en educación sobre cartas, estrategias y revisiones de productos." },
-    { name: "The Command Zone", imgSrc: imagen2, link: "https://www.youtube.com/@commandcast", description: "Enfocado en el formato Commander, con análisis de cartas y estrategias" },
-    { name: "Unsleeved Media", imgSrc: imagen3, link: "https://www.youtube.com/@mtgheadquarters", description: "Contenido sobre una variedad de formatos y estrategias de MTG." },
-    { name: "Kraken Packs", imgSrc: imagen4, link: "https://www.youtube.com/@KrakenPacksOFFICIAL", description: "Contenido de unboxing, packs y contenido relacionado con coleccionismo." },
-    { name: "MTGGoldfish", imgSrc: imagen5, link: "https://www.youtube.com/@MTGGoldfish", description: "Contenido de metajuego, deck techs y análisis de cartas." },
-    { name: "ChannelFireball", imgSrc: imagen6, link: "https://www.youtube.com/@ChannelFireball", description: "Contenido educativo y competitivo sobre estrategias y análisis de cartas." },
+    { name: "Tolarian Community College", imgSrc: imagen1, link: "https://www.youtube.com/@TolarianCommunityCollege", description: "Cartas y estrategias" },
+    { name: "The Command Zone", imgSrc: imagen2, link: "https://www.youtube.com/@commandcast", description: "Análisis y estrategias para Commander." },
+    { name: "Unsleeved Media", imgSrc: imagen3, link: "https://www.youtube.com/@mtgheadquarters", description: "Estrategias y formatos variados de MTG." },
+    { name: "Kraken Packs", imgSrc: imagen4, link: "https://www.youtube.com/@KrakenPacksOFFICIAL", description: "Unboxing y coleccionismo de MTG." },
+    { name: "MTGGoldfish", imgSrc: imagen5, link: "https://www.youtube.com/@MTGGoldfish", description: "Análisis de cartas y estrategias de metajuego." },
+    { name: "ChannelFireball", imgSrc: imagen6, link: "https://www.youtube.com/@ChannelFireball", description: "Educación competitiva sobre cartas y tácticas." },
     { name: "Good Morning Magic", imgSrc: imagen7, link: "https://www.youtube.com/@GoodMorningMagic", description: "Programa diario de noticias y análisis de MTG." },
-    { name: "Limited Resources", imgSrc: imagen8, link: "https://www.youtube.com/@LimitedResourcesPodcast", description: "Enfocado en el juego limitado y la estrategia de sellos." },
-    { name: "MTGNerdGirl", imgSrc: imagen9, link: "https://www.youtube.com/@MTGNerdGirl", description: "Enfocada en varios aspectos de MTG, incluyendo juegos competitivos y casuales." },
-    { name: "Luis Scott-Vargas", imgSrc: imagen10, link: "https://www.youtube.com/@LSVargas", description: "Pro jugador y creador de contenido que comparte su experiencia y estrategias sobre MTG." },
+    { name: "Limited Resources", imgSrc: imagen8, link: "https://www.youtube.com/@LimitedResourcesPodcast", description: "Estrategias específicas para formatos limitados." },
+    { name: "MTGNerdGirl", imgSrc: imagen9, link: "https://www.youtube.com/@MTGNerdGirl", description: "Aborda juegos competitivos y casuales." },
+    { name: "Luis Scott-Vargas", imgSrc: imagen10, link: "https://www.youtube.com/@LSVargas", description: "Comparte experiencias y estrategias de MTG" },
   ];
 
   return (
-    <div className="max-w-[1200px] mx-auto my-6 flex items-center" style={{ height: '450px' }}>
+    <div className="max-w-[1200px] mx-auto my-6 flex items-center">
       <div className="p-10 rounded-lg text-white w-full">
         <Slider {...settings}>
           {creators.map((creator, index) => (
             <div key={index} className="px-6">
               <a href={creator.link} target="_blank" rel="noopener noreferrer">
-                <div className="card w-[200px] h-[380px] bg-[#000] flex flex-col rounded-lg border-4 border-[#E83411] shadow-xl hover:border-[#e85438] transition-all duration-300 transform hover:translate-y-[-10px] hover:shadow-[0_0_20px_rgba(232,52,17,0.8)]">
-                  <div className="flex-1">
+                <div className="card w-[200px] h-[350px] bg-[#000] flex flex-col rounded-lg border-4 border-[#E83411] shadow-xl hover:border-[#e85438] transition-all duration-300 hover:shadow-[0_0_30px_rgba(232,52,17,1)]">
+                  <div className="flex-1 w-full h-[30%]">
                     <img
                       src={creator.imgSrc}
                       alt={creator.name}
-                      className="w-full h-[80%] object-cover rounded-t-lg border-b-4 border-[#E83411]"
+                      className="w-full object-cover border-b-4 border-[#E83411]"
                     />
                   </div>
-                  <div className="h-[20%] flex flex-col justify-center text-center p-2">
+                  <div className="h-[40%] flex flex-col justify-center text-center p-2">
                     <div className="font-bold text-[#FF7F50]">{creator.name}</div>
                     <div className="text-[#FFDAB9]">{creator.description}</div>
                   </div>
