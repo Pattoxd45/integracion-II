@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Events from "./components/Events";
+import Creadores from "./components/Creadores"
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
                 <h2 className="title">PROXIMOS EVENTOS</h2>
                 <Events /><br/>
                 <h3 className="title">CREADORES DE CONTENIDO</h3>
+                <Creadores /> <br/>
                 <Footer />
               </>
             }
