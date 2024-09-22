@@ -62,11 +62,11 @@ const Navbar = () => {
   return (
     <div className="bg-[#000] mb-6">
       <div className="flex justify-between items-center h-18 px-4 text-[#ddd] max-w-[1240px] mx-auto">
-        <img
+        <Link to="/"><img
           src="https://images.ctfassets.net/s5n2t79q9icq/3dB5uyWzUH95O1ZPBNNUX5/6cff7c65a809285755ea24b164b6ac65/magic-logo.png"
           alt="Magic: The Gathering Logo"
           className="w-[150px] h-auto"
-        />
+        /></Link>
 
         {/* Iconos de menu y perfil */}
         <div className="flex items-center space-x-2">
@@ -75,8 +75,12 @@ const Navbar = () => {
             <li className="p-4 hover:text-[#e85438] cursor-pointer">
               <Link to="/">Inicio</Link>
             </li>
-            <li className="p-4 hover:text-[#e85438] cursor-pointer">Cartas</li>
-            <li className="p-4 hover:text-[#e85438] cursor-pointer">Noticias</li>
+            <li className="p-4 hover:text-[#e85438] cursor-pointer">
+              <Link to="/cartas">Cartas</Link>
+            </li>
+            <li className="p-4 hover:text-[#e85438] cursor-pointer">
+              <Link to="/noticias">Noticias</Link>
+            </li>
           </ul>
 
           {/* Menu de perfil */}
