@@ -33,3 +33,12 @@ body {
 
 }
 
+.title {
+  font-family: 'Montserrat', sans-serif; /* Cambia a Montserrat */
+  font-weight: 700; /* Estilo bold */
+  font-size: 3rem; /* Tamaño de la fuente */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada */
+  text-align: center; /* Centra el texto */
+  margin: 20px 0; /* Espacio arriba y abajo */
+  color: #E83411; /* Color naranja */
+}
