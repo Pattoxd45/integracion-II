@@ -13,11 +13,7 @@ const News = () => {
               odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla
               quis sem at nibh elementum imperdiet. Duis sagittis ipsum.
             </p>
-<<<<<<< HEAD
             <p className="text-[#b8b8b8] cursor-pointer hover:opacity-70 mt-1">
-=======
-            <p className="text-[#b8b8b8] cursor-pointer hover:text-[#e85438] mt-2">
->>>>>>> 31dcc32e6b689ff7b27f36a19238e1726e99856d
               Ver más...
             </p>
           </div>
