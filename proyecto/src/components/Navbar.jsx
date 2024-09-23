@@ -95,6 +95,9 @@ const Navbar = () => {
                 <div className="absolute right-0 mt-2 w-[150px] bg-[#1a1a1a] text-[#ddd] shadow-md rounded-lg z-50">
                   <ul className="flex flex-col p-2 space-y-2">
                     <li className="hover:text-[#e85438]">
+                      <Link to="/Profile">Perfil</Link>
+                    </li>
+                    <li className="hover:text-[#e85438]">
                       <Link to="/support">Soporte</Link>
                     </li>
                     <li className="hover:text-[#e85438]">
