@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BiUser } from "react-icons/bi";
-import { AiOutlineUnlock } from "react-icons/ai";
+import { AiOutlineUnlock, AiOutlineClose } from "react-icons/ai";
 
 const LoginModal = ({ closeLoginModal }) => {
   const [formData, setFormData] = useState({
@@ -19,7 +19,7 @@ const LoginModal = ({ closeLoginModal }) => {
           onClick={closeLoginModal}
           className="absolute top-2 right-2 text-gray-400 hover:text-white"
         >
-          X
+          <AiOutlineClose size={20} />
         </button>
         <h1 className="text-4xl text-[#ddd] font-bold text-center mb-6">Login</h1>
         <form>
