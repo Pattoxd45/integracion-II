@@ -2,7 +2,7 @@ import React from "react";
 
 const News = () => {
   return (
-    <div className="max-w-[1200px] mx-auto space-y-6 my-6 text-white">
+    <div className="max-w-[1200px] mx-auto space-y-6 mb-[20px] text-white">
       {Array.from({ length: 3 }, (_, index) => (
         <div key={index} className="flex bg-[#000] rounded-lg overflow-hidden h-[152px] shadow-xl">
           <div className="max-w-[320px] min-w-[180px] bg-[#E83411]"></div>

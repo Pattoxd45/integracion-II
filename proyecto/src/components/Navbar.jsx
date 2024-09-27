@@ -60,7 +60,7 @@ const Navbar = () => {
   }, [showRegister, showLogin]);
 
   return (
-    <div className="bg-[#000] mb-6 relative">
+    <div className="bg-[#000] mb-[20px] relative">
       <div className="flex justify-between items-center h-18 px-4 text-[#ddd] max-w-[1240px] mx-auto">
         <Link to="/">
           <img
@@ -100,7 +100,7 @@ const Navbar = () => {
                       <Link to="/Profile">Perfil</Link>
                     </li>
                     <li className="hover:text-[#e85438]">
-                      <Link to="/support">Soporte</Link>
+                      <Link to="/Decks">Barajas</Link>
                     </li>
                     <li className="hover:text-[#e85438]">
                       <Link to="/about">Acerca</Link>
