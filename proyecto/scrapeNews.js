@@ -22,4 +22,4 @@ async function scrapeNews() {
     return articles;
 }
 
-module.exports = scrapeNews; // Asegúrate de que esto esté presente
+module.exports = scrapeNews; 
