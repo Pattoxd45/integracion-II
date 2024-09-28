@@ -4,10 +4,12 @@ const scrapeEvents = require('./scrapeEvents'); // Importa la función para even
 const cors = require('cors');
 
 const app = express();
-const port = 3000;
+// Usar el puerto proporcionado por el entorno, o 3000 por defecto
+const port = 22222;
 
 app.use(cors());
 
+// Ruta para obtener las noticias
 app.get('/api/news', async (req, res) => {
   try {
     const newsItems = await scrapeNews();
@@ -18,6 +20,7 @@ app.get('/api/news', async (req, res) => {
   }
 });
 
+// Ruta para obtener los eventos
 app.get('/api/events', async (req, res) => {
   try {
     const events = await scrapeEvents(); // Ejecuta la función scrapeEvents
@@ -28,6 +31,7 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
+// Iniciar el servidor
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
