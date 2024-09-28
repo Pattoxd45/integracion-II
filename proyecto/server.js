@@ -4,8 +4,8 @@ const scrapeEvents = require('./scrapeEvents'); // Importa la función para even
 const cors = require('cors');
 
 const app = express();
-// Usar el puerto proporcionado por el entorno, o 3000 por defecto
-const port = 22222;
+// Usar el puerto proporcionado por el entorno, o 2222, o 3000 
+const port = process.env.PORT || 22222 || 3000;
 
 app.use(cors());
 
