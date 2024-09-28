@@ -1,31 +1,23 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
+const puppeteer = require('puppeteer');
 
 async function scrapeNews() {
-    const { data } = await axios.get('https://magic.wizards.com/es/news');
-    const $ = cheerio.load(data);
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto('https://magic.wizards.com/es/news');
 
-    const articles = [];
-
-    $('article.css-415ug').each((index, element) => {
-        const title = $(element).find('h3.css-9f4rq').text().trim();
-        const description = $(element).find('div.css-p4BJO p').text().trim();
-        const imageUrl = $(element).find('picture source').attr('srcset');
-        const authorName = $(element).find('.css-Z5ZSx').text().trim();
-        const authorImageUrl = $(element).find('.css-l31Oj img').attr('src');
-        const category = $(element).find('.css-6ZZbL a').text().trim();
-
-        articles.push({
-            title,
-            description,
-            imageUrl: imageUrl ? `https:${imageUrl}` : null, // Añadir el prefijo https si existe
-            author: authorName,
-            authorImageUrl: authorImageUrl ? `https:${authorImageUrl}` : null, // Añadir el prefijo https si existe
-            category,
-        });
+    const articles = await page.evaluate(() => {
+        const items = Array.from(document.querySelectorAll('article.css-415ug'));
+        return items.map(item => ({
+            title: item.querySelector('h3.css-9f4rq')?.innerText.trim(),
+            description: item.querySelector('div.css-p4BJO p')?.innerText.trim(),
+            imageUrl: item.querySelector('picture source')?.getAttribute('srcset'),
+            author: item.querySelector('.css-Z5ZSx')?.innerText.trim(),
+            authorImage: item.querySelector('.css-l31Oj img')?.getAttribute('src'),
+            category: item.querySelector('.css-6ZZbL a')?.innerText.trim(),
+        }));
     });
 
-    console.log(articles)
+    await browser.close();
     return articles;
 }
 
