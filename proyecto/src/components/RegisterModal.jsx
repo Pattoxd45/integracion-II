@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BiUser, BiEnvelope } from "react-icons/bi";
 import { AiOutlineUnlock, AiOutlineClose } from "react-icons/ai";
 import { IoCalendarNumberOutline } from "react-icons/io5";
@@ -12,13 +12,31 @@ const RegisterModal = ({ closeRegisterModal }) => {
     confirmPassword: "",
   });
 
+  const modalRef = useRef(null);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        closeRegisterModal();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [closeRegisterModal]);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-      <div className="bg-[#000] border border-[#ddd] rounded-md p-8 shadow-lg backdrop-filter backdrop-blur-sm relative w-[380px]">
+      <div
+        ref={modalRef}
+        className="bg-[#000] border border-[#ddd] rounded-md p-8 shadow-lg backdrop-filter backdrop-blur-sm relative w-[380px]"
+      >
         <button
           onClick={closeRegisterModal}
           className="absolute top-2 right-2 text-gray-400 hover:text-white"
@@ -27,7 +45,6 @@ const RegisterModal = ({ closeRegisterModal }) => {
         </button>
         <h1 className="text-4xl text-[#ddd] font-bold text-center mb-6">¡Registro!</h1>
         <form>
-          {/* Campo de Usuario */}
           <div className="relative my-8">
             <input
               type="text"
@@ -43,7 +60,6 @@ const RegisterModal = ({ closeRegisterModal }) => {
             <BiUser className="absolute top-3 right-2 text-xl text-[#ddd]" />
           </div>
 
-          {/* Campo de Correo */}
           <div className="relative my-8">
             <input
               type="email"
@@ -59,7 +75,6 @@ const RegisterModal = ({ closeRegisterModal }) => {
             <BiEnvelope className="absolute top-3 right-2 text-xl text-[#ddd]" />
           </div>
 
-          {/* Campo de Fecha de Nacimiento */}
           <div className="relative my-8">
             <input
               type="date"
@@ -75,7 +90,6 @@ const RegisterModal = ({ closeRegisterModal }) => {
             <IoCalendarNumberOutline className="absolute top-3 right-2 text-xl text-[#ddd]" />
           </div>
 
-          {/* Campo de Contraseña */}
           <div className="relative my-8">
             <input
               type="password"
@@ -91,7 +105,6 @@ const RegisterModal = ({ closeRegisterModal }) => {
             <AiOutlineUnlock className="absolute top-3 right-2 text-xl text-[#ddd]" />
           </div>
 
-          {/* Campo de Confirmar Contraseña */}
           <div className="relative my-8">
             <input
               type="password"
@@ -120,3 +133,4 @@ const RegisterModal = ({ closeRegisterModal }) => {
 };
 
 export default RegisterModal;
+ 
