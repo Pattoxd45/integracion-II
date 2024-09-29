@@ -8,7 +8,7 @@ const NewsCarousel = () => {
   const [news, setNews] = useState([]);
 
   useEffect(() => {
-    axios.get("https://magicarduct.online/api/news")
+    axios.get("https://186.64.122.218/api/news") // Cambia esta línea por tu URL pública
       .then(response => {
         setNews(response.data);
       })
@@ -43,9 +43,8 @@ const NewsCarousel = () => {
               <div className="p-4 flex flex-col justify-center flex-grow">
                 <h2 className="text-2xl font-bold">{item.title}</h2>
                 <p className="mt-2 line-clamp-2 sm:line-clamp-3">
-                  {item.description} {/* Cambié item.summary a item.description */}
+                  {item.description}
                 </p>
-                {/* Agregar un enlace si deseas mostrar un enlace */}
               </div>
             </div>
           </div>

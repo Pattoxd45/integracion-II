@@ -1,11 +1,11 @@
 const express = require('express');
 const scrapeNews = require('./scrapeNews');
-const scrapeEvents = require('./scrapeEvents'); // Importa la función para eventos
+const scrapeEvents = require('./scrapeEvents');
 const cors = require('cors');
 
 const app = express();
-// Usar el puerto proporcionado por el entorno, o 2222, o 3000 
-const port = process.env.PORT || 22222 || 3000;
+// Usar el puerto proporcionado por el entorno
+const port = process.env.PORT || 22222; // Debería usar solo un puerto
 
 app.use(cors());
 
@@ -23,7 +23,7 @@ app.get('/api/news', async (req, res) => {
 // Ruta para obtener los eventos
 app.get('/api/events', async (req, res) => {
   try {
-    const events = await scrapeEvents(); // Ejecuta la función scrapeEvents
+    const events = await scrapeEvents();
     res.json(events);
   } catch (error) {
     console.error('Error fetching the events:', error.message);
