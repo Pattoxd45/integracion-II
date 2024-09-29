@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './App.css'; 
 
 const palabras = ['CONTRAHECHIZO', 'CONFIDENTEOSCURO', 'RELÁMPAGO', 'LOTONEGRO', 'TARMOGOYF'];
 const palabraSecreta = palabras[Math.floor(Math.random() * palabras.length)];
@@ -47,7 +46,7 @@ const Minijuegos = () => {
             {Array.from({ length: palabraSecreta.length }).map((_, colIndex) => (
               <div
                 key={colIndex}
-                className={`border p-2 ${attempt[colIndex] ? getLetterClass(attempt[colIndex], colIndex) : ''}`}
+                className={`border p-0.5 ${attempt[colIndex] ? getLetterClass(attempt[colIndex], colIndex) : ''}`}
               >
                 {attempt[colIndex] || ''}
               </div>
@@ -61,7 +60,7 @@ const Minijuegos = () => {
             type="text"
             value={input}
             onChange={handleChange}
-            className="border p-2 mb-4"
+            className="border p-2 mb-4 w-full"
             maxLength={palabraSecreta.length}
           />
           <button type="submit" className="bg-blue-500 text-white p-2">Enviar</button>

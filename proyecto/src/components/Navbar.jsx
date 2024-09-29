@@ -25,6 +25,8 @@ const Navbar = () => {
           <li className="p-4 hover:text-[#e85438] cursor-pointer">Noticias</li>
           <li className="p-4 hover:text-[#e85438] cursor-pointer">Acerca</li>
           <li className="p-4 hover:text-[#e85438] cursor-pointer">Soporte</li>
+          <li className="p-4 hover:text-[#e85438] cursor-pointer">Tiendas</li>
+          <li className="p-4 hover:text-[#e85438] cursor-pointer">Minijuegos</li>
           <li className="p-4 hover:text-[#e85438] cursor-pointer">
             <Link to="/register">Register</Link>
           </li>
@@ -62,6 +64,12 @@ const Navbar = () => {
             </li>
             <li className="p-4 border-b border-[#ddd] hover:text-[#e85438] cursor-pointer">
               Soporte
+            </li>
+            <li className="p-4 border-b border-[#ddd] hover:text-[#e85438] cursor-pointer">
+              Tiendas
+            </li>
+            <li className="p-4 border-b border-[#ddd] hover:text-[#e85438] cursor-pointer">
+              Minijuegos
             </li>
             <li className="p-4 hover:text-[#e85438]">Register</li>
           </ul>
