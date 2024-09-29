@@ -7,6 +7,8 @@ import News from "./components/News"
 import Footer from "./components/Footer";
 import Register from "./components/Register";
 import Login from "./components/Login"
+import Tiendas from "./components/Tiendas"
+import Minijuegos from "./components/Minijuegos"
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
                 <Hero />
                 <Cards />
                 <News />
+                <Tiendas/>
+                <Minijuegos/>
                 <Footer />
               </>
             }
