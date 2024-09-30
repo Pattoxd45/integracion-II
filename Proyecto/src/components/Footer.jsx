@@ -1,10 +1,11 @@
 import React from "react";
-import { FaGithub, FaInstagram, FaFacebook, FaUniversity } from "react-icons/fa";
+import { FaGithub, FaInstagram, FaFacebook, FaUniversity } from "react-icons/fa"; // Importamos los iconos
 
 const Footer = () => {
   return (
     <div className="mx-auto py-6 text-white bg-[#000]">
       <div className="max-w-[1240px] px-4 mx-auto grid lg:grid-cols-3 gap-8">
+        {/* Logo y descripción */}
         <div>
           <img
             src="https://images.ctfassets.net/s5n2t79q9icq/3dB5uyWzUH95O1ZPBNNUX5/6cff7c65a809285755ea24b164b6ac65/magic-logo.png"
@@ -16,6 +17,7 @@ const Footer = () => {
             consequuntur temporibus impedit et accusantium?
           </p>
 
+          {/* Iconos de GitHub, Instagram, Facebook y Universidad */}
           <div className="flex space-x-3">
             <a href="https://github.com/Pattoxd45/integracion-II" target="_blank" rel="noopener noreferrer">
               <FaGithub size={20} className="text-[#ddd] hover:text-[#e85438]" />
@@ -32,7 +34,9 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Secciones del footer */}
         <div className="lg:col-span-2 flex justify-around">
+          {/* Sección 1: Recursos */}
           <div>
             <h6 className="font-[14px]">Recursos</h6>
             <ul>
@@ -51,6 +55,7 @@ const Footer = () => {
             </ul>
           </div>
 
+          {/* Sección 2: Comunidad */}
           <div>
             <h6 className="font-[14px]">Comunidad</h6>
             <ul>
@@ -69,6 +74,7 @@ const Footer = () => {
             </ul>
           </div>
 
+          {/* Sección 3: Soporte */}
           <div>
             <h6 className="font-[14px]">Soporte</h6>
             <ul>

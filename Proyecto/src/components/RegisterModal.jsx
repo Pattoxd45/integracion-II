@@ -27,6 +27,7 @@ const RegisterModal = ({ closeRegisterModal }) => {
         </button>
         <h1 className="text-4xl text-[#ddd] font-bold text-center mb-6">¡Registro!</h1>
         <form>
+          {/* Campo de Usuario */}
           <div className="relative my-8">
             <input
               type="text"
@@ -42,6 +43,7 @@ const RegisterModal = ({ closeRegisterModal }) => {
             <BiUser className="absolute top-3 right-2 text-xl text-[#ddd]" />
           </div>
 
+          {/* Campo de Correo */}
           <div className="relative my-8">
             <input
               type="email"
@@ -57,6 +59,7 @@ const RegisterModal = ({ closeRegisterModal }) => {
             <BiEnvelope className="absolute top-3 right-2 text-xl text-[#ddd]" />
           </div>
 
+          {/* Campo de Fecha de Nacimiento */}
           <div className="relative my-8">
             <input
               type="date"
@@ -72,6 +75,7 @@ const RegisterModal = ({ closeRegisterModal }) => {
             <IoCalendarNumberOutline className="absolute top-3 right-2 text-xl text-[#ddd]" />
           </div>
 
+          {/* Campo de Contraseña */}
           <div className="relative my-8">
             <input
               type="password"
@@ -87,6 +91,7 @@ const RegisterModal = ({ closeRegisterModal }) => {
             <AiOutlineUnlock className="absolute top-3 right-2 text-xl text-[#ddd]" />
           </div>
 
+          {/* Campo de Confirmar Contraseña */}
           <div className="relative my-8">
             <input
               type="password"
