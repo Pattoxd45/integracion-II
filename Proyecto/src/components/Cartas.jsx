@@ -1,134 +1,178 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { FaSearch } from 'react-icons/fa';
 
 const Cartas = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("none");
-  const [filterValue, setFilterValue] = useState("all");
-
-  const cards = [
-    { name: "Aetherling", year: 2021, race: "Humano", cost: 3 },
-    { name: "Bloodghast", year: 2020, race: "Vampiro", cost: 2 },
-    { name: "Carnage Tyrant", year: 2021, race: "Dinosaurio", cost: 6 },
-    { name: "Deathrite Shaman", year: 2019, race: "Elfo", cost: 1 },
-    { name: "Eidolon of the Great Revel", year: 2021, race: "Espíritu", cost: 2 },
-    { name: "Fireblast", year: 2020, race: "Elemental", cost: 0 },
-    { name: "Griselbrand", year: 2021, race: "Demonio", cost: 8 },
-    { name: "Heliod, Sun-Crowned", year: 2020, race: "Dios", cost: 3 },
-    { name: "Inquisition of Kozilek", year: 2021, race: "Conjuro", cost: 1 },
-    { name: "Jace, the Mind Sculptor", year: 2019, race: "Planeswalker", cost: 4 },
-    { name: "Karn Liberated", year: 2018, race: "Planeswalker", cost: 7 },
-    { name: "Liliana of the Veil", year: 2021, race: "Planeswalker", cost: 3 },
-    { name: "Mox Opal", year: 2019, race: "Artefacto", cost: 0 },
-    { name: "Nicol Bolas, the Ravager", year: 2020, race: "Dragón", cost: 4 },
-    { name: "Omnath, Locus of Creation", year: 2021, race: "Elemental", cost: 4 },
-  ];
-
-  const filteredCards = cards.filter((card) => {
-    const matchesSearch = card.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-    if (selectedFilter === "none" || filterValue === "all") {
-      return matchesSearch; 
-    }
-
-    let matchesFilter = true;
-    if (selectedFilter === "year") {
-      matchesFilter = card.year.toString() === filterValue;
-    } else if (selectedFilter === "race") {
-      matchesFilter = card.race === filterValue;
-    } else if (selectedFilter === "cost") {
-      matchesFilter = card.cost.toString() === filterValue;
-    }
-
-    return matchesSearch && matchesFilter;
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filter, setFilter] = useState({
+    order: 'name',
+    dir: 'auto',
+    colors: [],
+    cmc: '',
+    power: '',
+    toughness: '',
   });
 
+  useEffect(() => {
+    fetchCards();
+  }, [searchQuery, filter]);
+
+  const fetchCards = () => {
+    setLoading(true);
+    const colorsQuery = filter.colors.length ? `+color:${filter.colors.join(',')}` : '';
+    const cmcQuery = filter.cmc ? `+cmc=${filter.cmc}` : '';
+    const powerQuery = filter.power ? `+pow=${filter.power}` : '';
+    const toughnessQuery = filter.toughness ? `+tou=${filter.toughness}` : '';
+
+    fetch(
+      `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}${colorsQuery}${cmcQuery}${powerQuery}${toughnessQuery}&order=${filter.order}&dir=${filter.dir}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.data) {
+          setCards(data.data);
+        } else {
+          setCards([]);
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching cards:', error);
+        setLoading(false);
+        setCards([]);
+      });
+  };
+
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleOrderChange = (event) => {
+    const { value } = event.target;
+    setFilter((prev) => ({ ...prev, order: value }));
+  };
+
+  const handleDirChange = (event) => {
+    const { value } = event.target;
+    setFilter((prev) => ({ ...prev, dir: value }));
+  };
+
+  const handleColorsChange = (event) => {
+    const { value, checked } = event.target;
+    setFilter((prev) => ({
+      ...prev,
+      colors: checked ? [...prev.colors, value] : prev.colors.filter((color) => color !== value),
+    }));
+  };
+
+  const handleCmcChange = (event) => {
+    setFilter((prev) => ({ ...prev, cmc: event.target.value }));
+  };
+
+  const handlePowerChange = (event) => {
+    setFilter((prev) => ({ ...prev, power: event.target.value }));
+  };
+
+  const handleToughnessChange = (event) => {
+    setFilter((prev) => ({ ...prev, toughness: event.target.value }));
+  };
+
   return (
-    <div className="max-w-[1200px] mx-auto my-6">
-      <div className="flex flex-col mb-6 space-y-4">
+    <div className="p-6 bg-gray-900 min-h-screen">
+      <h1 className="text-white text-4xl mb-8">Magic the Gathering Cards</h1>
+      <div className="mb-4 flex items-center">
         <input
           type="text"
-          placeholder="Buscar carta..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 border-2 border-gray-400 rounded-md w-full"
+          value={searchQuery}
+          onChange={handleSearch}
+          placeholder="Buscar cartas..."
+          className="p-2 rounded border border-gray-500"
         />
-
-        <div className="flex space-x-4">
-          <select
-            value={selectedFilter}
-            onChange={(e) => setSelectedFilter(e.target.value)}
-            className="p-2 border-2 border-gray-400 rounded-md"
-          >
-            <option value="none">Seleccionar filtro</option>
-            <option value="year">Filtrar por Año</option>
-            <option value="race">Filtrar por Raza</option>
-            <option value="cost">Filtrar por Coste</option>
-          </select>
-
-          <select
-            value={filterValue}
-            onChange={(e) => setFilterValue(e.target.value)}
-            className="p-2 border-2 border-gray-400 rounded-md"
-            disabled={selectedFilter === "none"}
-          >
-            <option value="all">Todos</option>
-            {selectedFilter === "year" && (
-              <>
-                <option value="2021">2021</option>
-                <option value="2020">2020</option>
-                <option value="2019">2019</option>
-                <option value="2018">2018</option>
-              </>
-            )}
-            {selectedFilter === "race" && (
-              <>
-                <option value="Humano">Humano</option>
-                <option value="Vampiro">Vampiro</option>
-                <option value="Dinosaurio">Dinosaurio</option>
-                <option value="Elfo">Elfo</option>
-                <option value="Espíritu">Espíritu</option>
-                <option value="Elemental">Elemental</option>
-                <option value="Demonio">Demonio</option>
-                <option value="Dios">Dios</option>
-                <option value="Conjuro">Conjuro</option>
-                <option value="Planeswalker">Planeswalker</option>
-                <option value="Artefacto">Artefacto</option>
-                <option value="Dragón">Dragón</option>
-              </>
-            )}
-            {selectedFilter === "cost" && (
-              <>
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-              </>
-            )}
-          </select>
-        </div>
+        <FaSearch className="ml-2 text-white" />
+        <select onChange={handleOrderChange} className="ml-4 p-2 rounded border border-gray-500">
+          <option value="name">Ordenar por Nombre</option>
+          <option value="set">Ordenar por Set</option>
+          <option value="released">Ordenar por Fecha de Lanzamiento</option>
+          <option value="cmc">Ordenar por CMC</option>
+        </select>
+        <select onChange={handleDirChange} className="ml-2 p-2 rounded border border-gray-500">
+          <option value="auto">Dirección Automática</option>
+          <option value="asc">Ascendente</option>
+          <option value="desc">Descendente</option>
+        </select>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 justify-items-center">
-        {filteredCards.length > 0 ? (
-          filteredCards.map((card, index) => (
-            <div
-              key={index}
-              className="card w-[220px] h-[320px] bg-[#000] text-white relative flex items-center justify-center rounded-lg border-4 border-[#E83411] shadow-xl hover:border-[#e85438] transition-all duration-300"
-            >
-              <div className="absolute top-2 right-2 bg-white text-black rounded-full w-10 h-10 flex items-center justify-center">
-                {card.cost}
+      <div className="mb-4">
+        <label className="text-white mr-4">Colores:</label>
+        {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
+          <label key={color} className="text-white mr-4">
+            <input
+              type="checkbox"
+              value={color}
+              onChange={handleColorsChange}
+              className="mr-1"
+            />
+            {color}
+          </label>
+        ))}
+      </div>
+
+      <div className="mb-4">
+        <label className="text-white mr-4">CMC:</label>
+        <input
+          type="number"
+          value={filter.cmc}
+          onChange={handleCmcChange}
+          placeholder="Coste de maná"
+          className="p-2 rounded border border-gray-500"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="text-white mr-4">Poder:</label>
+        <input
+          type="number"
+          value={filter.power}
+          onChange={handlePowerChange}
+          placeholder="Poder"
+          className="p-2 rounded border border-gray-500"
+        />
+        <label className="text-white ml-4 mr-4">Resistencia:</label>
+        <input
+          type="number"
+          value={filter.toughness}
+          onChange={handleToughnessChange}
+          placeholder="Resistencia"
+          className="p-2 rounded border border-gray-500"
+        />
+      </div>
+
+      {loading ? (
+        <p className="text-white">Cargando cartas...</p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          {Array.isArray(cards) && cards.length > 0 ? (
+            cards.map((card) => (
+              <div key={card.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
+                <img
+                  src={card.image_uris?.border_crop}
+                  alt={card.name}
+                  className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
+                />
+                <div className="mt-4">
+                  <h2 className="text-white text-lg font-bold">{card.name}</h2>
+                  <p className="text-gray-400">{card.type_line}</p>
+                  {card.power && <p className="text-gray-400">Power: {card.power}</p>}
+                  {card.toughness && <p className="text-gray-400">Toughness: {card.toughness}</p>}
+                </div>
               </div>
-              {card.name}
-            </div>
-          ))
-        ) : (
-          <p>No se encontraron cartas.</p>
-        )}
-      </div>
+            ))
+          ) : (
+            <p className="text-white">No se encontraron cartas.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
