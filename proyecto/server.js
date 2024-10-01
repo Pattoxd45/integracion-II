@@ -2,14 +2,15 @@ const express = require('express');
 const scrapeNews = require('./scrapeNews');
 const scrapeEvents = require('./scrapeEvents');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
-// Usar el puerto proporcionado por el entorno
-const port = process.env.PORT || 22222; // Debería usar solo un puerto
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 
-// Ruta para obtener las noticias
+app.use(express.static(path.join(__dirname, 'build')));
+
 app.get('/api/news', async (req, res) => {
   try {
     const newsItems = await scrapeNews();
@@ -20,7 +21,6 @@ app.get('/api/news', async (req, res) => {
   }
 });
 
-// Ruta para obtener los eventos
 app.get('/api/events', async (req, res) => {
   try {
     const events = await scrapeEvents();
@@ -31,7 +31,10 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
-// Iniciar el servidor
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });

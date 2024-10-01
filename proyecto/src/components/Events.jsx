@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+// npm install axios
 import axios from "axios";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    axios.get("https://186.64.122.218/api/events") // Cambia esta línea por tu URL pública
+    axios.get("http://localhost:3000/api/events")
       .then(response => {
         setEvents(response.data);
       })

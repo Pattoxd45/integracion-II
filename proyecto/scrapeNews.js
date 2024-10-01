@@ -1,23 +1,25 @@
-const puppeteer = require('puppeteer');
+const axios = require('axios');
+// npm install cheerio
+const cheerio = require('cheerio');
 
 async function scrapeNews() {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto('https://magic.wizards.com/es/news');
+    const { data } = await axios.get('https://magic.wizards.com/es/news');
+    const $ = cheerio.load(data);
 
-    const articles = await page.evaluate(() => {
-        const items = Array.from(document.querySelectorAll('article.css-415ug'));
-        return items.map(item => ({
-            title: item.querySelector('h3.css-9f4rq')?.innerText.trim(),
-            description: item.querySelector('div.css-p4BJO p')?.innerText.trim(),
-            imageUrl: item.querySelector('picture source')?.getAttribute('srcset'),
-            author: item.querySelector('.css-Z5ZSx')?.innerText.trim(),
-            authorImage: item.querySelector('.css-l31Oj img')?.getAttribute('src'),
-            category: item.querySelector('.css-6ZZbL a')?.innerText.trim(),
-        }));
+    const articles = [];
+
+    $('article.css-415ug').each((index, element) => {
+        const title = $(element).find('h3.css-9f4rq').text();
+        const description = $(element).find('div.css-p4BJO p').text();
+        const imageUrl = $(element).find('picture source').attr('srcset');
+
+        articles.push({
+            title,
+            description,
+            imageUrl,
+        });
     });
 
-    await browser.close();
     return articles;
 }
 

@@ -2,34 +2,25 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 async function scrapeEvents() {
-    const { data } = await axios.get('https://magic.wizards.com/es/news'); // Cambia esta URL si es necesario
+    const { data } = await axios.get('https://magic.gg/events');
     const $ = cheerio.load(data);
 
     const events = [];
 
-    $('article.css-415ug').each((index, element) => {
-        const title = $(element).find('h3.css-9f4rq').text().trim();
-        const description = $(element).find('div.css-p4BJO p').text().trim();
-        const imageUrl = $(element).find('picture source').attr('srcset');
-        const authorName = $(element).find('.css-Z5ZSx').text().trim();
-        const authorImageUrl = $(element).find('.css-l31Oj img').attr('src');
-        const category = $(element).find('.css-6ZZbL a').text().trim();
-        const date = $(element).find('.date-selector').text().trim(); // Ajusta el selector según la estructura HTML
-        const location = $(element).find('.location-selector').text().trim(); // Ajusta el selector según la estructura HTML
+    $('a.css-2XKNJ').each((index, element) => {
+        const title = $(element).find('div.css-2K89L').text().trim();
+        const date = $(element).find('span.css-_rnD-').text().trim();
+        const location = $(element).find('span.css-3HKUG').text().trim();
+        const url = 'https://magic.gg' + $(element).attr('href'); // URL completa del evento
 
         events.push({
             title,
-            description,
-            imageUrl: imageUrl ? `https:${imageUrl}` : null, // Añadir el prefijo https si existe
-            author: authorName,
-            authorImageUrl: authorImageUrl ? `https:${authorImageUrl}` : null, // Añadir el prefijo https si existe
-            category,
             date,
             location,
+            url,
         });
     });
 
-    console.log(events);
     return events;
 }
 

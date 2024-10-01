@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Cards from "./components/Cards";
-import News from "./components/News";
 import Footer from "./components/Footer";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Events from "./components/Events";
 import Creadores from "./components/Creadores"
+import NewsCarousel from "./components/News";
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
                 <Hero />
                 <Cards />
                 <h1 className="title">NOTICIAS IMPORTANTES</h1>
-                <News /> <br/>
+                <NewsCarousel /> <br/>
                 <h2 className="title">PROXIMOS EVENTOS</h2>
                 <Events /><br/>
                 <h3 className="title">CREADORES DE CONTENIDO</h3>

@@ -4,11 +4,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import axios from "axios";
 
-const NewsCarousel = () => {
+const Noticias = () => {
   const [news, setNews] = useState([]);
 
   useEffect(() => {
-    axios.get("https://186.64.122.218/api/news") // Cambia esta línea por tu URL pública
+    axios.get("http://localhost:3000/api/news")
       .then(response => {
         setNews(response.data);
       })
@@ -43,8 +43,9 @@ const NewsCarousel = () => {
               <div className="p-4 flex flex-col justify-center flex-grow">
                 <h2 className="text-2xl font-bold">{item.title}</h2>
                 <p className="mt-2 line-clamp-2 sm:line-clamp-3">
-                  {item.description}
+                  {item.description} {/* Cambié item.summary a item.description */}
                 </p>
+                {/* Agregar un enlace si deseas mostrar un enlace */}
               </div>
             </div>
           </div>
@@ -54,4 +55,4 @@ const NewsCarousel = () => {
   );
 };
 
-export default NewsCarousel;
+export default Noticias;
