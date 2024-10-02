@@ -1,28 +1,38 @@
-import React from 'react';
+import React from "react";
 
-const CardDetails = ({ card, onClose }) => {
-  if (!card) return null;
+const CardDetails = ({ selectedCard, closeDetails }) => {
+  if (!selectedCard) return null;
 
   return (
-    <div className="w-full h-full p-4 bg-[#222] text-white rounded-lg">
-      {/* Botón para cerrar la vista de detalle */}
-      <button
-        className="text-white hover:text-red-500 mb-4"
-        onClick={onClose}
-      >
-        Cerrar
-      </button>
+    <div className="w-[80%] bg-[#222] ml-4 p-5 rounded-lg text-white flex">
+      {/* Imagen de la carta */}
+      <div className="w-[50%] flex-shrink-0">
+        <img
+          src={selectedCard.image}
+          alt={selectedCard.name}
+          className="w-full h-full object-cover rounded-md"
+        />
+      </div>
 
-      {/* Información de la carta */}
-      <h2 className="text-3xl font-bold mb-2">{card.name}</h2>
-      <img
-        src={card.image}
-        alt={card.name}
-        className="w-[300px] h-[400px] object-cover mb-4"
-      />
-      <p className="mb-2">Tipo: {card.type || "Tipo no disponible"}</p>
-      <p className="mb-2">Mana: {card.mana || "N/A"}</p>
-      <p className="mb-2">Descripción: {card.description || "Sin descripción"}</p>
+      {/* Descripciones de la carta */}
+      <div className="ml-6 w-[50%] flex flex-col">
+        <button
+          className="self-end text-white hover:text-red-500 mb-4"
+          onClick={closeDetails}
+        >
+          Cerrar
+        </button>
+        <h2 className="text-3xl font-bold">{selectedCard.name}</h2>
+        <p className="mt-4 text-lg">
+          Descripción: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        </p>
+        <p className="mt-2">Mana: {selectedCard.mana || "Desconocido"}</p>
+        <p className="mt-2">Tipo: {selectedCard.type || "Desconocido"}</p>
+        <p className="mt-2">
+          Poder/Toughness: {selectedCard.power || "N/A"} /{" "}
+          {selectedCard.toughness || "N/A"}
+        </p>
+      </div>
     </div>
   );
 };
