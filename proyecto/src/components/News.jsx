@@ -1,25 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Slider from 'react-slick';
+import React, { useState, useEffect } from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import axios from "axios";
 
-const News = () => {
-  const [articles, setArticles] = useState([]);
+const Noticias = () => {
+  const [news, setNews] = useState([]);
 
-  // Fetch news articles when the component mounts
   useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const response = await axios.get('/scrapeNews'); // Llama a la ruta del servidor que ejecuta scrapeNews.js
-        setArticles(response.data);
-      } catch (error) {
-        console.error("Error fetching the news articles:", error);
-      }
-    };
-
-    fetchNews();
+    axios.get("http://localhost:3000/api/news")
+      .then(response => {
+        setNews(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching news:", error);
+      });
   }, []);
 
-  // Configuración del carrusel (manteniendo el formato existente)
   const settings = {
     dots: true,
     infinite: true,
@@ -31,24 +28,26 @@ const News = () => {
   };
 
   return (
-    <div>
-      <h2>Latest News</h2>
+    <div className="max-w-[1200px] mx-auto my-6 text-white">
       <Slider {...settings}>
-        {articles.map((article, index) => (
-          <div key={index} className="news-item">
-            <div className="news-content">
-              <h3>{article.title}</h3>
-              <p>{article.description}</p>
-              <a href={article.link} target="_blank" rel="noopener noreferrer">Read more</a>
-            </div>
-            <div className="news-images">
-              <div className="news-image">
-                <img src={article.newsImageUrl} alt={article.title} />
+        {news.map((item, index) => (
+          <div key={index} className="p-4">
+            <div className="flex bg-[#000] rounded-lg overflow-hidden h-[400px] shadow-xl">
+              <div className="flex-shrink-0 w-1/4 bg-[#E83411] flex items-center justify-center">
+                <img 
+                  src={item.imageUrl} 
+                  alt={item.title} 
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="author-info">
-                <p><strong>Author: {article.author.name}</strong></p>
-                <img src={article.author.imageUrl} alt={article.author.name} />
+              <div className="p-4 flex flex-col justify-center flex-grow">
+                <h2 className="text-2xl font-bold">{item.title}</h2>
+                <p className="mt-2 line-clamp-2 sm:line-clamp-3">
+                  {item.description} {/* Cambié item.summary a item.description */}
+                </p>
+                {/* Agregar un enlace a la noticia */}
               </div>
+
             </div>
           </div>
         ))}
@@ -57,4 +56,4 @@ const News = () => {
   );
 };
 
-export default News;
+export default Noticias;
