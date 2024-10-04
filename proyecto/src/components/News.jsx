@@ -41,8 +41,14 @@ const News = () => {
               <p>{article.description}</p>
               <a href={article.link} target="_blank" rel="noopener noreferrer">Read more</a>
             </div>
-            <div className="news-image">
-              <img src={article.imageUrl} alt={article.title} />
+            <div className="news-images">
+              <div className="news-image">
+                <img src={article.newsImageUrl} alt={article.title} />
+              </div>
+              <div className="author-info">
+                <p><strong>Author: {article.author.name}</strong></p>
+                <img src={article.author.imageUrl} alt={article.author.name} />
+              </div>
             </div>
           </div>
         ))}
