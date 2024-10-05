@@ -1,6 +1,6 @@
 const express = require('express');
-const scrapeNews = require('../proyecto/src/scrapeNews');
-const scrapeEvents = require('../proyecto/src/scrapeEvents');
+const scrapeNews = require('./scrapeNews');
+const scrapeEvents = require('./scrapeEvents');
 const cors = require('cors');
 const path = require('path');
 
