@@ -11,7 +11,6 @@ async function scrapeNews() {
     $('article.css-415ug').each((index, element) => {
         const title = $(element).find('h3.css-9f4rq').text();
         const description = $(element).find('div.css-p4BJO p').text();
-        const imageUrl = $(element).find('picture source').attr('srcset');
         const authorName = $(element).find('a.css-Z5ZSx').text().trim();
         const authorImageUrl = $(element).find('span.css-wBsxp img').attr('src');
         const link = $(element).find('a[data-navigation-type="client-side"]').attr('href');
@@ -19,7 +18,6 @@ async function scrapeNews() {
         articles.push({
             title,
             description,
-            imageUrl,
             author: {
                 name: authorName,
                 imageUrl: authorImageUrl,

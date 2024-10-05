@@ -4,16 +4,16 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 // Importa las imágenes directamente
-import imagen1 from "../images/imagen_1.jpg";
-import imagen2 from "../images/imagen_2.jpg";
-import imagen3 from "../images/imagen_3.jpg";
-import imagen4 from "../images/imagen_4.jpg";
-import imagen5 from "../images/imagen_5.jpg";
-import imagen6 from "../images/imagen_6.jpg";
-import imagen7 from "../images/imagen_7.jpg";
-import imagen8 from "../images/imagen_8.jpg";
-import imagen9 from "../images/imagen_9.jpg";
-import imagen10 from "../images/imagen_10.jpg";
+import imagen1 from "../images/imgCreadores/imagen_1.jpg";
+import imagen2 from "../images/imgCreadores/imagen_2.jpg";
+import imagen3 from "../images/imgCreadores/imagen_3.jpg";
+import imagen4 from "../images/imgCreadores/imagen_4.jpg";
+import imagen5 from "../images/imgCreadores/imagen_5.jpg";
+import imagen6 from "../images/imgCreadores/imagen_6.jpg";
+import imagen7 from "../images/imgCreadores/imagen_7.jpg";
+import imagen8 from "../images/imgCreadores/imagen_8.jpg";
+import imagen9 from "../images/imgCreadores/imagen_9.jpg";
+import imagen10 from "../images/imgCreadores/imagen_10.jpg";
 
 const Creadores = () => {
   const settings = {

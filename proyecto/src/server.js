@@ -8,9 +8,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'build')));
 
-// Ruta para obtener noticias
+//app.use(express.static(path.join(__dirname, 'build')));
+
 app.get('/api/news', async (req, res) => {
   try {
     const newsItems = await scrapeNews();
@@ -21,7 +21,6 @@ app.get('/api/news', async (req, res) => {
   }
 });
 
-// Ruta para obtener eventos
 app.get('/api/events', async (req, res) => {
   try {
     const events = await scrapeEvents();
@@ -32,12 +31,10 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
-// Cualquier otra ruta redirige al archivo index.html para manejar rutas en el frontend
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve('../build/index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-// Modificación para escuchar en todas las interfaces
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on http://186.64.122.218:${port}`);
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
