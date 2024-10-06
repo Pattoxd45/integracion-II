@@ -24,7 +24,7 @@ const Noticias = () => {
   };
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/news")
+    axios.get("http://186.64.122.218:22222/home/nataly/servidor/api/news")
       .then(response => {
         setNews(response.data);
       })

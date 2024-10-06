@@ -9,7 +9,7 @@ const Events = () => {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    axios.get("/api/events")
+    axios.get("http://186.64.122.218:22222/home/nataly/servidor/api/events")
       .then(response => {
         setEvents(response.data);
       })
