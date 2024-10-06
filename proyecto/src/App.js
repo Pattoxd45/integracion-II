@@ -9,7 +9,6 @@ import Login from "./components/Login";
 import Events from "./components/Events";
 import Creadores from "./components/Creadores"
 import NewsCarousel from "./components/News";
-import Tutorial from "./components/tutorial"
 
 function App() {
   return (
@@ -29,7 +28,6 @@ function App() {
                 <Events /><br/>
                 <h3 className="title">CREADORES DE CONTENIDO</h3>
                 <Creadores /> <br/>
-                <Tutorial /> <br/>
                 <Footer />
               </>
             }

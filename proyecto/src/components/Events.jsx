@@ -9,7 +9,8 @@ const Events = () => {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    axios.get("http://186.64.122.218:22222/home/nataly/servidor/api/events")
+    // Cambié la URL aquí
+    axios.get("http://186.64.122.218:3000/api/events") 
       .then(response => {
         setEvents(response.data);
       })

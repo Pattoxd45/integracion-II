@@ -10,7 +10,7 @@ const Noticias = () => {
   // Lista de imágenes disponibles en la carpeta '/images/imgNews'
   const images = [
     'imagen1.jpg', 'imagen2.jpg', 'imagen3.jpg', 'imagen4.jpg', 'imagen5.webp',
-    'imagen6.webp', 'imagen7.webp', 'imagen7.webp', 'imagen8.webp', 'imagen9.webp', 'imagen10.webp',
+    'imagen6.webp', 'imagen7.webp', 'imagen8.webp', 'imagen9.webp', 'imagen10.webp',
     'imagen11.webp', 'imagen12.webp', 'imagen13.webp', 'imagen14.webp', 'imagen15.webp',
     'imagen16.webp', 'imagen17.webp', 'imagen18.webp', 'imagen19.webp', 'imagen20.webp',
     'imagen21.webp', 'imagen22.webp'
@@ -24,7 +24,7 @@ const Noticias = () => {
   };
 
   useEffect(() => {
-    axios.get("http://186.64.122.218:22222/home/nataly/servidor/api/news")
+    axios.get("http://186.64.122.218:3000/api/news") // Cambié la URL aquí
       .then(response => {
         setNews(response.data);
       })

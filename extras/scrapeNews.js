@@ -1,5 +1,4 @@
 const axios = require('axios');
-// npm install cheerio
 const cheerio = require('cheerio');
 
 async function scrapeNews() {
