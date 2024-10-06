@@ -79,79 +79,91 @@ const Cartas = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen">
-      <h1 className="text-white text-4xl mb-8">Magic the Gathering Cards</h1>
-      <div className="mb-4 flex items-center">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={handleSearch}
-          placeholder="Buscar cartas..."
-          className="p-2 rounded border border-gray-500"
-        />
-        <FaSearch className="ml-2 text-white" />
-        <select onChange={handleOrderChange} className="ml-4 p-2 rounded border border-gray-500">
+    <div className="p-4 sm:p-6 bg-gray-900 min-h-screen">
+      <h1 className="text-white text-2xl sm:text-4xl mb-6 sm:mb-8">Magic the Gathering Cards</h1>
+
+      <div className="mb-4 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+        <div className="w-full sm:w-auto flex items-center">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearch}
+            placeholder="Buscar cartas..."
+            className="p-2 w-full sm:w-auto rounded border border-gray-500"
+          />
+          <FaSearch className="ml-2 text-white" />
+        </div>
+
+        <select onChange={handleOrderChange} className="p-2 w-full sm:w-auto rounded border border-gray-500">
           <option value="name">Ordenar por Nombre</option>
           <option value="set">Ordenar por Set</option>
           <option value="released">Ordenar por Fecha de Lanzamiento</option>
           <option value="cmc">Ordenar por CMC</option>
         </select>
-        <select onChange={handleDirChange} className="ml-2 p-2 rounded border border-gray-500">
+
+        <select onChange={handleDirChange} className="p-2 w-full sm:w-auto rounded border border-gray-500">
           <option value="auto">Dirección Automática</option>
           <option value="asc">Ascendente</option>
           <option value="desc">Descendente</option>
         </select>
       </div>
 
-      <div className="mb-4">
-        <label className="text-white mr-4">Colores:</label>
-        {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
-          <label key={color} className="text-white mr-4">
-            <input
-              type="checkbox"
-              value={color}
-              onChange={handleColorsChange}
-              className="mr-1"
-            />
-            {color}
-          </label>
-        ))}
+      <div className="mb-4 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+        <label className="text-white">Colores:</label>
+        <div className="flex flex-wrap gap-2">
+          {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
+            <label key={color} className="text-white">
+              <input
+                type="checkbox"
+                value={color}
+                onChange={handleColorsChange}
+                className="mr-1"
+              />
+              {color}
+            </label>
+          ))}
+        </div>
       </div>
 
-      <div className="mb-4">
-        <label className="text-white mr-4">CMC:</label>
-        <input
-          type="number"
-          value={filter.cmc}
-          onChange={handleCmcChange}
-          placeholder="Coste de maná"
-          className="p-2 rounded border border-gray-500"
-        />
-      </div>
+      <div className="mb-4 flex flex-col sm:flex-row items-center sm:items-start gap-4">
+        <div className="w-full sm:w-auto">
+          <label className="text-white">CMC:</label>
+          <input
+            type="number"
+            value={filter.cmc}
+            onChange={handleCmcChange}
+            placeholder="Coste de maná"
+            className="p-2 w-full sm:w-auto rounded border border-gray-500"
+          />
+        </div>
 
-      <div className="mb-4">
-        <label className="text-white mr-4">Poder:</label>
-        <input
-          type="number"
-          value={filter.power}
-          onChange={handlePowerChange}
-          placeholder="Poder"
-          className="p-2 rounded border border-gray-500"
-        />
-        <label className="text-white ml-4 mr-4">Resistencia:</label>
-        <input
-          type="number"
-          value={filter.toughness}
-          onChange={handleToughnessChange}
-          placeholder="Resistencia"
-          className="p-2 rounded border border-gray-500"
-        />
+        <div className="w-full sm:w-auto">
+          <label className="text-white">Poder:</label>
+          <input
+            type="number"
+            value={filter.power}
+            onChange={handlePowerChange}
+            placeholder="Poder"
+            className="p-2 w-full sm:w-auto rounded border border-gray-500"
+          />
+        </div>
+
+        <div className="w-full sm:w-auto">
+          <label className="text-white">Resistencia:</label>
+          <input
+            type="number"
+            value={filter.toughness}
+            onChange={handleToughnessChange}
+            placeholder="Resistencia"
+            className="p-2 w-full sm:w-auto rounded border border-gray-500"
+          />
+        </div>
       </div>
 
       {loading ? (
         <p className="text-white">Cargando cartas...</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.isArray(cards) && cards.length > 0 ? (
             cards.map((card) => (
               <div key={card.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
