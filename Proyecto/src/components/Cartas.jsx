@@ -9,10 +9,26 @@ const Cartas = () => {
     order: 'name',
     dir: 'auto',
     colors: [],
-    cmc: '',
+    cdm: '',  // Costo de Maná
     power: '',
     toughness: '',
+    type: '',
+    edition: '', // Edición
+    subtype: '', // Subtipo
   });
+  const [sets, setSets] = useState([]);
+  const [subtypes, setSubtypes] = useState([]);
+
+  // Fetch de ediciones y subtipos
+  useEffect(() => {
+    fetch('https://api.scryfall.com/sets')
+      .then(response => response.json())
+      .then(data => setSets(data.data || []));
+      
+    fetch('https://api.scryfall.com/catalog/card-types')
+      .then(response => response.json())
+      .then(data => setSubtypes(data.data || []));
+  }, []);
 
   useEffect(() => {
     fetchCards();
@@ -21,20 +37,19 @@ const Cartas = () => {
   const fetchCards = () => {
     setLoading(true);
     const colorsQuery = filter.colors.length ? `+color:${filter.colors.join(',')}` : '';
-    const cmcQuery = filter.cmc ? `+cmc=${filter.cmc}` : '';
+    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';  // Cambiado de CMC a CDM
     const powerQuery = filter.power ? `+pow=${filter.power}` : '';
     const toughnessQuery = filter.toughness ? `+tou=${filter.toughness}` : '';
+    const typeQuery = filter.type ? `+type:${filter.type}` : '';
+    const editionQuery = filter.edition ? `+set:${filter.edition}` : '';
+    const subtypeQuery = filter.subtype ? `+type:${filter.subtype}` : '';
 
     fetch(
-      `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}${colorsQuery}${cmcQuery}${powerQuery}${toughnessQuery}&order=${filter.order}&dir=${filter.dir}`
+      `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${filter.order}&dir=${filter.dir}`
     )
       .then((response) => response.json())
       .then((data) => {
-        if (data && data.data) {
-          setCards(data.data);
-        } else {
-          setCards([]);
-        }
+        setCards(data.data || []);
         setLoading(false);
       })
       .catch((error) => {
@@ -44,18 +59,9 @@ const Cartas = () => {
       });
   };
 
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleOrderChange = (event) => {
-    const { value } = event.target;
-    setFilter((prev) => ({ ...prev, order: value }));
-  };
-
-  const handleDirChange = (event) => {
-    const { value } = event.target;
-    setFilter((prev) => ({ ...prev, dir: value }));
+  const handleSearch = (event) => setSearchQuery(event.target.value);
+  const handleFilterChange = (field) => (event) => {
+    setFilter((prev) => ({ ...prev, [field]: event.target.value }));
   };
 
   const handleColorsChange = (event) => {
@@ -64,18 +70,6 @@ const Cartas = () => {
       ...prev,
       colors: checked ? [...prev.colors, value] : prev.colors.filter((color) => color !== value),
     }));
-  };
-
-  const handleCmcChange = (event) => {
-    setFilter((prev) => ({ ...prev, cmc: event.target.value }));
-  };
-
-  const handlePowerChange = (event) => {
-    setFilter((prev) => ({ ...prev, power: event.target.value }));
-  };
-
-  const handleToughnessChange = (event) => {
-    setFilter((prev) => ({ ...prev, toughness: event.target.value }));
   };
 
   return (
@@ -90,13 +84,13 @@ const Cartas = () => {
           className="p-2 rounded border border-gray-500"
         />
         <FaSearch className="ml-2 text-white" />
-        <select onChange={handleOrderChange} className="ml-4 p-2 rounded border border-gray-500">
+        <select onChange={handleFilterChange('order')} className="ml-4 p-2 rounded border border-gray-500">
           <option value="name">Ordenar por Nombre</option>
           <option value="set">Ordenar por Set</option>
           <option value="released">Ordenar por Fecha de Lanzamiento</option>
-          <option value="cmc">Ordenar por CMC</option>
+          <option value="cdm">Ordenar por CDM</option>
         </select>
-        <select onChange={handleDirChange} className="ml-2 p-2 rounded border border-gray-500">
+        <select onChange={handleFilterChange('dir')} className="ml-2 p-2 rounded border border-gray-500">
           <option value="auto">Dirección Automática</option>
           <option value="asc">Ascendente</option>
           <option value="desc">Descendente</option>
@@ -118,34 +112,74 @@ const Cartas = () => {
         ))}
       </div>
 
-      <div className="mb-4">
-        <label className="text-white mr-4">CMC:</label>
-        <input
-          type="number"
-          value={filter.cmc}
-          onChange={handleCmcChange}
-          placeholder="Coste de maná"
-          className="p-2 rounded border border-gray-500"
-        />
+      <div className="mb-4 flex flex-wrap">
+        <div className="mr-4">
+          <label className="text-white mr-2">CDM:</label>
+          <input
+            type="number"
+            value={filter.cdm}
+            onChange={handleFilterChange('cdm')}
+            placeholder="Costo de Maná"
+            className="p-2 rounded border border-gray-500"
+          />
+        </div>
+
+        <div className="mr-4">
+          <label className="text-white mr-2">Poder:</label>
+          <input
+            type="number"
+            value={filter.power}
+            onChange={handleFilterChange('power')}
+            placeholder="Poder"
+            className="p-2 rounded border border-gray-500"
+          />
+        </div>
+
+        <div className="mr-4">
+          <label className="text-white mr-2">Resistencia:</label>
+          <input
+            type="number"
+            value={filter.toughness}
+            onChange={handleFilterChange('toughness')}
+            placeholder="Resistencia"
+            className="p-2 rounded border border-gray-500"
+          />
+        </div>
       </div>
 
       <div className="mb-4">
-        <label className="text-white mr-4">Poder:</label>
-        <input
-          type="number"
-          value={filter.power}
-          onChange={handlePowerChange}
-          placeholder="Poder"
-          className="p-2 rounded border border-gray-500"
-        />
-        <label className="text-white ml-4 mr-4">Resistencia:</label>
-        <input
-          type="number"
-          value={filter.toughness}
-          onChange={handleToughnessChange}
-          placeholder="Resistencia"
-          className="p-2 rounded border border-gray-500"
-        />
+        <label className="text-white mr-4">Tipo:</label>
+        <select onChange={handleFilterChange('type')} className="p-2 rounded border border-gray-500">
+          <option value="">Cualquier Tipo</option>
+          <option value="creature">Criatura</option>
+          <option value="artifact">Artefacto</option>
+          <option value="enchantment">Encantamiento</option>
+          <option value="land">Tierra</option>
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <label className="text-white mr-4">Edición:</label>
+        <select onChange={handleFilterChange('edition')} className="p-2 rounded border border-gray-500">
+          <option value="">Seleccionar Edición</option>
+          {sets.map((set) => (
+            <option key={set.code} value={set.code}>
+              {set.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <label className="text-white mr-4">Subtipo:</label>
+        <select onChange={handleFilterChange('subtype')} className="p-2 rounded border border-gray-500">
+          <option value="">Seleccionar Subtipo</option>
+          {subtypes.map((subtype) => (
+            <option key={subtype} value={subtype}>
+              {subtype}
+            </option>
+          ))}
+        </select>
       </div>
 
       {loading ? (
@@ -163,8 +197,8 @@ const Cartas = () => {
                 <div className="mt-4">
                   <h2 className="text-white text-lg font-bold">{card.name}</h2>
                   <p className="text-gray-400">{card.type_line}</p>
-                  {card.power && <p className="text-gray-400">Power: {card.power}</p>}
-                  {card.toughness && <p className="text-gray-400">Toughness: {card.toughness}</p>}
+                  {card.power && <p className="text-gray-400">Poder: {card.power}</p>}
+                  {card.toughness && <p className="text-gray-400">Resistencia: {card.toughness}</p>}
                 </div>
               </div>
             ))
