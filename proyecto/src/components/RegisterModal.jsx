@@ -12,8 +12,56 @@ const RegisterModal = ({ closeRegisterModal }) => {
     confirmPassword: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+
+    const { username, email, password, confirmPassword } = formData;
+
+    // Validación
+    if (!username || !email || !password || !confirmPassword) {
+      setErrorMessage("Por favor, completa todos los campos");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage("Las contraseñas no coinciden");
+      return;
+    }
+
+    // Objeto con los datos del usuario
+    const userData = {
+      nombre: username,
+      correo: email,
+      clave: password,
+    };
+
+    // Petición POST al servidor
+    fetch('http://186.64.122.218:3000/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          setErrorMessage(data.error);
+        } else {
+          alert('¡Registro exitoso!');
+          closeRegisterModal(); // Cierra el modal después del registro exitoso
+        }
+      })
+      .catch(error => {
+        console.error('Error en la solicitud:', error);
+        setErrorMessage('Hubo un problema con el registro. Inténtalo de nuevo.');
+      });
   };
 
   return (
@@ -26,8 +74,8 @@ const RegisterModal = ({ closeRegisterModal }) => {
           X
         </button>
         <h1 className="text-4xl text-[#ddd] font-bold text-center mb-6">¡Registro!</h1>
-        <form>
-          {/* Campo de Usuario */}
+        {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
+        <form onSubmit={handleRegister}>
           <div className="relative my-8">
             <input
               type="text"
