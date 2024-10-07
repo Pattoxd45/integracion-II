@@ -2,15 +2,13 @@ import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-// npm install axios
 import axios from "axios";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    // Cambié la URL aquí
-    axios.get("http://186.64.122.218:3000/api/events") 
+    axios.get("http://186.64.122.218:3001/api/events") 
       .then(response => {
         setEvents(response.data);
       })
@@ -42,6 +40,14 @@ const Events = () => {
               <h2 className="text-xl font-bold">{event.title}</h2>
               <p className="mt-1">{event.date}</p>
               <p className="mt-1">{event.location}</p>
+              <a 
+                href={event.url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="mt-2 px-4 py-2 bg-orange-500 text-black rounded"
+              >
+                Más información
+              </a>
             </div>
           </div>
         ))}
