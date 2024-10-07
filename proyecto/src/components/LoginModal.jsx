@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BiUser } from "react-icons/bi";
 import { AiOutlineUnlock } from "react-icons/ai";
 
-const LoginModal = ({ closeLoginModal }) => {
+const LoginModal = ({ closeLoginModal, setUserId, navigation }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -10,6 +10,40 @@ const LoginModal = ({ closeLoginModal }) => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault(); // Evita que el formulario se envíe automáticamente
+
+    try {
+      const response = await fetch('http://186.64.122.218:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: formData.email, password: formData.password }),
+      });
+
+      const result = await response.json();
+
+      console.log('Respuesta del servidor:', result);
+      console.log('Código de respuesta:', response.status);
+
+      if (response.ok) {
+        alert('Login exitoso: Sesión iniciada correctamente');
+        console.log('ID de usuario:', result.userId);
+        const Id = result.userId;
+        console.log("Almacenando en contexto...", Id);
+        setUserId(Id);
+        // Redirige a la pantalla principal
+        navigation.replace('Main');
+      } else {
+        alert('Error de login: ' + (result.message || 'Correo o contraseña incorrectos'));
+      }
+    } catch (error) {
+      alert('Error: Hubo un problema con el servidor.');
+      console.error('Error en el fetch:', error);
+    }
   };
 
   return (
@@ -22,7 +56,7 @@ const LoginModal = ({ closeLoginModal }) => {
           X
         </button>
         <h1 className="text-4xl text-[#ddd] font-bold text-center mb-6">Login</h1>
-        <form>
+        <form onSubmit={handleLogin}>
           <div className="relative my-8">
             <input
               type="email"
