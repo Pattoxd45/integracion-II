@@ -29,29 +29,37 @@ const Events = () => {
 
   return (
     <div className="max-w-[1200px] mx-auto my-6 text-white">
-      <Slider {...settings}>
-        {events.map((event, index) => (
-          <div 
-            key={index} 
-            className="relative w-[calc(33.33%-1rem)] bg-black overflow-hidden h-[200px] shadow-xl flex flex-col items-center justify-center mx-2 border border-black"
-          >
-            <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-orange-500 to-transparent pointer-events-none"></div>
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <h2 className="text-xl font-bold">{event.title}</h2>
-              <p className="mt-1">{event.date}</p>
-              <p className="mt-1">{event.location}</p>
-              <a 
-                href={event.url} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="mt-2 px-4 py-2 bg-orange-500 text-black rounded"
-              >
-                Más información
-              </a>
-            </div>
+      {events.length === 0 ? (
+        <div className="relative w-full bg-black overflow-hidden h-[200px] shadow-xl flex flex-col items-center justify-center mx-2 border border-black">
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <h2 className="text-xl font-bold">No hay eventos disponibles</h2>
           </div>
-        ))}
-      </Slider>
+        </div>
+      ) : (
+        <Slider {...settings}>
+          {events.map((event, index) => (
+            <div 
+              key={index} 
+              className="relative w-[calc(33.33%-1rem)] bg-black overflow-hidden h-[200px] shadow-xl flex flex-col items-center justify-center mx-2 border border-black"
+            >
+              <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-orange-500 to-transparent pointer-events-none"></div>
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <h2 className="text-xl font-bold">{event.title}</h2>
+                <p className="mt-1">{event.date}</p>
+                <p className="mt-1">{event.location}</p>
+                <a 
+                  href={event.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="mt-2 px-4 py-2 bg-orange-500 text-black rounded"
+                >
+                  Más información
+                </a>
+              </div>
+            </div>
+          ))}
+        </Slider>
+      )}
     </div>
   );
 };
