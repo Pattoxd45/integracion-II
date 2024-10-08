@@ -1,10 +1,14 @@
 import React from "react";
 
-const CardDetails = ({ selectedCard, closeDetails }) => {
+const CardDetails = ({ selectedCard, closeDetails, isVisible }) => {
   if (!selectedCard) return null;
 
   return (
-    <div className="w-[80%] bg-[#222] ml-4 p-5 rounded-lg text-white flex">
+    <div
+      className={`w-[80%] bg-[#222] ml-4 p-5 rounded-lg text-white flex transform transition-all duration-300 ${
+        isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+      }`}
+    >
       {/* Imagen de la carta */}
       <div className="w-[50%] flex-shrink-0">
         <img

@@ -9,7 +9,10 @@ const Decks = () => {
   const [deckView, setDeckView] = useState("Mis Barajas");
   const [selectedDeck, setSelectedDeck] = useState(null); // Estado para la baraja seleccionada
   const [showInsideDecks, setShowInsideDecks] = useState(false); // Controla la visibilidad del modal
+  const [searchQuery, setSearchQuery] = useState(""); // Estado para el valor del buscador
+  const [filteredDecks, setFilteredDecks] = useState([]); // Estado para las barajas filtradas
 
+  // Lista de barajas
   const decks = [
     { id: 1, name: "Baraja 1" },
     { id: 2, name: "Baraja 2" },
@@ -17,14 +20,6 @@ const Decks = () => {
     { id: 4, name: "Baraja 4" },
     { id: 5, name: "Baraja 5" },
   ];
-
-  const handleToggle = (selection) => {
-    setToggleSelection(selection);
-  };
-
-  const handleDeckView = (view) => {
-    setDeckView(view);
-  };
 
   // Función para abrir InsideDecks
   const openInsideDecks = (deck) => {
@@ -38,6 +33,22 @@ const Decks = () => {
     setShowInsideDecks(false);
   };
 
+  // Función para manejar el cambio en el buscador y filtrar las barajas
+  const handleSearchChange = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+    
+    // Filtramos las barajas según el texto ingresado en el buscador
+    const filtered = decks.filter(deck =>
+      deck.name.toLowerCase().includes(query)
+    );
+    
+    setFilteredDecks(filtered);
+  };
+
+  // Si hay una búsqueda activa, mostramos las barajas filtradas; si no, mostramos todas las barajas
+  const displayedDecks = searchQuery ? filteredDecks : decks;
+
   return (
     <div className="max-w-[1200px] mx-auto relative">
       {/* Contenedor de los botones */}
@@ -46,7 +57,7 @@ const Decks = () => {
           className={`w-[595px] h-[46px] font-semibold rounded-md ${
             deckView === "Mis Barajas" ? "bg-[#E83411] text-white" : "bg-[#1E1E1E] text-white"
           }`}
-          onClick={() => handleDeckView("Mis Barajas")}
+          onClick={() => setDeckView("Mis Barajas")}
         >
           Mis Barajas
         </button>
@@ -54,7 +65,7 @@ const Decks = () => {
           className={`w-[595px] h-[46px] font-semibold rounded-md ${
             deckView === "Explorar Barajas" ? "bg-[#E83411] text-white" : "bg-[#1E1E1E] text-white"
           }`}
-          onClick={() => handleDeckView("Explorar Barajas")}
+          onClick={() => setDeckView("Explorar Barajas")}
         >
           Explorar Barajas
         </button>
@@ -66,6 +77,8 @@ const Decks = () => {
         <input
           type="text"
           placeholder="Buscador..."
+          value={searchQuery}
+          onChange={handleSearchChange} // Maneja los cambios en el input
           className="w-[1000px] h-[46px] bg-[#000] text-white px-4 rounded-md outline-none"
         />
 
@@ -75,7 +88,7 @@ const Decks = () => {
             className={`flex-1 flex items-center justify-center cursor-pointer rounded-l-md ${
               toggleSelection === "Baraja" ? "bg-[#E83411] text-white" : "bg-[#1E1E1E] text-white"
             }`}
-            onClick={() => handleToggle("Baraja")}
+            onClick={() => setToggleSelection("Baraja")}
           >
             Baraja
           </div>
@@ -83,7 +96,7 @@ const Decks = () => {
             className={`flex-1 flex items-center justify-center cursor-pointer rounded-r-md ${
               toggleSelection === "Carta" ? "bg-[#E83411] text-white" : "bg-[#1E1E1E] text-white"
             }`}
-            onClick={() => handleToggle("Carta")}
+            onClick={() => setToggleSelection("Carta")}
           >
             Cartas
           </div>
@@ -97,8 +110,8 @@ const Decks = () => {
 
       {/* Contenedor de barajas y botón */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-[25px] justify-center mt-[20px] mb-[25px] items-start">
-        {/* Mapeo de las barajas */}
-        {decks.map((deck) => (
+        {/* Mapeo de las barajas filtradas o completas */}
+        {displayedDecks.map((deck) => (
           <div key={deck.id} className="font-bold">
             {/* Representación de la baraja */}
             <div
