@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-<<<<<<< HEAD
-body {
-  background-color: #ddd;
-}
-
-=======
 @import url('https://fonts.googleapis.com/css?family=Varta:700|Varta:400');
 
 body {
@@ -34,7 +28,6 @@ h5 {font-size: 1.125rem; /* 18.08px */}
 
 small {font-size: 0.889rem; /* 14.24px */}
 
->>>>>>> origin/chelo
 .card {
   width: 220px;
   height: 320px;
@@ -60,25 +53,4 @@ small {font-size: 0.889rem; /* 14.24px */}
     height: 420px; /* Ajusta el alto a 420px */
   }
 
-<<<<<<< HEAD
 }
-
-.title {
-  font-family: 'Montserrat', sans-serif; /* Cambia a Montserrat */
-  font-weight: 700; /* Estilo bold */
-  font-size: 3rem; /* Tamaño de la fuente */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada */
-  text-align: center; /* Centra el texto */
-  margin: 20px 0; /* Espacio arriba y abajo */
-  color: #E83411; /* Color naranja */
-}
-
-
-
-
-
-
-
-=======
-}
->>>>>>> origin/chelo
