@@ -9,17 +9,16 @@ const Cartas = () => {
     order: 'name',
     dir: 'auto',
     colors: [],
-    cdm: '',  // Costo de Maná
+    cdm: '',  
     power: '',
     toughness: '',
     type: '',
-    edition: '', // Edición
-    subtype: '', // Subtipo
+    edition: '', 
+    subtype: '', 
   });
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
 
-  // Fetch de ediciones y subtipos
   useEffect(() => {
     fetch('https://api.scryfall.com/sets')
       .then(response => response.json())
@@ -37,7 +36,7 @@ const Cartas = () => {
   const fetchCards = () => {
     setLoading(true);
     const colorsQuery = filter.colors.length ? `+color:${filter.colors.join(',')}` : '';
-    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';  // Cambiado de CMC a CDM
+    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';  
     const powerQuery = filter.power ? `+pow=${filter.power}` : '';
     const toughnessQuery = filter.toughness ? `+tou=${filter.toughness}` : '';
     const typeQuery = filter.type ? `+type:${filter.type}` : '';
@@ -190,10 +189,11 @@ const Cartas = () => {
             cards.map((card) => (
               <div key={card.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
                 <img
-                  src={card.image_uris?.border_crop}
-                  alt={card.name}
-                  className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
+                src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`}
+                alt={card.name}
+                className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
                 />
+
                 <div className="mt-4">
                   <h2 className="text-white text-lg font-bold">{card.name}</h2>
                   <p className="text-gray-400">{card.type_line}</p>
