@@ -9,15 +9,16 @@ const Cartas = () => {
     order: 'name',
     dir: 'auto',
     colors: [],
-    cdm: '',  
+    cdm: '',
     power: '',
     toughness: '',
     type: '',
-    edition: '', 
-    subtype: '', 
+    edition: '',
+    subtype: '',
   });
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
+  const [favorites, setFavorites] = useState([]); 
 
   useEffect(() => {
     fetch('https://api.scryfall.com/sets')
@@ -69,6 +70,16 @@ const Cartas = () => {
       ...prev,
       colors: checked ? [...prev.colors, value] : prev.colors.filter((color) => color !== value),
     }));
+  };
+
+  const toggleFavorite = (card) => { // guardado de cartas como favoritas
+    setFavorites((prevFavorites) => {
+      if (prevFavorites.some((favorite) => favorite.id === card.id)) {
+        return prevFavorites.filter((favorite) => favorite.id !== card.id);
+      } else {
+        return [...prevFavorites, card];
+      }
+    });
   };
 
   return (
@@ -187,11 +198,11 @@ const Cartas = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.isArray(cards) && cards.length > 0 ? (
             cards.map((card) => (
-              <div key={card.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
+              <div key={card.id} className="bg-gray-800 p-4 rounded-lg shadow-lg relative">
                 <img
-                src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`} //aqui es donde se definen las cartas que van a "tapar" las cartas a las que no se les genera la imagen de forma correcta
-                alt={card.name}
-                className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
+                  src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas1.png`} //aqui es donde se definen las cartas que van a "tapar" las cartas a las que no se les genera la imagen de forma correcta
+                  alt={card.name}
+                  className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
                 />
 
                 <div className="mt-4">
@@ -200,12 +211,37 @@ const Cartas = () => {
                   {card.power && <p className="text-gray-400">Poder: {card.power}</p>}
                   {card.toughness && <p className="text-gray-400">Resistencia: {card.toughness}</p>}
                 </div>
+
+                <button
+                  onClick={() => toggleFavorite(card)}
+                  className={`absolute top-2 right-2 p-2 rounded ${favorites.some(fav => fav.id === card.id) ? 'bg-red-500' : 'bg-blue-500'}`}
+                >
+                  {favorites.some(fav => fav.id === card.id) ? '❤️' : '🤍'}
+                </button>
               </div>
             ))
           ) : (
             <p className="text-white">No se encontraron cartas.</p>
           )}
         </div>
+      )}
+      <h2 className="text-white text-3xl mt-8">Cartas Favoritas</h2>  
+      {favorites.length > 0 ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
+          {favorites.map((favorite) => (
+            <div key={favorite.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
+              <img
+                src={favorite.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas1.png`}
+                alt={favorite.name}
+                className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
+              />
+              <h2 className="text-white text-lg font-bold">{favorite.name}</h2>
+              <p className="text-gray-400">{favorite.type_line}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-white">No hay cartas favoritas guardadas.</p>
       )}
     </div>
   );
