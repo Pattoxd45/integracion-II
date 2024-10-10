@@ -200,7 +200,7 @@ const Cartas = () => {
             cards.map((card) => (
               <div key={card.id} className="bg-gray-800 p-4 rounded-lg shadow-lg relative">
                 <img
-                  src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas5.png`} //aqui es donde se definen las cartas que van a "tapar" las cartas a las que no se les genera la imagen de forma correcta
+                  src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`} //aqui es donde se definen las cartas que van a "tapar" las cartas a las que no se les genera la imagen de forma correcta
                   alt={card.name}
                   className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
                 />
