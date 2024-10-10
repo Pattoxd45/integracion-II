@@ -11,6 +11,7 @@ import Noticias from "./components/Noticias";
 import Events from "./components/Events";
 import Profile from "./components/Profile";
 import Decks from "./components/Decks";
+import About from "./components/about";
 
 function App() {
   return (
@@ -29,9 +30,10 @@ function App() {
             <Route path="/cartas" element={<Cartas />} />
             <Route path="/decks" element={<Decks />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/about" element={<About />} />
             <Route path="/noticias" element={
               <>
-                <h1 className="title">NOTICIAS IMPORTANTES</h1>
+                <h1 className="title">úLTIMAS NOTICIAS</h1>
                 <Noticias />
                 <h2 className="title">PROXIMOS EVENTOS</h2>
                 <Events />

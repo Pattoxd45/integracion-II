@@ -4,6 +4,7 @@ import { CgProfile } from "react-icons/cg";
 import { Link } from "react-router-dom";
 import RegisterModal from "./RegisterModal";
 import LoginModal from "./LoginModal";
+import About from "./about";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
@@ -103,7 +104,7 @@ const Navbar = () => {
                       <Link to="/Decks" onClick={() => setProfileMenu(false)}>Barajas</Link>
                     </li>
                     <li className="hover:text-[#e85438]">
-                      <Link to="/about" onClick={() => setProfileMenu(false)}>Acerca</Link>
+                      <Link to="/About" onClick={() => setProfileMenu(false)}>Acerca</Link>
                     </li>
                     <li
                       className="hover:text-[#e85438] cursor-pointer"
