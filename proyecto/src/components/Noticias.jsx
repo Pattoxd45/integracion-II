@@ -51,29 +51,29 @@ const Noticias = () => {
   return (
     <div className="max-w-[1200px] mx-auto my-6 text-white">
       <Slider {...settings}>
-        {displayItems.map((item, index) => (
+        {news.map((news, index) => (
           <div key={index} className="p-4">
             <div className="flex bg-[#000] rounded-lg overflow-hidden h-[400px] shadow-xl">
               <div className="flex-shrink-0 w-2/5 bg-[#E83411] flex items-center justify-center"> {/* Cambié a w-2/5 (40%) */}
                 {/* Siempre se muestra una imagen aleatoria */}
                 <img 
                   src={getRandomImage()} 
-                  alt={item ? item.title : "Imagen aleatoria"} 
+                  alt={news ? news.title : "Imagen aleatoria"} 
                   className="w-full h-full object-cover max-w-full"
-                />
+                />*
               </div>
               <div className="p-4 flex flex-col justify-center flex-grow">
-                {item ? (
+                {news ? (
                   <>
-                    <h2 className="text-2xl font-bold">{item.title}</h2>
+                    <h2 className="text-2xl font-bold">{news.title}</h2>
                     <p className="mt-2 line-clamp-2 sm:line-clamp-3">
-                      {item.description}
+                      {news.description}
                     </p>
-                    <a href={item.link} target="_blank" rel="noopener noreferrer">
+                    <a href={news.link} target="_blank" rel="noopener noreferrer">
                       ver más...
                     </a>
                     <div>
-                      <p>{item.author}</p>
+                     {/* <p>{news.author}</p>*/}
                     </div>
                   </>
                 ) : (
