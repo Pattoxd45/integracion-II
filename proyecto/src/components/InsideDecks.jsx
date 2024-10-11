@@ -121,93 +121,101 @@ const InsideDecks = ({ closeModal, deckName }) => {
         </button>
 
         {/* Contenedor de cartas y detalles */}
-        <div className={`flex flex-col justify-between w-${selectedCardDetails ? "[65%]" : "[100%]"} transition-all duration-500`}>
-          <div className="flex-grow">
-            <h2 className="text-white text-2xl font-bold mb-4">{deckName}</h2>
+        <div className={`w-${selectedCardDetails ? "[35%]" : "[100%]"} transition-all duration-500`}>
+          <h2 className="text-white text-2xl font-bold mb-4">{deckName}</h2>
 
-            {/* Barra de búsqueda, opciones y botón de editar */}
-            <div className="flex items-center mb-6">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar cartas..."
-                className="w-full h-[46px] px-4 text-black bg-white rounded-md focus:outline-none"
-              />
-              <button
-                className="ml-[5px] w-[91px] h-[46px] bg-[#E83411] text-white font-semibold rounded-md"
-              >
-                Buscar
-              </button>
-              <button
-                className="ml-[5px] bg-[#E83411] text-white rounded-[10px] p-[10px] hover:bg-[#b52e0e] transition-colors flex items-center justify-center"
-                style={{ width: "46px", height: "46px" }}
-              >
-                <IoIosOptions className="text-white text-[24px]" />
-              </button>
-              <button
-                className={`ml-[5px] rounded-[10px] p-[10px] transition-colors flex items-center justify-center ${
-                  editMode
-                    ? "bg-[#b52e0e] hover:bg-[#8f260c]"
-                    : "bg-[#E83411] hover:bg-[#b52e0e]"
-                }`}
-                style={{ width: "46px", height: "46px" }}
-                onClick={toggleEditMode}
-              >
-                {editMode ? (
-                  <MdEditOff className="text-white text-[24px]" />
-                ) : (
-                  <MdEdit className="text-white text-[24px]" />
-                )}
-              </button>
-            </div>
+          {/* Botones grandes en la parte superior */}
+          <div className="flex justify-between space-x-2 mb-4">
+            <button className="w-full bg-[#E83411] text-white py-3 rounded-md text-xl font-semibold text-center">
+              Cartas
+            </button>
+            <button className="w-full bg-[#E83411] text-white py-3 rounded-md text-xl font-semibold text-center">
+              Propiedades
+            </button>
+          </div>
 
-            {/* Contenedor de cartas con scroll */}
-            <div className="overflow-y-auto max-h-[70vh] pr-4">
-              <div className="grid grid-cols-1 gap-4">
-                {filteredCards.length > 0 ? (
-                  filteredCards.map((card) => (
-                    <div
-                      key={card.id}
-                      className="relative flex bg-[#333] p-3 rounded-md cursor-pointer"
-                      onClick={() => handleCardClick(card)}
-                    >
-                      {/* Imagen a la izquierda */}
-                      <div className="w-[150px] flex-shrink-0">
-                        <img
-                          src={card.image}
-                          alt={card.name}
-                          className="w-full h-[120px] object-cover"
-                        />
-                      </div>
+          {/* Barra de búsqueda, opciones y botón de editar */}
+          <div className="flex items-center space-x-3 mb-6">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar cartas..."
+              className="w-full h-[46px] px-4 text-black bg-white rounded-md focus:outline-none text-center"
+            />
+            <button
+              className="w-[91px] h-[46px] bg-[#E83411] text-white font-semibold rounded-md text-center"
+            >
+              Buscar
+            </button>
+            <button
+              className="bg-[#E83411] text-white rounded-[10px] p-[10px] hover:bg-[#b52e0e] transition-colors flex items-center justify-center"
+              style={{ width: "46px", height: "46px" }}
+            >
+              <IoIosOptions className="text-white text-[24px]" />
+            </button>
+            <button
+              className={`rounded-[10px] p-[10px] transition-colors flex items-center justify-center ${
+                editMode
+                  ? "bg-[#b52e0e] hover:bg-[#8f260c]"
+                  : "bg-[#E83411] hover:bg-[#b52e0e]"
+              }`}
+              style={{ width: "46px", height: "46px" }}
+              onClick={toggleEditMode}
+            >
+              {editMode ? (
+                <MdEditOff className="text-white text-[24px]" />
+              ) : (
+                <MdEdit className="text-white text-[24px]" />
+              )}
+            </button>
+          </div>
 
-                      {/* Contenido a la derecha */}
-                      <div className="ml-4 flex-grow">
-                        <h3 className="text-white text-xl font-bold">{card.name}</h3>
-                        <p className="text-gray-400 mt-2">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        </p>
-                      </div>
-
-                      {/* Circulo de selección */}
-                      {editMode && (
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <div
-                            className={`relative w-5 h-5 rounded-full border-2 ${
-                              selectedCards.includes(card.id)
-                                ? "bg-[#E83411] border-[#E83411]"
-                                : "bg-white border-gray-300"
-                            }`}
-                            onClick={() => toggleSelectCard(card.id)}
-                          ></div>
-                        </div>
-                      )}
+          {/* Contenedor de cartas con scroll */}
+          <div className="overflow-y-auto max-h-[70vh] pr-4">
+            <div className="grid grid-cols-1 gap-4">
+              {filteredCards.length > 0 ? (
+                filteredCards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="relative flex bg-[#333] p-3 rounded-md cursor-pointer"
+                    onClick={() => handleCardClick(card)}
+                  >
+                    {/* Imagen a la izquierda */}
+                    <div className="w-[150px] flex-shrink-0">
+                      <img
+                        src={card.image}
+                        alt={card.name}
+                        className="w-full h-[120px] object-cover"
+                      />
                     </div>
-                  ))
-                ) : (
-                  <p className="text-white">No se encontraron cartas.</p>
-                )}
-              </div>
+
+                    {/* Contenido a la derecha */}
+                    <div className="ml-4 flex-grow">
+                      <h3 className="text-white text-xl font-bold">{card.name}</h3>
+                      <p className="text-gray-400 mt-2">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      </p>
+                    </div>
+
+                    {/* Circulo de selección */}
+                    {editMode && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <div
+                          className={`relative w-5 h-5 rounded-full border-2 ${
+                            selectedCards.includes(card.id)
+                              ? "bg-[#E83411] border-[#E83411]"
+                              : "bg-white border-gray-300"
+                          }`}
+                          onClick={() => toggleSelectCard(card.id)}
+                        ></div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <p className="text-white">No se encontraron cartas.</p>
+              )}
             </div>
           </div>
 
@@ -235,11 +243,36 @@ const InsideDecks = ({ closeModal, deckName }) => {
 
         {/* Detalles de la carta seleccionada */}
         {selectedCardDetails && (
-          <CardDetails
-            selectedCard={selectedCardDetails}
-            closeDetails={closeCardDetails}
-            isVisible={isCardDetailsVisible} // Pasar estado de visibilidad
-          />
+          <div className="w-[65%] bg-[#222] ml-4 p-5 rounded-lg text-white flex">
+            {/* Imagen de la carta */}
+            <div className="w-[50%] flex-shrink-0">
+              <img
+                src={selectedCardDetails.image}
+                alt={selectedCardDetails.name}
+                className="w-full h-full object-cover rounded-md"
+              />
+            </div>
+
+            {/* Descripciones de la carta */}
+            <div className="ml-6 w-[50%] flex flex-col">
+              <button
+                className="self-end text-white hover:text-red-500 mb-4"
+                onClick={closeCardDetails}
+              >
+                Cerrar
+              </button>
+              <h2 className="text-3xl font-bold">{selectedCardDetails.name}</h2>
+              <p className="mt-4 text-lg">
+                Descripción: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              </p>
+              <p className="mt-2">Mana: {selectedCardDetails.mana || "Desconocido"}</p>
+              <p className="mt-2">Tipo: {selectedCardDetails.type || "Desconocido"}</p>
+              <p className="mt-2">
+                Poder/Toughness: {selectedCardDetails.power || "N/A"} /{" "}
+                {selectedCardDetails.toughness || "N/A"}
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </div>
