@@ -11,34 +11,38 @@ import Noticias from "./components/Noticias";
 import Events from "./components/Events";
 import Profile from "./components/Profile";
 
+import { UserProvider } from './components/UserContext';
+
 function App() {
   return (
     <div className="App">
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={
-            <>
-              <Hero />
-              <Cards />
-              <News />
-            </>
-          } />
-          <Route path="/cartas" element={<Cartas />} />  
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/noticias" element={
-            <>
-              <h1 className="title">NOTICIAS IMPORTANTES</h1>
-              <Noticias />
-              <h2 className="title">PROXIMOS EVENTOS</h2>
-              <Events />
-              <h3 className="title">CREADORES DE CONTENIDO</h3>
-              <Creadores />
-            </>
-          } />
-        </Routes>
-        <Footer />
-      </Router>
+      <UserProvider>
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={
+              <>
+                <Hero />
+                <Cards />
+                <News />
+              </>
+            } />
+            <Route path="/cartas" element={<Cartas />} />  
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/noticias" element={
+              <>
+                <h1 className="title">NOTICIAS IMPORTANTES</h1>
+                <Noticias />
+                <h2 className="title">PROXIMOS EVENTOS</h2>
+                <Events />
+                <h3 className="title">CREADORES DE CONTENIDO</h3>
+                <Creadores />
+              </>
+            } />
+          </Routes>
+          <Footer />
+        </Router>
+      </UserProvider>
     </div>
   );
 }

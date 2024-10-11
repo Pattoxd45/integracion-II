@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
+import { useUser } from './UserContext';
 
 function Profile() {
-  const initialUserProfile = {
+  const { userProfile } = useUser(); // Obtén el userProfile del contexto
+  const [editIndex, setEditIndex] = useState(null);
+  const [editData, setEditData] = useState({
+    name: '',
+    image: '',
+    description: '',
+  });
+
+  // Si no hay un perfil, muestra un perfil por defecto
+  const defaultProfile = {
     name: 'Juan Pérez',
     email: 'juan.perez@example.com',
     profileImage: 'https://via.placeholder.com/150',
@@ -23,18 +33,12 @@ function Profile() {
     ],
   };
 
-  const [userProfile, setUserProfile] = useState(initialUserProfile);
-  const [editIndex, setEditIndex] = useState(null); // Índice del mazo en edición
-  const [editData, setEditData] = useState({
-    name: '',
-    image: '',
-    description: '',
-  }); // Datos temporales del mazo
+  const profile = userProfile || defaultProfile; // Usa el perfil del contexto o el perfil por defecto
 
   // Maneja el inicio de la edición
   const handleEdit = (index) => {
     setEditIndex(index);
-    setEditData(userProfile.decks[index]);
+    setEditData(profile.decks[index]);
   };
 
   // Maneja cambios en los inputs
@@ -45,10 +49,10 @@ function Profile() {
 
   // Guardar cambios y salir del modo edición
   const handleSave = () => {
-    const updatedDecks = userProfile.decks.map((deck, index) =>
+    const updatedDecks = profile.decks.map((deck, index) =>
       index === editIndex ? editData : deck
     );
-    setUserProfile((prev) => ({ ...prev, decks: updatedDecks }));
+    profile.decks = updatedDecks; // Actualiza directamente el perfil
     setEditIndex(null);
   };
 
@@ -57,12 +61,12 @@ function Profile() {
       {/* Perfil de usuario */}
       <div className="text-left shadow-lg p-4 rounded-lg bg-black border border-red-500">
         <img
-          src={userProfile.profileImage}
+          src={profile.profileImage}
           alt="Imagen de perfil"
           className="w-12 h-12 rounded-full mx-auto mb-2 border-2 border-red-500"
         />
-        <h2 className="text-lg font-bold text-red-500">{userProfile.name}</h2>
-        <p className="text-sm text-gray-400">{userProfile.email}</p>
+        <h2 className="text-lg font-bold text-red-500">{profile.name}</h2>
+        <p className="text-sm text-gray-400">{profile.email}</p>
       </div>
 
       {/* Contenido */}
@@ -71,7 +75,7 @@ function Profile() {
         <div className="bg-black p-6 rounded-lg shadow-md border border-red-500">
           <h3 className="text-xl font-semibold mb-4 text-red-500">Cartas Favoritas</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {userProfile.favoriteCards.map((card, index) => (
+            {profile.favoriteCards.map((card, index) => (
               <div key={index} className="text-center">
                 <img
                   src={card.image}
@@ -88,11 +92,11 @@ function Profile() {
         <div className="bg-black p-6 rounded-lg shadow-md border border-red-500">
           <h3 className="text-xl font-semibold mb-4 text-red-500">Mazos Creados</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {userProfile.decks.map((deck, index) => (
+            {profile.decks.map((deck, index) => (
               <div
                 key={index}
                 className="transform hover:scale-105 transition-transform duration-300 cursor-pointer p-4 rounded-lg shadow-lg hover:shadow-2xl border border-red-500"
-                style={{ backgroundColor: 'black', color: 'white' }} // Color negro
+                style={{ backgroundColor: 'black', color: 'white' }}
               >
                 {editIndex === index ? (
                   <div>
