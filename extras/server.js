@@ -4,12 +4,13 @@ const fs = require('fs');
 const scrapeNews = require('./scrapeNews');
 const scrapeEvents = require('./scrapeEvents');
 const cors = require('cors');
-const path = require('path');
 
-const privateKey = fs.readFileSync('/home/nataly/servidor/private.key', 'utf8');
-const certificate = fs.readFileSync('/home/nataly/servidor/certificate.crt', 'utf8');
+// Cargar certificados SSL de Let's Encrypt
+const privateKey = fs.readFileSync('/etc/letsencrypt/archive/magicarduct.online/privkey1.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/archive/magicarduct.online/fullchain1.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/archive/magicarduct.online/chain1.pem', 'utf8');
 
-const credentials = { key: privateKey, cert: certificate };
+const credentials = { key: privateKey, cert: certificate, ca: ca };
 
 const app = express();
 const port = 3001;

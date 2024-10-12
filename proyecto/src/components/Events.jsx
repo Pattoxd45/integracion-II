@@ -8,7 +8,7 @@ const Events = () => {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    axios.get("https://186.64.122.218:3001/api/events") // Cambié la ruta
+    axios.get("https://magicarduct.online:3001/api/events") // Cambié la ruta
       .then(response => {
         setEvents(response.data);
       })
