@@ -17,10 +17,8 @@ async function scrapeNews() {
         articles.push({
             title,
             description,
-            author: {
-                name: authorName,
-                imageUrl: authorImageUrl,
-            },
+            authorName,
+            authorImageUrl,
             link: `https://magic.wizards.com${link}`
         });
     });
