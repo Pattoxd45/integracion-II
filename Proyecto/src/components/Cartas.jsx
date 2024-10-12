@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
-
+import Favorites from './Favorites'; 
 const Cartas = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,8 @@ const Cartas = () => {
   });
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
-  const [favorites, setFavorites] = useState([]); 
+  const [favorites, setFavorites] = useState([]);
+  const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() => {
     fetch('https://api.scryfall.com/sets')
@@ -72,7 +73,7 @@ const Cartas = () => {
     }));
   };
 
-  const toggleFavorite = (card) => { // guardado de cartas como favoritas
+  const toggleFavorite = (card) => {
     setFavorites((prevFavorites) => {
       if (prevFavorites.some((favorite) => favorite.id === card.id)) {
         return prevFavorites.filter((favorite) => favorite.id !== card.id);
@@ -82,9 +83,32 @@ const Cartas = () => {
     });
   };
 
+  const handleCardClick = (card) => {
+    setSelectedCard(card);
+  };
+
+  const closeModal = () => {
+    setSelectedCard(null);
+  };
+
+  const handleNextCard = () => {
+    const currentIndex = cards.findIndex(card => card.id === selectedCard.id);
+    const nextIndex = (currentIndex + 1) % cards.length;
+    setSelectedCard(cards[nextIndex]);
+  };
+
+  const handlePreviousCard = () => {
+    const currentIndex = cards.findIndex(card => card.id === selectedCard.id);
+    const prevIndex = (currentIndex - 1 + cards.length) % cards.length;
+    setSelectedCard(cards[prevIndex]);
+  };
+
   return (
     <div className="p-6 bg-gray-900 min-h-screen">
       <h1 className="text-white text-4xl mb-8">Magic the Gathering Cards</h1>
+      
+      <Favorites favorites={favorites} toggleFavorite={toggleFavorite} />
+
       <div className="mb-4 flex items-center">
         <input
           type="text"
@@ -198,25 +222,29 @@ const Cartas = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.isArray(cards) && cards.length > 0 ? (
             cards.map((card) => (
-              <div key={card.id} className="bg-gray-800 p-4 rounded-lg shadow-lg relative">
+              <div
+                key={card.id}
+                className="bg-gray-800 rounded-lg p-4 cursor-pointer relative"
+                onClick={() => handleCardClick(card)}
+              >
                 <img
-                  src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`} //aqui es donde se definen las cartas que van a "tapar" las cartas a las que no se les genera la imagen de forma correcta
+                  src={card.image_uris?.normal || `${process.env.PUBLIC_URL}/Cartas2.png`}
                   alt={card.name}
-                  className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
+                  className="rounded-lg"
                 />
-
-                <div className="mt-4">
-                  <h2 className="text-white text-lg font-bold">{card.name}</h2>
-                  <p className="text-gray-400">{card.type_line}</p>
-                  {card.power && <p className="text-gray-400">Poder: {card.power}</p>}
-                  {card.toughness && <p className="text-gray-400">Resistencia: {card.toughness}</p>}
-                </div>
-
+                <h3 className="text-white text-lg mt-2">{card.name}</h3>
                 <button
-                  onClick={() => toggleFavorite(card)}
-                  className={`absolute top-2 right-2 p-2 rounded ${favorites.some(fav => fav.id === card.id) ? 'bg-red-500' : 'bg-blue-500'}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(card);
+                  }}
+                  className={`absolute top-2 right-2 text-3xl ${
+                    favorites.some((favorite) => favorite.id === card.id)
+                      ? 'text-red-600'
+                      : 'text-white'
+                  }`}
                 >
-                  {favorites.some(fav => fav.id === card.id) ? '❤️' : '🤍'}
+                  {favorites.some((favorite) => favorite.id === card.id) ? '♥' : '♡'}
                 </button>
               </div>
             ))
@@ -225,23 +253,51 @@ const Cartas = () => {
           )}
         </div>
       )}
-      <h2 className="text-white text-3xl mt-8">Cartas Favoritas</h2>  
-      {favorites.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
-          {favorites.map((favorite) => (
-            <div key={favorite.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
-              <img
-                src={favorite.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas1.png`}
-                alt={favorite.name}
-                className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
-              />
-              <h2 className="text-white text-lg font-bold">{favorite.name}</h2>
-              <p className="text-gray-400">{favorite.type_line}</p>
+
+      {selectedCard && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+          <div className="flex bg-gray-900 p-6 rounded-lg w-full max-w-4xl flex-col">
+            <div className="w-full p-4 flex">
+              <div className="w-1/2 p-4">
+                <img
+                  src={selectedCard.image_uris?.normal || `${process.env.PUBLIC_URL}/Cartas2.png`}
+                  alt={selectedCard.name}
+                  className="rounded-lg"
+                />
+              </div>
+              <div className="w-1/2 p-4">
+                <h2 className="text-white text-2xl mb-4">{selectedCard.name}</h2>
+                <p className="text-white"><strong>Tipo:</strong> {selectedCard.type_line}</p>
+                <p className="text-white"><strong>Costo de Maná:</strong> {selectedCard.mana_cost || 'N/A'}</p>
+                <p className="text-white"><strong>Texto:</strong> {selectedCard.oracle_text || 'N/A'}</p>
+                <p className="text-white"><strong>Rareza:</strong> {selectedCard.rarity}</p>
+                <p className="text-white"><strong>Edición:</strong> {selectedCard.set_name}</p>
+              </div>
             </div>
-          ))}
+
+            <div className="flex justify-between mt-8">
+              <button
+                onClick={handlePreviousCard}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors w-full mr-2"
+              >
+                Anterior
+              </button>
+              <button
+                onClick={handleNextCard}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors w-full ml-2"
+              >
+                Siguiente
+              </button>
+            </div>
+
+            <button
+              onClick={closeModal}
+              className="mt-8 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition-colors w-full"
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
-      ) : (
-        <p className="text-white">No hay cartas favoritas guardadas.</p>
       )}
     </div>
   );
