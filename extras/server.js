@@ -1,8 +1,15 @@
 const express = require('express');
+const https = require('https');
+const fs = require('fs');
 const scrapeNews = require('./scrapeNews');
 const scrapeEvents = require('./scrapeEvents');
 const cors = require('cors');
 const path = require('path');
+
+const privateKey = fs.readFileSync('/home/nataly/servidor/private.key', 'utf8');
+const certificate = fs.readFileSync('/home/nataly/servidor/certificate.crt', 'utf8');
+
+const credentials = { key: privateKey, cert: certificate };
 
 const app = express();
 const port = 3001;
@@ -29,6 +36,7 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log('Server is running on http://186.64.122.218:${port}');
+// Crear el servidor HTTPS
+https.createServer(credentials, app).listen(port, () => {
+  console.log(`Server is running on https://magicarduct.online:${port}`);
 });
