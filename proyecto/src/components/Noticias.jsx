@@ -26,7 +26,7 @@ const Noticias = () => {
   };
 
   useEffect(() => {
-    axios.get("http://186.64.122.218:3001/api/news") //Cambié la ruta
+    axios.get("https://186.64.122.218:3001/api/news") //Cambié la ruta
       .then(response => {
         setNews(response.data);
       })
