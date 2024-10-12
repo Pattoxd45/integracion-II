@@ -33,11 +33,12 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/noticias" element={
               <>
-                <h1 className="title">úLTIMAS NOTICIAS</h1>
-                <Noticias />
-                <h2 className="title">PROXIMOS EVENTOS</h2>
-                <Events />
-                <h3 className="title">CREADORES DE CONTENIDO</h3>
+                <br></br>
+                <h1 className="text-center text-orange-500 text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
+                <Noticias /> <br></br>
+                <h2 className="text-center text-orange-500 text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
+                <Events /><br></br>
+                <h3 className="text-center text-orange-500 text-4xl font-bold">CREADORES DE CONTENIDO</h3>
                 <Creadores />
               </>
             } />
