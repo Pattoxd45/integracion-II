@@ -4,7 +4,6 @@ import { AiOutlineClose } from "react-icons/ai";
 import { IoIosOptions, IoIosAdd } from "react-icons/io";
 import { MdEdit, MdEditOff } from "react-icons/md";
 import { FaTrashCan } from "react-icons/fa6";
-import CardDetails from "./CardDetails"; // Importar CardDetails
 
 const InsideDecks = ({ closeModal, deckName }) => {
   const navigate = useNavigate(); // Usamos el hook useNavigate para navegar
@@ -26,7 +25,6 @@ const InsideDecks = ({ closeModal, deckName }) => {
   const [editMode, setEditMode] = useState(false);
   const [selectedCards, setSelectedCards] = useState([]);
   const [selectedCardDetails, setSelectedCardDetails] = useState(null);
-  const [isCardDetailsVisible, setIsCardDetailsVisible] = useState(false); // Nuevo estado para animación
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -68,7 +66,6 @@ const InsideDecks = ({ closeModal, deckName }) => {
     setEditMode(!editMode);
     setSelectedCards([]);
     setSelectedCardDetails(null); // Cerrar detalles de carta si se activa el modo edición
-    setIsCardDetailsVisible(false); // Ocultar detalles con animación
   };
 
   const toggleSelectCard = (cardId) => {
@@ -90,15 +87,11 @@ const InsideDecks = ({ closeModal, deckName }) => {
   const handleCardClick = (card) => {
     if (!editMode) {
       setSelectedCardDetails(card);
-      setIsCardDetailsVisible(true); // Mostrar detalles con animación
     }
   };
 
   const closeCardDetails = () => {
-    setIsCardDetailsVisible(false); // Cerrar detalles con animación
-    setTimeout(() => {
-      setSelectedCardDetails(null);
-    }, 300); // Esperar a que termine la animación antes de cerrar completamente
+    setSelectedCardDetails(null); // Esperar a que termine la animación antes de cerrar completamente
   };
 
   // Función para navegar a la página Cartas.jsx
