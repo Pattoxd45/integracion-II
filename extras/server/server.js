@@ -265,18 +265,19 @@ app.get('/api/barajas/:IDbarajas', async (req, res) => {
   }
 });
 
-// POST: Crea un nuevo mazo con los datos proporcionados
+// POST: Crea un nuevo mazo y lo asocia a un usuario específico
 app.post('/api/createmazo', (req, res) => {
   console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
-  const { nombre, formato, descripcion } = req.body;
+  const { nombre, formato, descripcion, idusuario } = req.body;
 
-  if (!nombre || !formato || !descripcion) {
+  if (!nombre || !formato || !descripcion || !idusuario) {
     console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
-  const query = 'INSERT INTO barajas (nombre, formato, descripcion) VALUES (?, ?, ?)';
-  db.query(query, [nombre, formato, descripcion], (err, result) => {
+  // Consulta para insertar el nuevo mazo
+  const queryMazo = 'INSERT INTO barajas (nombre, formato, descripcion) VALUES (?, ?, ?)';
+  db.query(queryMazo, [nombre, formato, descripcion], (err, result) => {
     if (err) {
       console.error('Error al crear mazo:', err); // Mensaje de error
       return res.status(500).json({ error: 'Error al crear mazo' });
@@ -285,9 +286,21 @@ app.post('/api/createmazo', (req, res) => {
     // Obtiene el ID del nuevo mazo
     const nuevoMazoId = result.insertId;
     console.log('Nuevo mazo creado con ID:', nuevoMazoId);
-    res.status(200).json({ message: 'Mazo creado exitosamente', id: nuevoMazoId });
+
+    // Consulta para asociar el nuevo mazo al usuario
+    const queryUsuarioMazo = 'INSERT INTO barajas_de_usuario (id_usuario, id_baraja) VALUES (?, ?)';
+    db.query(queryUsuarioMazo, [idusuario, nuevoMazoId], (err) => {
+      if (err) {
+        console.error('Error al asociar el mazo al usuario:', err); // Mensaje de error
+        return res.status(500).json({ error: 'Error al asociar el mazo al usuario' });
+      }
+      
+      // Respuesta final
+      res.status(200).json({ message: 'Mazo creado y asociado exitosamente', id: nuevoMazoId });
+    });
   });
 });
+
 
 // PUT: Actualiza un mazo existente con los datos proporcionados por su ID
 app.put('/api/actualizarmazo/:id', (req, res) => {
@@ -314,26 +327,6 @@ app.put('/api/actualizarmazo/:id', (req, res) => {
   });
 });
 
-// POST: Asocia un mazo con un usuario específico
-app.post('/api/createusermazo', (req, res) => {
-  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
-  const { idusuario, idmazo } = req.body;
-
-  if (!idusuario || !idmazo) {
-    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
-    return res.status(400).json({ error: 'Faltan datos del formulario' });
-  }
-
-  const query = 'INSERT INTO barajas_de_usuario (idbarajas_de_usuario, id_usuario) VALUES (?, ?)';
-  db.query(query, [idusuario, idmazo], (err, result) => {
-    if (err) {
-      console.error('Error al crear mazo:', err); // Mensaje de error
-      return res.status(500).json({ error: 'Error al crear mazo:' });
-    }
-    res.status(200).json({ message: 'Mazo creado exitosamente' });
-  });
-});
-
 // DELETE: Elimina un mazo específico y sus referencias asociadas
 app.delete('/api/eliminarmazo/:id', (req, res) => {
   const mazoId = req.params.id; // Obtiene el ID del mazo de los parámetros de la URL
@@ -342,28 +335,36 @@ app.delete('/api/eliminarmazo/:id', (req, res) => {
     return res.status(400).json({ error: 'ID del mazo es requerido' });
   }
 
-  // Primero, eliminamos las referencias en la tabla de relación barajas_de_usuario
-  const deleteRelacionQuery = 'DELETE FROM barajas_de_usuario WHERE idbarajas_de_usuario = ?';
-
-  db.query(deleteRelacionQuery, [mazoId], (err, result) => {
+  // Primero, eliminamos las referencias en la tabla de relación mazo_cartas
+  const deleteMazoCartasQuery = 'DELETE FROM mazo_cartas WHERE IDmazo = ?';
+  db.query(deleteMazoCartasQuery, [mazoId], (err, result) => {
     if (err) {
-      console.error('Error al eliminar las referencias del mazo:', err);
-      return res.status(500).json({ error: 'Error al eliminar las referencias del mazo' });
+      console.error('Error al eliminar las referencias en mazo_cartas:', err);
+      return res.status(500).json({ error: 'Error al eliminar las referencias en mazo_cartas' });
     }
 
-    // Luego, eliminamos el mazo de la tabla barajas
-    const deleteMazoQuery = 'DELETE FROM barajas WHERE idbarajas = ?';
-    db.query(deleteMazoQuery, [mazoId], (err, result) => {
+    // Luego, eliminamos las referencias en la tabla de relación barajas_de_usuario
+    const deleteRelacionQuery = 'DELETE FROM barajas_de_usuario WHERE idbarajas_de_usuario = ?';
+    db.query(deleteRelacionQuery, [mazoId], (err, result) => {
       if (err) {
-        console.error('Error al eliminar el mazo:', err);
-        return res.status(500).json({ error: 'Error al eliminar el mazo' });
+        console.error('Error al eliminar las referencias del mazo en barajas_de_usuario:', err);
+        return res.status(500).json({ error: 'Error al eliminar las referencias del mazo en barajas_de_usuario' });
       }
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: 'Mazo no encontrado' });
-      }
+      // Finalmente, eliminamos el mazo de la tabla barajas
+      const deleteMazoQuery = 'DELETE FROM barajas WHERE idbarajas = ?';
+      db.query(deleteMazoQuery, [mazoId], (err, result) => {
+        if (err) {
+          console.error('Error al eliminar el mazo:', err);
+          return res.status(500).json({ error: 'Error al eliminar el mazo' });
+        }
 
-      res.status(200).json({ message: 'Mazo eliminado exitosamente' });
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ message: 'Mazo no encontrado' });
+        }
+
+        res.status(200).json({ message: 'Mazo eliminado exitosamente' });
+      });
     });
   });
 });
