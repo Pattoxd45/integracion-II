@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-
-import reloj from "../images/imgAbout/reloj.png";
-import jugador from "../images/imgAbout/jugador.png";
-import mazo from "../images/imgAbout/mazo.png";
+import Reglas from './Reglas'; // Asegúrate de importar el componente
+import fondo1 from "../images/imgFormatos/fondo.png";
+import fondo2 from "../images/imgFormatos/fondo2.png";
 
 const About = () => {
   const tarjetas = [
-    "MAZO CERRADO", 
-    "MAZO CERRADO POR EQUIPOS", 
+    "Sealed Deck", 
+    "Team Sealed", 
     "BOOSTER DRAFT", 
     "JUMPSTART", 
     "STANDAR", 
@@ -15,211 +14,108 @@ const About = () => {
     "MODERN", 
     "LEGACY", 
     "VINTAGE", 
-    "PRE-MODERN", 
+    "HISTORIC", 
     "PAUPER", 
     "COMMANDER", 
-    "FORMATOS EN MAGIC ARENA",
-    "FORMATO",
-    "FORMATO",
-    "FORMATO",
-    "FORMATO",
-    "FORMATO",
-    "FORMATO",
-    "FORMATO",
+    "OATHBREAKER",
+    "BRAWL",
+    "TWO-HEADED GIANT",
+    "ALCHEMY",
+    "PLANECHASE",
+    "ARCHENEMY",
+    "TIMELESS",
+    "CONSPIRANCY",
+    "FREEFORM",
+    "MOMIR BASIC"
   ];
 
-  // Información adicional para cada tarjeta
-  const Info = [
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "Cada jugador comienza con 20 puntos de vida. El objetivo es reducir la vida de tu oponente a cero.",
-      cantidadJugadores: "2",
-      duracionPartida: "20 minutos",
-      TamMazo: "40 cartas o más",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "Formato de Mazo Cerrado por Equipos: dos equipos de dos jugadores cada uno. Juegan contra otro equipo.",
-      cantidadJugadores: "4 jugadores en total",
-      duracionPartida: "1 a 2 horas",
-      TamMazo: "Normalmente entre 60 y 80 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    {
-      infoAdicional: "Aquí puedes agregar información adicional sobre la tarjeta seleccionada.",
-      reglas: "El Booster Draft permite a los jugadores construir mazos a partir de cartas seleccionadas de boosters.",
-      cantidadJugadores: "8 jugadores en total.",
-      duracionPartida: "2 a 3 horas",
-      TamMazo: "Normalmente entre 40 y 60 cartas",
-    },
-    // Agrega más objetos de Info según sea necesario
-    // ...
-  ];
-
-  const [visibleCount, setVisibleCount] = useState(8); // Inicialmente mostrar 8 tarjetas
-  const [selectedCardIndex, setSelectedCardIndex] = useState(null); // Índice de la tarjeta seleccionada
+  const [visibleCount, setVisibleCount] = useState(8);
+  const [selectedCardIndex, setSelectedCardIndex] = useState(null);
 
   const handleLoadMore = () => {
     setVisibleCount(prevCount => Math.min(prevCount + 8, tarjetas.length));
   };
 
   const handleCardClick = (index) => {
-    setSelectedCardIndex(index); // Establecer el índice de la tarjeta seleccionada
+    setSelectedCardIndex(index);
   };
 
   const handleCloseModal = () => {
-    setSelectedCardIndex(null); // Cerrar el modal
+    setSelectedCardIndex(null);
   };
 
   return (
     <>
-      <div className="max-w-[1200px] mx-auto mb-[20px] p-4 bg-[#000] min-h-[40vh] h-auto rounded-lg shadow-xl text-white">
-        <h1 className="text-4xl font-bold text-[#e85438] text-center mb-6 font-['ROBOTO']">SOBRE NOSOTROS</h1>
-        <p className="text-lg leading-relaxed text-center mb-8">
-          Bienvenido a nuestra página dedicada al increíble juego de cartas <strong className="font-bold text-2xl">Magic: The Gathering</strong>.
-          Nuestra misión es ofrecer una plataforma donde los jugadores puedan optimizar la creación de sus mazos utilizando las estadísticas de cada carta,
-          para mejorar su experiencia de juego y tomar decisiones estratégicas informadas.
+      {/* Contenedor con fondo sin difuminado */}
+      <div 
+        className="relative max-w-[1200px] mx-auto mb-[20px] p-4 min-h-[40vh] h-auto rounded-lg shadow-xl text-white bg-cover bg-center"
+        style={{ backgroundImage: `url(${fondo1})` }}
+      >
+        {/* Capa semi-transparente encima del fondo */}
+        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg"></div>
+
+        {/* Contenido encima del fondo */}
+        <div className="relative z-10">
+          <h1 className="text-4xl font-bold text-[#e85438] text-center mb-6 font-['ROBOTO']">SOBRE NOSOTROS</h1>
+          <p className="text-lg leading-relaxed text-center mb-8">
+            Bienvenido a nuestra página dedicada al increíble juego de cartas <strong className="font-bold text-2xl">Magic: The Gathering</strong>.
+            Nuestra misión es ofrecer una plataforma donde los jugadores puedan optimizar la creación de sus mazos utilizando las estadísticas de cada carta,
+            para mejorar su experiencia de juego y tomar decisiones estratégicas informadas.
+          </p>
+          <p className="text-lg leading-relaxed text-center mb-8">
+            Nuestro enfoque está en proporcionar información detallada y análisis de las cartas disponibles,
+            con el objetivo de facilitar la elección de las mejores cartas para cada formato de juego.
+          </p>
+          <p className="text-lg leading-relaxed text-center mb-8">
+            Nuestro objetivo es ayudarte a comprender mejor el potencial de cada carta y permitirte construir los mazos más competitivos,
+            basándote en datos y estadísticas confiables.
+          </p>
+          <p className="text-lg leading-relaxed text-center mb-8">
+            ¡Esperamos que encuentres esta página útil y que disfrutes del mundo de Magic como nunca antes!
+          </p>
+        </div>
+      </div>
+
+      {/* Título y explicación sobre los formatos */}
+      <div className="max-w-[1200px] mx-auto mb-[20px] p-4 text-white">
+        <h2 className="text-3xl font-bold text-[#e85438] text-center mb-4">Formatos</h2>
+        <p className="text-lg leading-relaxed text-center text-black">
+          Magic: The Gathering ofrece múltiples formatos de juego, cada uno con sus propias reglas y características. 
+          Algunos formatos se enfocan en construir mazos a partir de colecciones específicas de cartas, mientras que otros te permiten
+          crear estrategias a partir de cartas lanzadas en cualquier momento de la historia de Magic. Existen formatos casuales y competitivos,
+          donde los jugadores pueden experimentar o enfrentarse en torneos oficiales.
         </p>
-        <p className="text-lg leading-relaxed text-center mb-8">
-          Nuestro enfoque está en proporcionar información detallada y análisis de las cartas disponibles,
-          con el objetivo de facilitar la elección de las mejores cartas para cada formato de juego.
-        </p>
-        <p className="text-lg leading-relaxed text-center mb-8">
-          Nuestro objetivo es ayudarte a comprender mejor el potencial de cada carta y permitirte construir los mazos más competitivos,
-          basándote en datos y estadísticas confiables.
-        </p>
-        <p className="text-lg leading-relaxed text-center mb-8">
-          ¡Esperamos que encuentres esta página útil y que disfrutes del mundo de Magic como nunca antes!
+        <p className="text-lg leading-relaxed text-center text-black">
+          A continuación, te presentamos los formatos oficiales de Magic junto con sus reglas principales. Cada uno de estos formatos tiene
+          un conjunto de cartas permitidas, condiciones de victoria y reglas específicas, que hacen de Magic un juego tan dinámico y diverso.
+          Ya sea que prefieras construir mazos rápidamente en sellados o disfrutar de complejas estrategias en Commander, existe un formato
+          ideal para cada tipo de jugador.
         </p>
       </div>
 
+      {/* Sección de tarjetas */}
       <div className="max-w-[1200px] mx-auto mb-[20px] p-4 min-h-[40vh] h-auto rounded-lg text-white">
         <div className="flex flex-wrap justify-between">
           {tarjetas.slice(0, visibleCount).map((tarjeta, index) => (
             <div 
               key={index} 
-              className="w-[calc(25%-1rem)] aspect-[4/3] border-4 border-[#e85438] bg-[#000] flex items-center justify-center rounded-lg mb-4 cursor-pointer"
-              onClick={() => handleCardClick(index)} // Manejar el clic en la tarjeta
+              className="w-[calc(25%-1rem)] aspect-[4/3] border-4 border-[#e85438] relative flex items-center justify-center rounded-lg mb-4 cursor-pointer transition-transform duration-300 transform hover:scale-105 hover:border-[#e85438] hover:shadow-[0_0_30px_rgba(232,52,17,1)]"
+              onClick={() => handleCardClick(index)}
             >
-              <p className="text-base md:text-lg lg:text-xl font-semibold text-[#e85438] text-center p-2">{tarjeta}</p>
+              {/* Imagen de fondo difuminada y oscurecida */}
+              <div 
+                className="absolute inset-0 rounded-lg bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(${fondo2})`,
+                  filter: 'blur(5px) brightness(0.6)', // Difumina y oscurece la imagen
+                  zIndex: 0,
+                }}
+              ></div>
+
+              {/* Texto dentro de la tarjeta */}
+              <p className="relative z-10 text-base md:text-lg lg:text-xl font-semibold text-[#e85438] text-center p-2 bg-black bg-opacity-40 rounded-lg">
+                {tarjeta}
+              </p>
             </div>
           ))}
         </div>
@@ -237,45 +133,11 @@ const About = () => {
       </div>
 
       {/* Modal para mostrar información de la tarjeta */}
-      {selectedCardIndex !== null && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
-          onClick={handleCloseModal} // Cerrar modal al hacer clic fuera
-        >
-          <div 
-            className="bg-[#000] p-6 rounded-lg border-4 border-[#e85438] relative" 
-            onClick={e => e.stopPropagation()} // Evitar que el clic en el cuadro cierre el modal
-          >
-            <h2 className="text-2xl text-[#e85438] mb-4">{tarjetas[selectedCardIndex]}</h2>
-            <p className="text-lg text-white">{Info[selectedCardIndex].infoAdicional}</p>
-            <h3 className="text-xl text-[#e85438] mt-4">Reglas del juego</h3>
-            <p className="text-lg text-white">{Info[selectedCardIndex].reglas}</p>
-            <div className="flex justify-around mt-4">
-              <div className="text-center">
-                <img src={mazo} alt="Tamaño del mazo" className="mx-auto mb-2" />
-                <p className="text-[#e85438] font-bold">Tamaño del Mazo</p>
-                <p className="text-white">{Info[selectedCardIndex].TamMazo}</p>
-              </div>
-              <div className="text-center">
-                <img src={jugador} alt="Número de jugadores" className="mx-auto mb-2" />
-                <p className="text-[#e85438] font-bold">Número de Jugadores</p>
-                <p className="text-white">{Info[selectedCardIndex].cantidadJugadores}</p>
-              </div>
-              <div className="text-center">
-                <img src={reloj} alt="Duración del juego" className="mx-auto mb-2" />
-                <p className="text-[#e85438] font-bold">Duración de un Juego</p>
-                <p className="text-white">{Info[selectedCardIndex].duracionPartida}</p>
-              </div>
-            </div>
-            <button 
-              onClick={handleCloseModal} 
-              className="absolute top-2 right-2 text-[#e85438] hover:text-white"
-            >
-              ❌
-            </button>
-          </div>
-        </div>
-      )}
+      <Reglas 
+        selectedCardIndex={selectedCardIndex} 
+        tarjetas={tarjetas} 
+        onClose={handleCloseModal} 
+      />
     </>
   );
 };
