@@ -12,37 +12,41 @@ import Events from "./components/Events";
 import Profile from "./components/Profile";
 import Decks from "./components/Decks";
 
+import { UserProvider } from "./components/UserContext";
+
 function App() {
   return (
     <div className="App flex flex-col min-h-screen">
-      <Router>
-        <Navbar />
-        <div className="flex-grow">
-          <Routes>
-            <Route path="/" element={
-              <>
-                <Hero />
-                <Cards />
-                <News />
-              </>
-            } />
-            <Route path="/cartas" element={<Cartas />} />
-            <Route path="/decks" element={<Decks />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/noticias" element={
-              <>
-                <h1 className="text-center text-orange-500 text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
-                <Noticias /><br></br>
-                <h2 className="text-center text-orange-500 text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
-                <Events /><br></br>
-                <h3 className="text-center text-orange-500 text-4xl font-bold">CREADORES DE CONTENIDO</h3>
-                <Creadores />
-              </>
-            } />
-          </Routes>
-        </div>
-        <Footer />
-      </Router>
+      <UserProvider>
+        <Router>
+          <Navbar />
+          <div className="flex-grow">
+            <Routes>
+              <Route path="/" element={
+                <>
+                  <Hero />
+                  <Cards />
+                  <News />
+                </>
+              } />
+              <Route path="/cartas" element={<Cartas />} />
+              <Route path="/decks" element={<Decks />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/noticias" element={
+                <>
+                  <h1 className="text-center text-orange-500 text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
+                  <Noticias /><br></br>
+                  <h2 className="text-center text-orange-500 text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
+                  <Events /><br></br>
+                  <h3 className="text-center text-orange-500 text-4xl font-bold">CREADORES DE CONTENIDO</h3>
+                  <Creadores />
+                </>
+              } />
+            </Routes>
+          </div>
+          <Footer />
+        </Router>
+      </UserProvider>
     </div>
   );
 }
