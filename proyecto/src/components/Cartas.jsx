@@ -3,6 +3,7 @@ import { FaSearch } from 'react-icons/fa';
 import { IoIosAdd } from 'react-icons/io'; // Importamos el icono de añadir
 import { useLocation } from 'react-router-dom'; // Importar para detectar el estado de navegación
 import { getDecks, addCardsToDeck } from './db'; // Importar la función para obtener barajas y agregar cartas
+import Favorites from './Favorites'; // Importamos el componente de favoritos
 
 const Cartas = () => {
   const [cards, setCards] = useState([]);
@@ -21,6 +22,8 @@ const Cartas = () => {
   });
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
+  const [favorites, setFavorites] = useState([]); // Estado de favoritos
+  const [selectedCard, setSelectedCard] = useState(null); // Estado para popup de carta seleccionada
   const [selectedCards, setSelectedCards] = useState([]); // Estado para las cartas seleccionadas
   const [decks, setDecks] = useState([]); // Almacenar las barajas
   const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de barajas
@@ -89,6 +92,38 @@ const Cartas = () => {
     }
   };
 
+  // Manejar la selección de favoritos
+  const toggleFavorite = (card) => {
+    setFavorites((prevFavorites) => {
+      if (prevFavorites.some((favorite) => favorite.id === card.id)) {
+        return prevFavorites.filter((favorite) => favorite.id !== card.id);
+      } else {
+        return [...prevFavorites, card];
+      }
+    });
+  };
+
+  // Manejar el click de la carta (abrir popup)
+  const handleCardClick = (card) => {
+    setSelectedCard(card);
+  };
+
+  const closeModalCard = () => {
+    setSelectedCard(null);
+  };
+
+  const handleNextCard = () => {
+    const currentIndex = cards.findIndex(card => card.id === selectedCard.id);
+    const nextIndex = (currentIndex + 1) % cards.length;
+    setSelectedCard(cards[nextIndex]);
+  };
+
+  const handlePreviousCard = () => {
+    const currentIndex = cards.findIndex(card => card.id === selectedCard.id);
+    const prevIndex = (currentIndex - 1 + cards.length) % cards.length;
+    setSelectedCard(cards[prevIndex]);
+  };
+
   // Abrir el modal y obtener las barajas de IndexedDB
   const openModal = async () => {
     const savedDecks = await getDecks(); // Obtener barajas de IndexedDB
@@ -125,6 +160,10 @@ const Cartas = () => {
   return (
     <div className="p-6 bg-gray-900 min-h-screen">
       <h1 className="text-white text-4xl mb-8">Magic the Gathering Cards</h1>
+      
+      {/* Componente de Favoritos */}
+      <Favorites favorites={favorites} toggleFavorite={toggleFavorite} />
+
       <div className="mb-4 flex items-center">
         <input
           type="text"
@@ -238,19 +277,36 @@ const Cartas = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.isArray(cards) && cards.length > 0 ? (
             cards.map((card) => (
-              <div key={card.id} className="relative bg-gray-800 p-4 rounded-lg shadow-lg">
+              <div
+                key={card.id}
+                className="relative bg-gray-800 p-4 rounded-lg shadow-lg cursor-pointer"
+                onClick={() => handleCardClick(card)}
+              >
                 <img
                   src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`}
                   alt={card.name}
                   className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
                 />
-                
+
                 <div className="mt-4">
                   <h2 className="text-white text-lg font-bold">{card.name}</h2>
                   <p className="text-gray-400">{card.type_line}</p>
                   {card.power && <p className="text-gray-400">Poder: {card.power}</p>}
                   {card.toughness && <p className="text-gray-400">Resistencia: {card.toughness}</p>}
                 </div>
+
+                {/* Botón de favorito */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(card);
+                  }}
+                  className={`absolute top-2 left-2 text-2xl ${
+                    favorites.some((favorite) => favorite.id === card.id) ? 'text-red-600' : 'text-white'
+                  }`}
+                >
+                  {favorites.some((favorite) => favorite.id === card.id) ? '♥' : '♡'}
+                </button>
 
                 {/* Mostrar círculo para selección si estamos añadiendo cartas */}
                 {addingCards && (
@@ -260,7 +316,10 @@ const Cartas = () => {
                         ? "bg-orange-500 border-white"
                         : "border-white"
                     }`}
-                    onClick={() => handleSelectCard(card.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectCard(card.id);
+                    }}
                   ></div>
                 )}
               </div>
@@ -310,6 +369,53 @@ const Cartas = () => {
             <button
               className="bg-gray-400 px-4 py-2 rounded-md hover:bg-gray-500"
               onClick={closeModal}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Popup de detalles de carta seleccionada */}
+      {selectedCard && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+          <div className="flex bg-gray-900 p-6 rounded-lg w-full max-w-4xl flex-col">
+            <div className="w-full p-4 flex">
+              <div className="w-1/2 p-4">
+                <img
+                  src={selectedCard.image_uris?.normal || `${process.env.PUBLIC_URL}/Cartas2.png`}
+                  alt={selectedCard.name}
+                  className="rounded-lg"
+                />
+              </div>
+              <div className="w-1/2 p-4">
+                <h2 className="text-white text-2xl mb-4">{selectedCard.name}</h2>
+                <p className="text-white"><strong>Tipo:</strong> {selectedCard.type_line}</p>
+                <p className="text-white"><strong>Costo de Maná:</strong> {selectedCard.mana_cost || 'N/A'}</p>
+                <p className="text-white"><strong>Texto:</strong> {selectedCard.oracle_text || 'N/A'}</p>
+                <p className="text-white"><strong>Rareza:</strong> {selectedCard.rarity}</p>
+                <p className="text-white"><strong>Edición:</strong> {selectedCard.set_name}</p>
+              </div>
+            </div>
+
+            <div className="flex justify-between mt-8">
+              <button
+                onClick={handlePreviousCard}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors w-full mr-2"
+              >
+                Anterior
+              </button>
+              <button
+                onClick={handleNextCard}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors w-full ml-2"
+              >
+                Siguiente
+              </button>
+            </div>
+
+            <button
+              onClick={closeModalCard}
+              className="mt-8 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition-colors w-full"
             >
               Cerrar
             </button>
