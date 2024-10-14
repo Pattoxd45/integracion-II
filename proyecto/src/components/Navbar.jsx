@@ -65,6 +65,9 @@ const Navbar = () => {
             <li className="p-4 hover:text-[#e85438] cursor-pointer">
               <Link to="/noticias">Noticias</Link>
             </li>
+            <li className="p-4 hover:text-[#e85438] cursor-pointer">
+              <Link to="/decks">Barajas (esto eliminar)</Link>
+            </li>
             {/* Opción "Acerca" eliminada de aquí */}
           </ul>
 

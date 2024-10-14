@@ -301,7 +301,6 @@ app.post('/api/createmazo', (req, res) => {
   });
 });
 
-
 // PUT: Actualiza un mazo existente con los datos proporcionados por su ID
 app.put('/api/actualizarmazo/:id', (req, res) => {
   const mazoId = req.params.id; // Obtiene el ID del usuario de los parámetros
