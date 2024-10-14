@@ -11,6 +11,7 @@ import Noticias from "./components/Noticias";
 import Events from "./components/Events";
 import Profile from "./components/Profile";
 import Decks from "./components/Decks";
+import About from "./components/About";
 
 import { UserProvider } from "./components/UserContext";
 
@@ -32,6 +33,7 @@ function App() {
               <Route path="/cartas" element={<Cartas />} />
               <Route path="/decks" element={<Decks />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/about" element={<About />} />
               <Route path="/noticias" element={
                 <>
                   <h1 className="text-center text-orange-500 text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>

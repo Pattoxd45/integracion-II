@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { SlOptions } from "react-icons/sl";
-import { IoIosOptions } from "react-icons/io"; 
+import { IoIosOptions } from "react-icons/io";
 import InsideDecks from "./InsideDecks"; // Importamos InsideDecks
+import { saveDeck, getDecks, deleteDeck } from './db'; // Importar las funciones de IndexedDB
 
 const Decks = () => {
   const [toggleSelection, setToggleSelection] = useState("Baraja");
@@ -11,15 +12,19 @@ const Decks = () => {
   const [showInsideDecks, setShowInsideDecks] = useState(false); // Controla la visibilidad del modal
   const [searchQuery, setSearchQuery] = useState(""); // Estado para el valor del buscador
   const [filteredDecks, setFilteredDecks] = useState([]); // Estado para las barajas filtradas
+  const [decks, setDecks] = useState([]); // Lista de barajas
+  const [showModal, setShowModal] = useState(false); // Controla el modal de añadir baraja
+  const [newDeckName, setNewDeckName] = useState(""); // Nombre del nuevo mazo
+  const [errorMessage, setErrorMessage] = useState(""); // Mensaje de error para nombres duplicados
 
-  // Lista de barajas
-  const decks = [
-    { id: 1, name: "Baraja 1" },
-    { id: 2, name: "Baraja 2" },
-    { id: 3, name: "Baraja 3" },
-    { id: 4, name: "Baraja 4" },
-    { id: 5, name: "Baraja 5" },
-  ];
+  // Cargar barajas desde IndexedDB al montar el componente
+  useEffect(() => {
+    const loadDecks = async () => {
+      const savedDecks = await getDecks(); // Obtener barajas de IndexedDB
+      setDecks(savedDecks || []);
+    };
+    loadDecks();
+  }, []);
 
   // Función para abrir InsideDecks
   const openInsideDecks = (deck) => {
@@ -33,21 +38,53 @@ const Decks = () => {
     setShowInsideDecks(false);
   };
 
+  // Función para abrir el modal de añadir baraja
+  const openModal = () => {
+    setShowModal(true);
+    setErrorMessage(""); // Limpiar el mensaje de error
+  };
+
+  // Función para cerrar el modal de añadir baraja
+  const closeModal = () => {
+    setShowModal(false);
+    setNewDeckName(""); // Limpiar el nombre del mazo
+  };
+
   // Función para manejar el cambio en el buscador y filtrar las barajas
   const handleSearchChange = (event) => {
     const query = event.target.value.toLowerCase();
     setSearchQuery(query);
-    
     // Filtramos las barajas según el texto ingresado en el buscador
-    const filtered = decks.filter(deck =>
+    const filtered = decks.filter((deck) =>
       deck.name.toLowerCase().includes(query)
     );
-    
     setFilteredDecks(filtered);
   };
 
   // Si hay una búsqueda activa, mostramos las barajas filtradas; si no, mostramos todas las barajas
   const displayedDecks = searchQuery ? filteredDecks : decks;
+
+  // Función para añadir una nueva baraja con verificación de nombre único
+  const addNewDeck = async () => {
+    if (newDeckName.trim() === "") {
+      setErrorMessage("El nombre del mazo no puede estar vacío.");
+      return;
+    }
+
+    // Verificar si ya existe una baraja con el mismo nombre
+    const deckExists = decks.some((deck) =>
+      deck.name.toLowerCase() === newDeckName.toLowerCase()
+    );
+    
+    if (deckExists) {
+      setErrorMessage("Ya existe una baraja con este nombre.");
+    } else {
+      const newDeck = { name: newDeckName };
+      await saveDeck(newDeck); // Guardar la nueva baraja en IndexedDB
+      setDecks([...decks, newDeck]); // Añadir la baraja localmente
+      closeModal(); // Cerrar el modal después de añadir
+    }
+  };
 
   return (
     <div className="max-w-[1200px] mx-auto relative">
@@ -129,10 +166,46 @@ const Decks = () => {
         ))}
 
         {/* Botón para añadir más barajas */}
-        <div className="flex w-[220px] h-[320px] justify-center items-center bg-[#4747474b] border-[4px] border-[#00000075] rounded-md">
+        <div
+          className="flex w-[220px] h-[320px] justify-center items-center bg-[#4747474b] border-[4px] border-[#00000075] rounded-md cursor-pointer"
+          onClick={openModal}
+        >
           <IoMdAddCircleOutline className="text-black text-[80px] cursor-pointer hover:text-[#E83411]" />
         </div>
       </div>
+
+      {/* Modal para añadir una nueva baraja */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
+          <div className="bg-white p-5 rounded-lg">
+            <h2 className="text-2xl font-semibold mb-4">Añadir Nueva Baraja</h2>
+            <input
+              type="text"
+              value={newDeckName}
+              onChange={(e) => setNewDeckName(e.target.value)}
+              placeholder="Nombre de la baraja"
+              className="w-full h-[46px] p-2 border rounded-md focus:outline-none"
+            />
+            {errorMessage && (
+              <p className="text-red-500 mt-2">{errorMessage}</p>
+            )}
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                className="bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400"
+                onClick={closeModal}
+              >
+                Cancelar
+              </button>
+              <button
+                className="bg-[#E83411] text-white px-4 py-2 rounded-md hover:bg-[#b52e0e]"
+                onClick={addNewDeck}
+              >
+                Añadir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Renderiza InsideDecks si se selecciona una baraja */}
       {showInsideDecks && (

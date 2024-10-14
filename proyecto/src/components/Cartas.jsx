@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
+import { IoIosAdd } from 'react-icons/io'; // Importamos el icono de añadir
+import { useLocation } from 'react-router-dom'; // Importar para detectar el estado de navegación
+import { getDecks, addCardsToDeck } from './db'; // Importar la función para obtener barajas y agregar cartas
 
 const Cartas = () => {
   const [cards, setCards] = useState([]);
@@ -18,6 +21,12 @@ const Cartas = () => {
   });
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
+  const [selectedCards, setSelectedCards] = useState([]); // Estado para las cartas seleccionadas
+  const [decks, setDecks] = useState([]); // Almacenar las barajas
+  const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de barajas
+
+  const location = useLocation(); // Hook para obtener el estado de navegación
+  const addingCards = location.state?.addingCards || false; // Detectar si estamos añadiendo cartas
 
   useEffect(() => {
     fetch('https://api.scryfall.com/sets')
@@ -69,6 +78,48 @@ const Cartas = () => {
       ...prev,
       colors: checked ? [...prev.colors, value] : prev.colors.filter((color) => color !== value),
     }));
+  };
+
+  // Manejar la selección de cartas (checkbox o círculo)
+  const handleSelectCard = (cardId) => {
+    if (selectedCards.includes(cardId)) {
+      setSelectedCards(selectedCards.filter(id => id !== cardId));
+    } else {
+      setSelectedCards([...selectedCards, cardId]);
+    }
+  };
+
+  // Abrir el modal y obtener las barajas de IndexedDB
+  const openModal = async () => {
+    const savedDecks = await getDecks(); // Obtener barajas de IndexedDB
+    setDecks(savedDecks || []);
+    setShowModal(true); // Mostrar el modal
+  };
+
+  // Cerrar el modal
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // Manejar la selección de una baraja para agregar cartas
+  const handleSelectDeck = async (deckId) => {
+    const selectedCardNames = selectedCards.map(cardId => {
+      const card = cards.find(card => card.id === cardId);
+      return {
+        id: card.id,
+        name: card.name,
+        image: card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`,
+        mana: card.mana_cost || "Desconocido",
+        type: card.type_line || "Desconocido",
+        power: card.power || null,
+        toughness: card.toughness || null,
+      };
+    });
+
+    // Agregar las cartas seleccionadas a la baraja
+    await addCardsToDeck(deckId, selectedCardNames);
+    setSelectedCards([]); // Limpiar las cartas seleccionadas
+    closeModal(); // Cerrar el modal
   };
 
   return (
@@ -187,24 +238,82 @@ const Cartas = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.isArray(cards) && cards.length > 0 ? (
             cards.map((card) => (
-              <div key={card.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
+              <div key={card.id} className="relative bg-gray-800 p-4 rounded-lg shadow-lg">
                 <img
-                src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`} //aqui es donde se definen las cartas que van a "tapar" las cartas a las que no se les genera la imagen de forma correcta
-                alt={card.name}
-                className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
+                  src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`}
+                  alt={card.name}
+                  className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
                 />
-
+                
                 <div className="mt-4">
                   <h2 className="text-white text-lg font-bold">{card.name}</h2>
                   <p className="text-gray-400">{card.type_line}</p>
                   {card.power && <p className="text-gray-400">Poder: {card.power}</p>}
                   {card.toughness && <p className="text-gray-400">Resistencia: {card.toughness}</p>}
                 </div>
+
+                {/* Mostrar círculo para selección si estamos añadiendo cartas */}
+                {addingCards && (
+                  <div
+                    className={`absolute right-3 top-3 w-5 h-5 rounded-full border-2 ${
+                      selectedCards.includes(card.id)
+                        ? "bg-orange-500 border-white"
+                        : "border-white"
+                    }`}
+                    onClick={() => handleSelectCard(card.id)}
+                  ></div>
+                )}
               </div>
             ))
           ) : (
             <p className="text-white">No se encontraron cartas.</p>
           )}
+        </div>
+      )}
+
+      {/* Botón flotante: solo visible si hay cartas seleccionadas */}
+      {selectedCards.length > 0 && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-[1200px]">
+          <div className="flex justify-end">
+            <button
+              className="bg-[#E83411] text-white rounded-[10px] p-[10px] hover:bg-[#b52e0e] transition-colors flex items-center justify-center"
+              style={{ width: "50px", height: "50px" }}
+              onClick={openModal}
+            >
+              <IoIosAdd className="text-white text-[24px]" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para seleccionar baraja */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
+          <div className="bg-white p-5 rounded-lg w-[400px]">
+            <h2 className="text-xl font-bold mb-4">Seleccionar Baraja</h2>
+            {decks.length > 0 ? (
+              <ul className="mb-4">
+                {decks.map((deck) => (
+                  <li key={deck.id} className="mb-2">
+                    <button
+                      className="w-full bg-[#E83411] text-white p-2 rounded-md"
+                      onClick={() => handleSelectDeck(deck.id)}
+                    >
+                      {deck.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-700">No hay barajas disponibles.</p>
+            )}
+            <button
+              className="bg-gray-400 px-4 py-2 rounded-md hover:bg-gray-500"
+              onClick={closeModal}
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
       )}
     </div>

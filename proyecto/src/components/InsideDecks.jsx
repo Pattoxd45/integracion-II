@@ -1,30 +1,36 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom"; // Importamos el hook useNavigate
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AiOutlineClose } from "react-icons/ai";
 import { IoIosOptions, IoIosAdd } from "react-icons/io";
 import { MdEdit, MdEditOff } from "react-icons/md";
 import { FaTrashCan } from "react-icons/fa6";
+import { getDecks } from './db'; // Importamos la función para obtener barajas desde IndexedDB
 
 const InsideDecks = ({ closeModal, deckName }) => {
   const navigate = useNavigate(); // Usamos el hook useNavigate para navegar
   const modalRef = useRef(null);
 
-  // Cartas de ejemplo (placeholder)
-  const cards = useMemo(
-    () => [
-      { id: 1, name: "Carta 1", image: "https://via.placeholder.com/150", mana: "1G", type: "Criatura", power: 3, toughness: 2 },
-      { id: 2, name: "Carta 2", image: "https://via.placeholder.com/150", mana: "2U", type: "Hechizo", power: null, toughness: null },
-      { id: 3, name: "Carta 3", image: "https://via.placeholder.com/150", mana: "3R", type: "Enchantment", power: null, toughness: null },
-      // Más cartas...
-    ],
-    []
-  );
-
+  // Estado para almacenar las cartas en el mazo
+  const [cards, setCards] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCards, setFilteredCards] = useState(cards);
   const [editMode, setEditMode] = useState(false);
   const [selectedCards, setSelectedCards] = useState([]);
   const [selectedCardDetails, setSelectedCardDetails] = useState(null);
+
+  // Efecto para cargar las cartas del mazo seleccionado desde IndexedDB
+  useEffect(() => {
+    const loadDeck = async () => {
+      const allDecks = await getDecks();
+      const deck = allDecks.find((d) => d.name === deckName);
+      if (deck && deck.cards) {
+        setCards(deck.cards); // Cargar las cartas del mazo
+        setFilteredCards(deck.cards); // Filtrar las cartas para mostrarlas
+      }
+    };
+
+    loadDeck();
+  }, [deckName]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -91,12 +97,12 @@ const InsideDecks = ({ closeModal, deckName }) => {
   };
 
   const closeCardDetails = () => {
-    setSelectedCardDetails(null); // Esperar a que termine la animación antes de cerrar completamente
+    setSelectedCardDetails(null); // Cerrar detalles de carta
   };
 
   // Función para navegar a la página Cartas.jsx
   const handleAddCardClick = () => {
-    navigate("/cartas"); // Navegar a la página de cartas
+    navigate("/cartas", { state: { addingCards: true } }); // Navegar a Cartas con la marca de añadir cartas
   };
 
   return (
@@ -134,7 +140,7 @@ const InsideDecks = ({ closeModal, deckName }) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar cartas..."
-              className="w-full h-[46px] px-4 text-black bg-white rounded-md focus:outline-none text-center"
+              className="w-full h-[46px] px-4 text-black bg-white rounded-md focus:outline-none"
             />
             <button
               className="w-[91px] h-[46px] bg-[#E83411] text-white font-semibold rounded-md text-center"
@@ -186,9 +192,7 @@ const InsideDecks = ({ closeModal, deckName }) => {
                     {/* Contenido a la derecha */}
                     <div className="ml-4 flex-grow">
                       <h3 className="text-white text-xl font-bold">{card.name}</h3>
-                      <p className="text-gray-400 mt-2">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      </p>
+                      <p className="text-gray-400 mt-2">{card.type}</p>
                     </div>
 
                     {/* Circulo de selección */}
@@ -207,7 +211,7 @@ const InsideDecks = ({ closeModal, deckName }) => {
                   </div>
                 ))
               ) : (
-                <p className="text-white">No se encontraron cartas.</p>
+                <p className="text-white">No se han agregado cartas a este mazo.</p>
               )}
             </div>
           </div>
