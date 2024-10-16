@@ -46,10 +46,10 @@ const Noticias = () => {
   };
 
   // Renderiza elementos de noticias o imágenes aleatorias
-  const displayItems = news.length > 0 ? news : Array(5).fill(null); // Cambia 5 por el número de imágenes que deseas mostrar
+  // const displayItems = news.length > 0 ? news : Array(5).fill(null); // Cambia 5 por el número de imágenes que deseas mostrar
 
   return (
-    <div className="max-w-[1200px] mx-auto my-6 text-white">
+    <div className="max-w-[1200px] mx-auto mb-6 text-white">
       <Slider {...settings}>
         {news.map((news, index) => (
           <div key={index} className="p-4">

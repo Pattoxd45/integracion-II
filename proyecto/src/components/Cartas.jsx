@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { IoIosAdd } from 'react-icons/io'; // Importamos el icono de añadir
 import { useLocation } from 'react-router-dom'; // Importar para detectar el estado de navegación
@@ -41,11 +41,8 @@ const Cartas = () => {
       .then(data => setSubtypes(data.data || []));
   }, []);
 
-  useEffect(() => {
-    fetchCards();
-  }, [searchQuery, filter]);
-
-  const fetchCards = () => {
+  // Definir fetchCards con useCallback para que sea estable y evitar advertencias de dependencias
+  const fetchCards = useCallback(() => {
     setLoading(true);
     const colorsQuery = filter.colors.length ? `+color:${filter.colors.join(',')}` : '';
     const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';  
@@ -68,7 +65,11 @@ const Cartas = () => {
         setLoading(false);
         setCards([]);
       });
-  };
+  }, [searchQuery, filter]);
+
+  useEffect(() => {
+    fetchCards();
+  }, [searchQuery, filter, fetchCards]); // Agregar fetchCards como dependencia
 
   const handleSearch = (event) => setSearchQuery(event.target.value);
   const handleFilterChange = (field) => (event) => {

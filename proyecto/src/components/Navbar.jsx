@@ -44,7 +44,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="bg-[#000] mb-6">
+    <div className="bg-[#000]">
       <div className="flex justify-between items-center h-18 px-4 text-[#ddd] max-w-[1240px] mx-auto">
         <Link to="/">
           <img
