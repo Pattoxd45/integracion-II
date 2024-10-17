@@ -222,7 +222,7 @@ const Decks = () => {
               onClick={() => openInsideDecks(deck)} // Abre InsideDecks al hacer clic en una baraja
             ></div>
             {/* Contenedor para nombre y opciones */}
-            <div className="mt-1 text-black flex justify-between items-center relative">
+            <div className="mt-1 text-[#e1e6ea] flex justify-between items-center relative">
               {/* Nombre de la baraja */}
               {editingDeck === deck.id ? (
                 <input
@@ -279,7 +279,7 @@ const Decks = () => {
           className="flex w-[220px] h-[320px] justify-center items-center bg-[#4747474b] border-[4px] border-[#00000075] rounded-md cursor-pointer"
           onClick={openModal}
         >
-          <IoMdAddCircleOutline className="text-black text-[80px] cursor-pointer hover:text-[#E83411]" />
+          <IoMdAddCircleOutline className="text-[#00000075] text-[80px] cursor-pointer hover:text-[#E83411]" />
         </div>
       </div>
 
