@@ -4,7 +4,7 @@ const Favorites = ({ favorites, toggleFavorite }) => {
   return (
     <div className="mb-8">
       <h2 className="text-white text-2xl mb-4">Favoritos</h2>
-      <div className="bg-gray-800 p-4 rounded-lg">
+      <div className="bg-[#12181E] p-4 rounded-lg">
         {favorites.length === 0 ? (
           <p className="text-gray-400">No hay cartas favoritas.</p>
         ) : (

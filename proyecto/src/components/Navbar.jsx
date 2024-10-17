@@ -44,8 +44,8 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="bg-[#000]">
-      <div className="flex justify-between items-center h-18 px-4 text-[#ddd] max-w-[1240px] mx-auto">
+    <div className="bg-[#0b0f14] border-b-[1px] border-[rgba(255,255,255,0.1)]">
+      <div className="flex justify-between items-center h-18 px-4 text-[#e1e6ea] max-w-[1240px] mx-auto">
         <Link to="/">
           <img
             src="https://images.ctfassets.net/s5n2t79q9icq/3dB5uyWzUH95O1ZPBNNUX5/6cff7c65a809285755ea24b164b6ac65/magic-logo.png"
@@ -68,19 +68,18 @@ const Navbar = () => {
             <li className="p-4 hover:text-[#e85438] cursor-pointer">
               <Link to="/decks">Barajas (esto eliminar)</Link>
             </li>
-            {/* Opción "Acerca" eliminada de aquí */}
           </ul>
 
           <div className="flex items-center space-x-[6px]">
             <div className="relative" ref={profileRef}>
               {userId ? (
-                <FaUserCheck onClick={handleProfileMenu} size={30} className="cursor-pointer text-[#ddd] hover:text-[#e85438]" />
+                <FaUserCheck onClick={handleProfileMenu} size={30} className="cursor-pointer text-[#e1e6ea] hover:text-[#e85438]" />
               ) : (
-                <CgProfile onClick={handleProfileMenu} size={30} className="cursor-pointer text-[#ddd] hover:text-[#e85438]" />
+                <CgProfile onClick={handleProfileMenu} size={30} className="cursor-pointer text-[#e1e6ea] hover:text-[#e85438]" />
               )}
               
               {profileMenu && (
-                <div className="absolute right-0 mt-2 w-[200px] bg-[#1a1a1a] text-[#ddd] shadow-md rounded-lg z-50">
+                <div className="absolute right-0 mt-2 w-[200px] bg-[#1a1a1a] text-[#e1e6ea] shadow-md rounded-lg z-50">
                   <ul className="flex flex-col p-2 space-y-2">
                     {userId ? (
                       <>
@@ -115,16 +114,16 @@ const Navbar = () => {
       
       {nav && (
         <ul className="absolute bg-[#000] w-full px-8">
-          <li className="border-b-2 border-[#ddd] w-full p-4 hover:bg-[#e85438] cursor-pointer">
+          <li className="border-b-2 border-[#e1e6ea] w-full p-4 hover:bg-[#e85438] cursor-pointer">
             <Link to="/">Inicio</Link>
           </li>
-          <li className="border-b-2 border-[#ddd] w-full p-4 hover:bg-[#e85438] cursor-pointer">
+          <li className="border-b-2 border-[#e1e6ea] w-full p-4 hover:bg-[#e85438] cursor-pointer">
             <Link to="/cartas">Cartas</Link>
           </li>
-          <li className="border-b-2 border-[#ddd] w-full p-4 hover:bg-[#e85438] cursor-pointer">
+          <li className="border-b-2 border-[#e1e6ea] w-full p-4 hover:bg-[#e85438] cursor-pointer">
             <Link to="/noticias">Noticias</Link>
           </li>
-          <li className="border-b-2 border-[#ddd] w-full p-4 hover:bg-[#e85438] cursor-pointer">
+          <li className="border-b-2 border-[#e1e6ea] w-full p-4 hover:bg-[#e85438] cursor-pointer">
             <Link to="/about">Acerca</Link>
           </li>
         </ul>

@@ -38,7 +38,7 @@ function Profile() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`http://186.64.122.218:3000/obtener-usuario?userId=${userId}`, {
+        const response = await fetch(`https://magicarduct.online:3000/obtener-usuario?userId=${userId}`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -94,7 +94,7 @@ function Profile() {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`http://186.64.122.218:3000/api/usuario/${userId}`, {
+      const response = await fetch(`https://magicarduct.online:3000/api/usuario/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -4,8 +4,8 @@ const News = () => {
   return (
     <div className="max-w-[1200px] mx-auto space-y-6 mb-[20px] text-white">
       {Array.from({ length: 3 }, (_, index) => (
-        <div key={index} className="flex bg-[#000] rounded-lg overflow-hidden h-[152px] shadow-xl">
-          <div className="max-w-[320px] min-w-[180px] bg-[#E83411]"></div>
+        <div key={index} className="flex bg-[#12181E] rounded-lg overflow-hidden h-[152px] shadow-xl">
+          <div className="max-w-[320px] min-w-[180px] bg-[#9ebbd6]"></div>
           <div className="p-4 flex flex-col justify-center">
             <h2 className="text-2xl font-bold">Noticia {index + 1}</h2>
             <p className="mt-2 line-clamp-2 sm:line-clamp-3">

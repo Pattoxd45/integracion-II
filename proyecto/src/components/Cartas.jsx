@@ -159,9 +159,7 @@ const Cartas = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen">
-      <h1 className="text-white text-4xl mb-8">Magic the Gathering Cards</h1>
-      
+    <div className="p-6 bg-[#0b0f14] min-h-screen">
       {/* Componente de Favoritos */}
       <Favorites favorites={favorites} toggleFavorite={toggleFavorite} />
 
@@ -171,7 +169,7 @@ const Cartas = () => {
           value={searchQuery}
           onChange={handleSearch}
           placeholder="Buscar cartas..."
-          className="p-2 rounded border border-gray-500"
+          className="p-2 rounded border border-[#12181E]"
         />
         <FaSearch className="ml-2 text-white" />
         <select onChange={handleFilterChange('order')} className="ml-4 p-2 rounded border border-gray-500">
@@ -280,7 +278,7 @@ const Cartas = () => {
             cards.map((card) => (
               <div
                 key={card.id}
-                className="relative bg-gray-800 p-4 rounded-lg shadow-lg cursor-pointer"
+                className="relative bg-[#12181E] p-4 rounded-lg shadow-lg cursor-pointer"
                 onClick={() => handleCardClick(card)}
               >
                 <img

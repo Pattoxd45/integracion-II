@@ -44,7 +44,7 @@ const RegisterModal = ({ closeRegisterModal }) => {
     };
 
     // Petición POST al servidor
-    fetch('http://186.64.122.218:3000/register', {
+    fetch('https://magicarduct.online:3000/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ const RegisterModal = ({ closeRegisterModal }) => {
             password: userData.clave,
           };
 
-          return fetch('http://186.64.122.218:3000/login', {
+          return fetch('https://magicarduct.online:3000/login', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

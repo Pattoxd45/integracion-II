@@ -158,7 +158,7 @@ const Decks = () => {
       <div className="flex justify-center space-x-[10px]">
         <button
           className={`w-[595px] h-[46px] font-semibold rounded-md ${
-            deckView === "Mis Barajas" ? "bg-[#E83411] text-white" : "bg-[#1E1E1E] text-white"
+            deckView === "Mis Barajas" ? "bg-[#29577f] text-white" : "bg-[#9ebbd6] text-white"
           }`}
           onClick={() => setDeckView("Mis Barajas")}
         >
@@ -166,7 +166,7 @@ const Decks = () => {
         </button>
         <button
           className={`w-[595px] h-[46px] font-semibold rounded-md ${
-            deckView === "Explorar Barajas" ? "bg-[#E83411] text-white" : "bg-[#1E1E1E] text-white"
+            deckView === "Explorar Barajas" ? "bg-[#29577f] text-white" : "bg-[#9ebbd6] text-white"
           }`}
           onClick={() => setDeckView("Explorar Barajas")}
         >
@@ -182,14 +182,14 @@ const Decks = () => {
           placeholder="Buscador..."
           value={searchQuery}
           onChange={handleSearchChange} // Maneja los cambios en el input
-          className="w-[1000px] h-[46px] bg-[#000] text-white px-4 rounded-md outline-none"
+          className="w-[1000px] h-[46px] bg-[#e1e6ea] text-black px-4 rounded-md outline-none"
         />
 
         {/* Toggle Switch */}
-        <div className="flex w-[154px] h-[46px] rounded-md border border-[#ddd]">
+        <div className="flex w-[154px] h-[46px] rounded-md">
           <div
             className={`flex-1 flex items-center justify-center cursor-pointer rounded-l-md ${
-              toggleSelection === "Baraja" ? "bg-[#E83411] text-white" : "bg-[#1E1E1E] text-white"
+              toggleSelection === "Baraja" ? "bg-[#29577f] text-white" : "bg-[#9ebbd6] text-white"
             }`}
             onClick={() => setToggleSelection("Baraja")}
           >
@@ -197,7 +197,7 @@ const Decks = () => {
           </div>
           <div
             className={`flex-1 flex items-center justify-center cursor-pointer rounded-r-md ${
-              toggleSelection === "Carta" ? "bg-[#E83411] text-white" : "bg-[#1E1E1E] text-white"
+              toggleSelection === "Carta" ? "bg-[#29577f] text-white" : "bg-[#9ebbd6] text-white"
             }`}
             onClick={() => setToggleSelection("Carta")}
           >
@@ -206,7 +206,7 @@ const Decks = () => {
         </div>
 
         {/* Botón "Buscar" */}
-        <button className="w-[91px] h-[46px] bg-[#E83411] text-white font-semibold rounded-md">
+        <button className="w-[91px] h-[46px] bg-[#29577f] text-white font-semibold rounded-md">
           Buscar
         </button>
       </div>
@@ -218,7 +218,7 @@ const Decks = () => {
           <div key={deck.id} className="font-bold relative">
             {/* Representación de la baraja */}
             <div
-              className="w-[220px] h-[320px] bg-black border-[4px] border-[#E83411] rounded-md cursor-pointer"
+              className="w-[220px] h-[320px] bg-[#12181E] border-[4px] border-[#9ebbd6] rounded-md cursor-pointer"
               onClick={() => openInsideDecks(deck)} // Abre InsideDecks al hacer clic en una baraja
             ></div>
             {/* Contenedor para nombre y opciones */}

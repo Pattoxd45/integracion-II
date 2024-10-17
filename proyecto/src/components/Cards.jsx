@@ -8,7 +8,7 @@ const Cards = () => {
           {["Carta I", "Carta II", "Carta III", "Carta IV"].map((card, index) => (
             <div
               key={index}
-              className="card w-[220px] h-[320px] bg-[#000] flex items-center justify-center rounded-lg border-4 border-[#E83411] shadow-xl hover:border-[#e85438] transition-all duration-300"
+              className="card w-[220px] h-[320px] bg-[#12181E] flex items-center justify-center rounded-lg border-4 border-[#9ebbd6] shadow-xl"
             >
               {card}
             </div>
