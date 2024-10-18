@@ -11,7 +11,7 @@ async function scrapeEvents() {
         const title = $(element).find('div.css-2K89L').text().trim();
         const date = $(element).find('span.css-_rnD-').text().trim();
         const location = $(element).find('span.css-3HKUG').text().trim();
-        const url = 'https://magic.gg' + $(element).attr('href'); // URL completa del evento
+        const url = $(element).attr('href'); // URL completa del evento
 
         events.push({
             title,
