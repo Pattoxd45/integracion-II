@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch } from 'react-icons/fa';
+import { IoIosAdd } from "react-icons/io";
 import Favorites from './Favorites'; 
+import { useUser } from './UserContext'; // Asumiendo que tienes un contexto para obtener el userId
 
 const Cartas = () => {
+  const { userId } = useUser(); // Obtener el userId del contexto
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,7 +23,11 @@ const Cartas = () => {
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [selectedCards, setSelectedCards] = useState([]); // Cartas seleccionadas
   const [selectedCard, setSelectedCard] = useState(null);
+  const [decks, setDecks] = useState([]); // Barajas del usuario
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
+  const [selectedDeck, setSelectedDeck] = useState(null); // Baraja seleccionada
 
   // Cargar sets y subtipos
   useEffect(() => {
@@ -32,6 +39,30 @@ const Cartas = () => {
       .then(response => response.json())
       .then(data => setSubtypes(data.data || []));
   }, []);
+
+  // Obtener las barajas del usuario
+  useEffect(() => {
+    const fetchDecks = async () => {
+      if (!userId) {
+        console.log('No se encontró userId');
+        return; // Si no hay usuario, no hacemos nada
+      }
+
+      try {
+        const response = await fetch(`https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setDecks(data); // Almacenar las barajas en el estado
+        } else {
+          console.error("Error al obtener las barajas");
+        }
+      } catch (error) {
+        console.error("Error en la petición:", error); // Mostrar error en consola
+      }
+    };
+
+    fetchDecks();
+  }, [userId]);
 
   // Función para obtener las cartas según los filtros
   const fetchCards = useCallback(() => {
@@ -86,6 +117,14 @@ const Cartas = () => {
     });
   };
 
+  const toggleSelectCard = (card) => {
+    if (selectedCards.some((selected) => selected.id === card.id)) {
+      setSelectedCards(selectedCards.filter((selected) => selected.id !== card.id));
+    } else {
+      setSelectedCards([...selectedCards, card]);
+    }
+  };
+
   const handleCardClick = (card) => {
     setSelectedCard(card);
   };
@@ -104,6 +143,30 @@ const Cartas = () => {
     const currentIndex = cards.findIndex(card => card.id === selectedCard.id);
     const prevIndex = (currentIndex - 1 + cards.length) % cards.length;
     setSelectedCard(cards[prevIndex]);
+  };
+
+  const openModal = () => setIsModalOpen(true);
+  const closeDeckModal = () => setIsModalOpen(false);
+
+  const handleDeckSelect = (deck) => {
+    if (selectedDeck?.idbarajas === deck.idbarajas) {
+      setSelectedDeck(null); // Deselecciona si se hace clic de nuevo
+    } else {
+      setSelectedDeck(deck); // Selecciona la baraja
+    }
+  };
+
+  // Función que imprime por consola el id de la baraja y las cartas seleccionadas
+  const handleAddCardsToDeck = () => {
+    if (!selectedDeck || selectedCards.length === 0) {
+      console.log('No se ha seleccionado ninguna baraja o carta');
+      return;
+    }
+
+    const selectedCardIds = selectedCards.map(card => card.id);
+
+    console.log('Baraja seleccionada:', selectedDeck.idbarajas);
+    console.log('Cartas seleccionadas:', selectedCardIds);
   };
 
   return (
@@ -234,24 +297,102 @@ const Cartas = () => {
                   className="rounded-lg"
                 />
                 <h3 className="text-[#e2e7eb] text-lg mt-2">{card.name}</h3>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(card);
-                  }}
-                  className={`absolute top-2 right-2 text-3xl ${
-                    favorites.some((favorite) => favorite.id === card.id)
-                      ? 'text-red-600'
-                      : 'text-[#e2e7eb]'
-                  }`}
-                >
-                  {favorites.some((favorite) => favorite.id === card.id) ? '♥' : '♡'}
-                </button>
+                <div className="absolute top-2 right-2 flex items-center space-x-2">
+                  {/* Ícono de favorito */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(card);
+                    }}
+                    className={`text-3xl ${
+                      favorites.some((favorite) => favorite.id === card.id)
+                        ? 'text-red-600'
+                        : 'text-[#e2e7eb]'
+                    }`}
+                  >
+                    {favorites.some((favorite) => favorite.id === card.id) ? '♥' : '♡'}
+                  </button>
+
+                  {/* Círculo de selección */}
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSelectCard(card);
+                    }}
+                    className={`w-5 h-5 rounded-full border-2 ${
+                      selectedCards.some((selected) => selected.id === card.id)
+                        ? 'bg-[#2a5880] border-[#2a5880]'
+                        : 'bg-white border-gray-300'
+                    } cursor-pointer`}
+                  />
+                </div>
               </div>
             ))
           ) : (
             <p className="text-[#e2e7eb]">No se encontraron cartas.</p>
           )}
+        </div>
+      )}
+
+      {/* Mostrar el botón de añadir si hay cartas seleccionadas */}
+      {selectedCards.length > 0 && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-[1200px]">
+          <div className="flex justify-end">
+            <button
+              onClick={openModal}
+              className="bg-[#2a5880] text-[#e2e7eb] rounded-[10px] p-[10px] hover:opacity-70 transition flex items-center justify-center"
+              style={{ width: "50px", height: "50px" }}
+            >
+              <IoIosAdd className="text-[#e2e7eb] text-[24px]" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para seleccionar la baraja */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+          <div
+            className="bg-[#0b0f14] p-6 rounded-lg min-w-[500px]"
+            style={{ maxWidth: selectedDeck ? `${selectedDeck.nombre.length + 10}ch` : "400px" }}
+          >
+            <h2 className="text-[#e2e7eb] text-2xl mb-4">Selecciona una baraja</h2>
+
+            {/* Mostrar las barajas del usuario */}
+            {decks.length > 0 ? (
+              <ul className="mb-4">
+                {decks.map((deck) => (
+                  <li
+                    key={deck.idbarajas}
+                    onClick={() => handleDeckSelect(deck)}
+                    className={`text-[#e2e7eb] mb-2 flex items-center cursor-pointer ${
+                      selectedDeck?.idbarajas === deck.idbarajas ? "bg-[#2a5880]" : "bg-[#1E1E1E]"
+                    } p-2 rounded-lg`}
+                  >
+                    {deck.nombre}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-[#e2e7eb]">No tienes barajas disponibles.</p>
+            )}
+
+            {/* Botones de cancelar y añadir */}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={closeDeckModal}
+                className="bg-gray-500 text-[#e2e7eb] px-4 py-2 rounded hover:bg-gray-700 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAddCardsToDeck}
+                className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#3587cf] transition"
+              >
+                Añadir
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

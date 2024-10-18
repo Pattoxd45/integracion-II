@@ -211,11 +211,17 @@ app.post('/api/mazocartas', async (req, res) => {
   }
 });
 
-// GET: Obtiene todas las barajas de un usuario especí­fico por su ID
-app.get('/api/barajasdeusuaio/:IDusuario', async (req, res) => {
+// GET: Obtiene todas las barajas de un usuario especÃfico por su ID
+app.get('/api/barajasdeusuario/:IDusuario', async (req, res) => {
   const { IDusuario } = req.params;
 
-  const query = `SELECT * FROM barajas_de_usuario WHERE id_usuario = ?`;
+  // Consulta para unir las tablas barajas_de_usuario y barajas
+  const query = `
+    SELECT bu.idbarajas_de_usuario, b.nombre 
+    FROM barajas_de_usuario bu
+    JOIN barajas b ON bu.idbarajas = b.idbarajas
+    WHERE bu.id_usuario = ?
+  `;
 
   try {
     const [rows] = await db.execute(query, [IDusuario]);
@@ -226,7 +232,7 @@ app.get('/api/barajasdeusuaio/:IDusuario', async (req, res) => {
       res.status(404).json({ error: 'No se encontraron barajas' });
     }
   } catch (error) {
-    console.error('No se encontraron barajas:', error);
+    console.error('Error al obtener barajas:', error);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });

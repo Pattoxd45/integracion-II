@@ -6,16 +6,12 @@ import { MdEdit, MdEditOff } from "react-icons/md";
 import { FaTrashCan } from "react-icons/fa6";
 import InsideDecksProperties from "./InsideDecksProperties"; // Importamos InsideDecksProperties
 
-const InsideDecks = ({ closeModal, deckName }) => {
+const InsideDecks = ({ closeModal, deckName, deckId }) => {
   const navigate = useNavigate(); // Usamos el hook useNavigate para navegar
   const modalRef = useRef(null);
 
-  // Estado para almacenar las cartas en el mazo
-  const [cards] = useState([
-    // Simulación de cartas obtenidas
-    { id: 1, name: "Carta 1", image: "img1.jpg", type: "Criatura" },
-    { id: 2, name: "Carta 2", image: "img2.jpg", type: "Hechizo" },
-  ]);
+  // Estado para almacenar las cartas en el mazo (inicialmente vacío)
+  const [cards, setCards] = useState([]); 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCards, setFilteredCards] = useState(cards);
   const [editMode, setEditMode] = useState(false);
@@ -23,8 +19,27 @@ const InsideDecks = ({ closeModal, deckName }) => {
   const [selectedCardDetails, setSelectedCardDetails] = useState(null);
   const [activeView, setActiveView] = useState("Cartas"); // Estado para controlar la vista activa (Cartas o Propiedades)
 
+  // Llamada a la API para obtener las cartas del mazo
   useEffect(() => {
-    setFilteredCards(cards); // Cargar las cartas simuladas al iniciar el componente
+    const fetchDeckCards = async () => {
+      try {
+        const response = await fetch(`https://magicarduct.online:3000/api/mazocartas/${deckId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setCards(data); // Almacenar las cartas del mazo en el estado
+        } else {
+          console.error("Error al obtener las cartas del mazo");
+        }
+      } catch (error) {
+        console.error("Error en la petición:", error);
+      }
+    };
+
+    fetchDeckCards();
+  }, [deckId]);
+
+  useEffect(() => {
+    setFilteredCards(cards); // Actualizar las cartas filtradas cuando se actualiza el estado de las cartas
   }, [cards]);
 
   useEffect(() => {
@@ -225,21 +240,20 @@ const InsideDecks = ({ closeModal, deckName }) => {
               </div>
 
               {/* Botones de añadir y eliminar cartas */}
-              <div className="relative flex justify-end space-x-4 mt-4">
+              <div className="flex justify-end space-x-4 mt-4">
                 {selectedCards.length > 0 && (
                   <button
                     onClick={handleDelete}
-                    className="absolute bottom-[35px] right-[75px] bg-[#E83411] text-[#ddd] rounded-full hover:bg-[#b52e0e] transition-colors p-3 flex items-center justify-center"
+                    className="bg-[#E83411] text-[#ddd] rounded-full hover:bg-[#b52e0e] transition-colors p-3 flex items-center justify-center"
                     style={{ width: "46px", height: "46px" }}
                   >
                     <FaTrashCan className="text-[20px]" />
                   </button>
                 )}
 
-                {/* Botón de añadir cartas */}
                 <button
                   onClick={handleAddCardClick} // Navega a Cartas.jsx
-                  className="absolute bottom-[35px] right-[20px] bg-[#E83411] text-[#ddd] rounded-full hover:bg-[#b52e0e] transition-colors p-3 flex items-center justify-center"
+                  className="bg-[#E83411] text-[#ddd] rounded-full hover:bg-[#b52e0e] transition-colors p-3 flex items-center justify-center"
                   style={{ width: "46px", height: "46px" }}
                 >
                   <IoIosAdd className="text-[20px]" />
