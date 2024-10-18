@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
+//import Hero from "./components/Hero";
 import Cards from "./components/Cards";
 import News from "./components/News";
 import Footer from "./components/Footer";
@@ -22,9 +22,9 @@ function App() {
           <Routes>
             <Route path="/" element={
               <>
-                <Hero />
-                <Cards />
-                <News />
+              <News />
+              {/*<Hero />*/} <br/>
+              <Cards />
               </>
             } />
             <Route path="/cartas" element={<Cartas />} />
@@ -34,7 +34,6 @@ function App() {
             <Route path="/noticias" element={
               <>
                 <br></br>
-                <h1 className="text-center text-orange-500 text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
                 <Noticias /> <br></br>
                 <h2 className="text-center text-orange-500 text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
                 <Events /><br></br>
