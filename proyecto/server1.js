@@ -1,6 +1,7 @@
 const express = require('express');
-const scrapeNews = require('./src/scrapeNews');
-const scrapeEvents = require('./src/scrapeEvents');
+const scrapeNews = require('./src/scrapeNews1');
+const scrapeEvents = require('./src/scrapeEvents1');
+const scrapeNoticias = require('./src/scrapeNoticias1');
 const cors = require('cors');
 const path = require('path');
 
@@ -49,3 +50,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve('../build/index.html'));
 });
 
+app.listen(port, () => {
+  //console.log(`Server is running on https://magicarduct.online:${port}`);
+});
