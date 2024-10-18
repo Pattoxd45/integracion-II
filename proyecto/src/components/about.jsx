@@ -49,7 +49,7 @@ const About = () => {
       {/* Contenedor con fondo sin difuminado */}
       <div 
         className="relative max-w-[1200px] mx-auto mb-[20px] p-4 min-h-[40vh] h-auto rounded-lg shadow-xl text-white bg-cover bg-center"
-        style={{ backgroundImage: `url(${fondo1})` }}
+        style={{ backgroundImage: `url(${fondo1})`, backgroundSize: 'cover' }} // Cambié aquí
       >
         {/* Capa semi-transparente encima del fondo */}
         <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg"></div>
@@ -99,15 +99,16 @@ const About = () => {
           {tarjetas.slice(0, visibleCount).map((tarjeta, index) => (
             <div 
               key={index} 
-              className="w-[calc(25%-1rem)] aspect-[4/3] border-4 border-[#e85438] relative flex items-center justify-center rounded-lg mb-4 cursor-pointer transition-transform duration-300 transform hover:scale-105 hover:border-[#e85438] hover:shadow-[0_0_30px_rgba(232,52,17,1)]"
+              className="w-[calc(50%-1rem)] sm:w-[calc(33.33%-1rem)] md:w-[calc(25%-1rem)] h-[100px] border-4 border-[#e85438] relative flex items-center justify-center rounded-lg mb-4 cursor-pointer transition-transform duration-300 transform hover:scale-105 hover:border-[#e85438] hover:shadow-[0_0_30px_rgba(232,52,17,1)]" 
               onClick={() => handleCardClick(index)}
             >
-              {/* Imagen de fondo difuminada y oscurecida */}
+              {/* Imagen de fondo difuminada y oscurecida */} 
               <div 
                 className="absolute inset-0 rounded-lg bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(${fondo2})`,
-                  filter: 'blur(5px) brightness(0.6)', // Difumina y oscurece la imagen
+                  backgroundImage: `url(${fondo2})`, // Cambié aquí
+                  backgroundSize: 'cover',
+                  filter: 'blur(5px) brightness(0.6)',
                   zIndex: 0,
                 }}
               ></div>

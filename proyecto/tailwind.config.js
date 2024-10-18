@@ -7,5 +7,13 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  
+  theme: {
+    extend: {
+      animation: {
+        'spin-slow': 'spin 3s linear infinite', // Cambié el tiempo a 3 segundos
+      },
+    },
+  },
 }
 

@@ -171,18 +171,18 @@ const Reglas = ({ selectedCardIndex, tarjetas, onClose }) => {
       onClick={onClose} // Cerrar modal al hacer clic fuera
     >
       <div 
-        className="bg-[#000] p-6 rounded-lg border-4 border-[#e85438] relative max-w-[750px] w-full h-auto max-h-[550px] overflow-y-auto"
+        className="bg-[#000] p-4 sm:p-6 rounded-lg border-4 border-[#e85438] relative max-w-[90%] sm:max-w-[750px] w-full h-auto max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()} // Evitar que el clic en el cuadro cierre el modal
       >
-        <h2 className="text-2xl text-[#e85438] mb-4">{tarjetas[selectedCardIndex]}</h2>
-        <p className="text-lg text-white">{Info[selectedCardIndex].infoAdicional}</p>
-        <h3 className="text-xl text-[#e85438] mt-4">Reglas del juego</h3>
-        <ul className="list-disc pl-5 text-lg text-white">
+        <h2 className="text-xl sm:text-2xl text-[#e85438] mb-4">{tarjetas[selectedCardIndex]}</h2>
+        <p className="text-base sm:text-lg text-white">{Info[selectedCardIndex].infoAdicional}</p>
+        <h3 className="text-lg sm:text-xl text-[#e85438] mt-4">Reglas del juego</h3>
+        <ul className="list-disc pl-5 text-base sm:text-lg text-white">
           {Array.isArray(Info[selectedCardIndex].reglas) ? Info[selectedCardIndex].reglas.map((regla, idx) => (
             <li key={idx}>{regla}</li>
           )) : <li>{Info[selectedCardIndex].reglas}</li>}
         </ul>
-        <div className="flex justify-around mt-4">
+        <div className="flex flex-col sm:flex-row justify-around mt-4">
           <div className="text-center">
             <img src={mazo} alt="Tamaño del mazo" className="mx-auto mb-2" />
             <p className="text-[#e85438] font-bold">Tamaño del Mazo</p>
@@ -208,6 +208,6 @@ const Reglas = ({ selectedCardIndex, tarjetas, onClose }) => {
       </div>
     </div>
   );
-};
+};  
 
 export default Reglas;
