@@ -130,7 +130,7 @@ const About = () => {
               </div>
 
               {/* Texto dentro de la tarjeta */} 
-              <p className="relative z-10 text-base md:text-lg lg:text-xl font-semibold text-[#e85438] text-center p-2 bg-black bg-opacity-40 rounded-lg">
+              <p className="relative z-10 text-base md:text-lg lg:text-xl font-semibold text-white text-center p-2 bg-black bg-opacity-40 rounded-lg">
                 {tarjeta.nombre} {/* Muestra el nombre aquí */}
               </p>
             </div>
