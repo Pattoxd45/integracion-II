@@ -4,7 +4,7 @@ import jugador from "../images/imgAbout/jugador.png";
 import mazo from "../images/imgAbout/mazo.png";
 
 const Reglas = ({ selectedCardIndex, tarjetas, onClose }) => {
-  // Definir la información dentro del componente
+  
   const Info = [
     { //Cerrado
       infoAdicional: "Este formato es utilizado para eventos de pre-lanzamiento de una nueva edición, se puede jugar una partida o al mejor de tres.",
@@ -163,7 +163,9 @@ const Reglas = ({ selectedCardIndex, tarjetas, onClose }) => {
   },
   ];
 
-  if (selectedCardIndex === null) return null; // No renderizar si no hay tarjeta seleccionada
+  if (selectedCardIndex === null || selectedCardIndex >= Info.length) return null; // Validar índice
+
+  const selectedInfo = Info[selectedCardIndex]; // Almacena la información seleccionada
 
   return (
     <div 
@@ -174,29 +176,29 @@ const Reglas = ({ selectedCardIndex, tarjetas, onClose }) => {
         className="bg-[#000] p-4 sm:p-6 rounded-lg border-4 border-[#e85438] relative max-w-[90%] sm:max-w-[750px] w-full h-auto max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()} // Evitar que el clic en el cuadro cierre el modal
       >
-        <h2 className="text-xl sm:text-2xl text-[#e85438] mb-4">{tarjetas[selectedCardIndex]}</h2>
-        <p className="text-base sm:text-lg text-white">{Info[selectedCardIndex].infoAdicional}</p>
+        <h2 className="text-xl sm:text-2xl text-[#e85438] mb-4">{tarjetas[selectedCardIndex].nombre}</h2>
+        <p className="text-base sm:text-lg text-white">{selectedInfo.infoAdicional}</p>
         <h3 className="text-lg sm:text-xl text-[#e85438] mt-4">Reglas del juego</h3>
         <ul className="list-disc pl-5 text-base sm:text-lg text-white">
-          {Array.isArray(Info[selectedCardIndex].reglas) ? Info[selectedCardIndex].reglas.map((regla, idx) => (
-            <li key={idx}>{regla}</li>
-          )) : <li>{Info[selectedCardIndex].reglas}</li>}
+          {selectedInfo.reglas.map((regla, index) => (
+            <li key={index}>{regla}</li>
+          ))}
         </ul>
-        <div className="flex flex-col sm:flex-row justify-around mt-4">
-          <div className="text-center">
-            <img src={mazo} alt="Tamaño del mazo" className="mx-auto mb-2" />
-            <p className="text-[#e85438] font-bold">Tamaño del Mazo</p>
-            <p className="text-white">{Info[selectedCardIndex].TamMazo}</p>
+        <div className="mt-4 flex justify-between"> {/* Contenedor flex para horizontal */}
+          <div className="flex flex-col items-center"> {/* Columna para el mazo */}
+            <img src={mazo} alt="Mazo" className="w-12 h-12 sm:w-16 sm:h-16 mb-2" />
+            <span className="text-base sm:text-lg text-white">Tamaño del Mazo</span>
+            <span className="text-base sm:text-lg text-white">{selectedInfo.TamMazo}</span>
           </div>
-          <div className="text-center">
-            <img src={jugador} alt="Número de jugadores" className="mx-auto mb-2" />
-            <p className="text-[#e85438] font-bold">Número de Jugadores</p>
-            <p className="text-white">{Info[selectedCardIndex].cantidadJugadores}</p>
+          <div className="flex flex-col items-center"> {/* Columna para los jugadores */}
+            <img src={jugador} alt="Jugadores" className="w-12 h-12 sm:w-16 sm:h-16 mb-2" />
+            <span className="text-base sm:text-lg text-white">Cantidad de Jugadores</span>
+            <span className="text-base sm:text-lg text-white">{selectedInfo.cantidadJugadores}</span>
           </div>
-          <div className="text-center">
-            <img src={reloj} alt="Duración del juego" className="mx-auto mb-2" />
-            <p className="text-[#e85438] font-bold">Duración de un Juego</p>
-            <p className="text-white">{Info[selectedCardIndex].duracionPartida}</p>
+          <div className="flex flex-col items-center"> {/* Columna para la duración */}
+            <img src={reloj} alt="Reloj" className="w-12 h-12 sm:w-16 sm:h-16 mb-2" />
+            <span className="text-base sm:text-lg text-white">Duración del Juego</span>
+            <span className="text-base sm:text-lg text-white">{selectedInfo.duracionPartida}</span>
           </div>
         </div>
         <button 
@@ -208,6 +210,6 @@ const Reglas = ({ selectedCardIndex, tarjetas, onClose }) => {
       </div>
     </div>
   );
-};  
+};
 
 export default Reglas;
