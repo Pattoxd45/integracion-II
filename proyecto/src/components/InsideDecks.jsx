@@ -4,7 +4,6 @@ import { AiOutlineClose } from "react-icons/ai";
 import { IoIosOptions, IoIosAdd } from "react-icons/io";
 import { MdEdit, MdEditOff } from "react-icons/md";
 import { FaTrashCan } from "react-icons/fa6";
-import { getDecks } from './db'; // Importamos la función para obtener barajas desde IndexedDB
 import InsideDecksProperties from "./InsideDecksProperties"; // Importamos InsideDecksProperties
 
 const InsideDecks = ({ closeModal, deckName }) => {
@@ -12,7 +11,11 @@ const InsideDecks = ({ closeModal, deckName }) => {
   const modalRef = useRef(null);
 
   // Estado para almacenar las cartas en el mazo
-  const [cards, setCards] = useState([]);
+  const [cards] = useState([
+    // Simulación de cartas obtenidas
+    { id: 1, name: "Carta 1", image: "img1.jpg", type: "Criatura" },
+    { id: 2, name: "Carta 2", image: "img2.jpg", type: "Hechizo" },
+  ]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCards, setFilteredCards] = useState(cards);
   const [editMode, setEditMode] = useState(false);
@@ -20,19 +23,9 @@ const InsideDecks = ({ closeModal, deckName }) => {
   const [selectedCardDetails, setSelectedCardDetails] = useState(null);
   const [activeView, setActiveView] = useState("Cartas"); // Estado para controlar la vista activa (Cartas o Propiedades)
 
-  // Efecto para cargar las cartas del mazo seleccionado desde IndexedDB
   useEffect(() => {
-    const loadDeck = async () => {
-      const allDecks = await getDecks();
-      const deck = allDecks.find((d) => d.name === deckName);
-      if (deck && deck.cards) {
-        setCards(deck.cards); // Cargar las cartas del mazo
-        setFilteredCards(deck.cards); // Filtrar las cartas para mostrarlas
-      }
-    };
-
-    loadDeck();
-  }, [deckName]);
+    setFilteredCards(cards); // Cargar las cartas simuladas al iniciar el componente
+  }, [cards]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -243,7 +236,7 @@ const InsideDecks = ({ closeModal, deckName }) => {
                   </button>
                 )}
 
-                {/* Botón de añadir cartas, se mueve junto con las cartas */}
+                {/* Botón de añadir cartas */}
                 <button
                   onClick={handleAddCardClick} // Navega a Cartas.jsx
                   className="absolute bottom-[35px] right-[20px] bg-[#E83411] text-[#ddd] rounded-full hover:bg-[#b52e0e] transition-colors p-3 flex items-center justify-center"

@@ -5,6 +5,14 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+    key: fs.readFileSync('/etc/letsencrypt/archive/magicarduct.online/privkey1.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/archive/magicarduct.online/fullchain1.pem')
+};
+
 const app = express();
 const port = process.env.PORT || 3000; // Utiliza el puerto definido en .env o por defecto el 3000
 
@@ -13,9 +21,15 @@ const allowedOrigins = [
   'http://localhost:3001',
   'http://magicarduct.online',
   'http://localhost:3000',
-  'http://localhost:8081', // Tu m�quina local
-  'http://186.64.122.218:3000',  // IP del host remoto
-  'http://186.64.122.218', // Otro dominio permitido
+  'http://localhost:8081',
+  'http://186.64.122.218:3000',
+  'http://186.64.122.218',
+  'https://localhost:3001',
+  'https://magicarduct.online',
+  'https://localhost:3000',
+  'https://localhost:8081',
+  'https://186.64.122.218:3000',
+  'https://186.64.122.218',
 ];
 
 app.use(cors({
@@ -32,12 +46,16 @@ app.use(cors({
   optionsSuccessStatus: 200,
 }));
 
-// Configuraci�n de sesiones utilizando el secreto desde el archivo .env
+// Configuración de sesiones utilizando el secreto desde el archivo .env
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // Cambiar a true si usas HTTPS
+  cookie: { 
+    secure: true, // Solo se enviará a través de HTTPS
+    httpOnly: true, // Evita el acceso de JavaScript en el cliente a la cookie
+    sameSite: 'strict' // Protección contra CSRF
+  }
 }));
 
 app.options('*', (req, res) => {
@@ -46,7 +64,7 @@ app.options('*', (req, res) => {
 
 app.use(bodyParser.json());
 
-// Conexi�n a la base de datos MySQL utilizando las variables de entorno
+// Conexión a la base de datos MySQL utilizando las variables de entorno
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -59,12 +77,10 @@ db.connect((err) => {
     console.error('Error conectando a la base de datos:', err);
     return;
   }
-  console.log('Conectado a la base de datos MySQL.');
 });
 
-// Middleware para verificar que el usuario est� autenticado
+// Middleware para verificar que el usuario está autenticado
 const isAuthenticated = (req, res, next) => {
-  console.log('TOY AUTENTICAO WEBON!:', req.session.userId);
   if (req.session.userId) {
     next();
   } else {
@@ -76,9 +92,8 @@ const isAuthenticated = (req, res, next) => {
 // Endpoint de login
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  console.log('Datos de inicio de sesi�n:', req.body);
   if (!email || !password) {
-    return res.status(400).json({ message: 'Correo y contrase�a son requeridos.' });
+    return res.status(400).json({ message: 'Correo y contraseña son requeridos.' });
   }
 
   const query = 'SELECT idusuario FROM usuario WHERE correo = ? AND clave = ?';
@@ -87,17 +102,13 @@ app.post('/login', (req, res) => {
       return res.status(500).json({ message: 'Error en el servidor' });
     }
 
-    console.log('Resultados de la consulta:', results);
-
     if (results.length === 0) {
-      return res.status(401).json({ message: 'Correo o contrase�a incorrectos.' });
+      return res.status(401).json({ message: 'Correo o contraseña incorrectos.' });
     }
 
-    // Iniciar sesi�n
+    // Iniciar sesión
     req.session.userId = results[0].idusuario;
-    console.log('pene:', req.session);
-    res.status(200).json({ message: 'Inicio de sesi�n exitoso', userId: results[0].idusuario });
-    console.log('Funciono esta mierda o no?: ', results[0].idusuario);
+    res.status(200).json({ message: 'Inicio de sesión exitoso', userId: results[0].idusuario });
   });
 });
 //Endpoint del logout
@@ -110,11 +121,9 @@ app.post('/logout', (req, res) => {
   });
 });
 app.post('/register', (req, res) => {
-  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
   const { nombre, correo, clave } = req.body;
 
   if (!nombre || !correo || !clave) {
-    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -127,7 +136,6 @@ app.post('/register', (req, res) => {
     }
 
     if (results.length > 0) {
-      console.log('El correo ya está registrado'); // Mensaje de correo repetido
       return res.status(400).json({ error: 'El correo ya está registrado' });
     }
 
@@ -145,9 +153,7 @@ app.post('/register', (req, res) => {
 
 //Obtener datos de usuario
 app.get('/obtener-usuario', (req, res) => {
-  const userId = req.query.userId; // Obtén el userId de los parámetros de consulta
-
-  console.log('TENGO ESTO CAUSA:', userId); // Imprime el userId recibido
+  const userId = req.query.userId; // Obtener el userId de los parámetros de consulta
 
   // Consulta a la base de datos
   const query = 'SELECT nombre, correo, foto FROM usuario WHERE idusuario = ?';
@@ -160,7 +166,7 @@ app.get('/obtener-usuario', (req, res) => {
 
     if (results.length > 0) {
       const usuario = results[0]; // Asumiendo que solo habrá un resultado
-      // Asegúrate de devolver el correo correctamente
+
       res.json({ userName: usuario.nombre, email: usuario.correo, image: usuario.foto });
     } else {
       res.status(404).json({ message: 'Usuario no encontrado' });
@@ -190,7 +196,7 @@ app.post('/api/mazocartas', async (req, res) => {
   const { IDcarta, IDmazo, cantidad } = req.body;
 
   if (!IDcarta || !IDmazo || !cantidad) {
-    return res.status(400).json({ error: 'Faltan par�metros requeridos' });
+    return res.status(400).json({ error: 'Faltan parámetros requeridos' });
   }
 
   const query = `INSERT INTO mazo_cartas (IDmazo, IDcarta, cantidad) VALUES (?, ?, ?)
@@ -198,14 +204,14 @@ app.post('/api/mazocartas', async (req, res) => {
 
   try {
     await db.execute(query, [IDcarta, IDmazo, cantidad]);
-    res.status(200).json({ message: 'Carta a�adida al mazo correctamente' });
+    res.status(200).json({ message: 'Carta añadida al mazo correctamente' });
   } catch (error) {
-    console.error('Error al a�adir carta al mazo:', error);
+    console.error('Error al añadir carta al mazo:', error);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
 
-// GET: Obtiene todas las barajas de un usuario específico por su ID
+// GET: Obtiene todas las barajas de un usuario especí­fico por su ID
 app.get('/api/barajasdeusuaio/:IDusuario', async (req, res) => {
   const { IDusuario } = req.params;
 
@@ -225,7 +231,38 @@ app.get('/api/barajasdeusuaio/:IDusuario', async (req, res) => {
   }
 });
 
-// GET: Obtiene todas las cartas de un mazo específico por su ID
+// GET: Obtiene todas las barajas de un usuario específico por su ID
+app.get('/api/barajasdeusuaio2/:IDusuario', async (req, res) => {
+  const { IDusuario } = req.params;
+
+  // Consulta cruzada (JOIN) para obtener los nombres y el id de las barajas asociadas al usuario
+  const query = `
+    SELECT b.idbarajas, b.nombre 
+    FROM barajas_de_usuario bu
+    JOIN barajas b ON bu.idbarajas_de_usuario = b.idbarajas
+    WHERE bu.id_usuario = ?
+  `;
+
+  try {
+    db.query(query, [IDusuario], (err, rows) => {
+      if (err) {
+        console.error('Error al obtener barajas:', err);
+        return res.status(500).json({ error: 'Error del servidor' });
+      }
+
+      if (rows.length > 0) {
+        res.status(200).json(rows); // Devolverá el id y los nombres de las barajas
+      } else {
+        res.status(404).json({ error: 'No se encontraron barajas' });
+      }
+    });
+  } catch (error) {
+    console.error('No se encontraron barajas:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// GET: Obtiene todas las cartas de un mazo especí­fico por su ID
 app.get('/api/mazocartas/:IDmazo', async (req, res) => {
   const { IDmazo } = req.params;
 
@@ -237,7 +274,7 @@ app.get('/api/mazocartas/:IDmazo', async (req, res) => {
     if (rows.length > 0) {
       res.status(200).json(rows);
     } else {
-      res.status(404).json({ error: 'No se encontr� la carta en el mazo' });
+      res.status(404).json({ error: 'No se encontró la carta en el mazo' });
     }
   } catch (error) {
     console.error('Error al obtener la carta del mazo:', error);
@@ -245,7 +282,7 @@ app.get('/api/mazocartas/:IDmazo', async (req, res) => {
   }
 });
 
-// GET: Obtiene información de una baraja específica por su ID
+// GET: Obtiene información de una baraja especí­fica por su ID
 app.get('/api/barajas/:IDbarajas', async (req, res) => {
   const { IDbarajas } = req.params;
 
@@ -265,13 +302,11 @@ app.get('/api/barajas/:IDbarajas', async (req, res) => {
   }
 });
 
-// POST: Crea un nuevo mazo y lo asocia a un usuario específico
+// POST: Crea un nuevo mazo y lo asocia a un usuario especÃ­fico
 app.post('/api/createmazo', (req, res) => {
-  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
   const { nombre, formato, descripcion, idusuario } = req.body;
 
   if (!nombre || !formato || !descripcion || !idusuario) {
-    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -285,10 +320,9 @@ app.post('/api/createmazo', (req, res) => {
 
     // Obtiene el ID del nuevo mazo
     const nuevoMazoId = result.insertId;
-    console.log('Nuevo mazo creado con ID:', nuevoMazoId);
 
     // Consulta para asociar el nuevo mazo al usuario
-    const queryUsuarioMazo = 'INSERT INTO barajas_de_usuario (id_usuario, id_baraja) VALUES (?, ?)';
+    const queryUsuarioMazo = 'INSERT INTO barajas_de_usuario (id_usuario, idbarajas_de_usuario) VALUES (?, ?)';
     db.query(queryUsuarioMazo, [idusuario, nuevoMazoId], (err) => {
       if (err) {
         console.error('Error al asociar el mazo al usuario:', err); // Mensaje de error
@@ -301,9 +335,45 @@ app.post('/api/createmazo', (req, res) => {
   });
 });
 
+app.post('/api/createmazo2', (req, res) => {
+  const { nombre, formato, descripcion, idusuario } = req.body;
+
+  if (!nombre || !formato || !descripcion || !idusuario) {
+    return res.status(400).json({ error: 'Faltan datos del formulario' });
+  }
+
+  // Inserta el nuevo mazo
+  const queryMazo = 'INSERT INTO barajas (nombre, formato, descripcion) VALUES (?, ?, ?)';
+  db.query(queryMazo, [nombre, formato, descripcion], (err, result) => {
+    if (err) {
+      console.error('Error al crear mazo:', err); // Mensaje de error
+      return res.status(500).json({ error: 'Error al crear mazo' });
+    }
+
+    const nuevoMazoId = result.insertId;
+
+    const queryUsuarioMazo = 'INSERT INTO barajas_de_usuario (id_usuario, idbarajas_de_usuario) VALUES (?, ?)';
+    db.query(queryUsuarioMazo, [idusuario, nuevoMazoId], (err) => {
+      if (err) {
+        console.error('Error al asociar el mazo al usuario:', err);
+        return res.status(500).json({ error: 'Error al asociar el mazo al usuario' });
+      }
+
+      // Respuesta final
+      res.status(200).json({
+        message: 'Mazo creado y asociado exitosamente',
+        baraja: {
+          id: nuevoMazoId,
+          name: nombre
+        }
+      });
+    });
+  });
+});
+
 // PUT: Actualiza un mazo existente con los datos proporcionados por su ID
 app.put('/api/actualizarmazo/:id', (req, res) => {
-  const mazoId = req.params.id; // Obtiene el ID del usuario de los parámetros
+  const mazoId = req.params.id; // Obtiene el ID del usuario de los parÃ¡metros
   const { nombre, formato, descripcion } = req.body; // Obtiene el nombre del cuerpo de la solicitud
 
   if (!nombre || !formato || !descripcion) {
@@ -326,15 +396,15 @@ app.put('/api/actualizarmazo/:id', (req, res) => {
   });
 });
 
-// DELETE: Elimina un mazo específico y sus referencias asociadas
+// DELETE: Elimina un mazo especÃ­fico y sus referencias asociadas
 app.delete('/api/eliminarmazo/:id', (req, res) => {
-  const mazoId = req.params.id; // Obtiene el ID del mazo de los parámetros de la URL
+  const mazoId = req.params.id; // Obtiene el ID del mazo de los parÃ¡metros de la URL
 
   if (!mazoId) {
     return res.status(400).json({ error: 'ID del mazo es requerido' });
   }
 
-  // Primero, eliminamos las referencias en la tabla de relación mazo_cartas
+  // Primero, eliminamos las referencias en la tabla de relaciÃ³n mazo_cartas
   const deleteMazoCartasQuery = 'DELETE FROM mazo_cartas WHERE IDmazo = ?';
   db.query(deleteMazoCartasQuery, [mazoId], (err, result) => {
     if (err) {
@@ -342,7 +412,7 @@ app.delete('/api/eliminarmazo/:id', (req, res) => {
       return res.status(500).json({ error: 'Error al eliminar las referencias en mazo_cartas' });
     }
 
-    // Luego, eliminamos las referencias en la tabla de relación barajas_de_usuario
+    // Luego, eliminamos las referencias en la tabla de relaciÃ³n barajas_de_usuario
     const deleteRelacionQuery = 'DELETE FROM barajas_de_usuario WHERE idbarajas_de_usuario = ?';
     db.query(deleteRelacionQuery, [mazoId], (err, result) => {
       if (err) {
@@ -368,13 +438,73 @@ app.delete('/api/eliminarmazo/:id', (req, res) => {
   });
 });
 
-// POST: Agrega cartas a un mazo específico
+app.delete('/api/eliminarmazo2/:nombre/:idUsuario', (req, res) => {
+  const { nombre, idUsuario } = req.params;
+
+  if (!nombre || !idUsuario) {
+    return res.status(400).json({ error: 'El nombre del mazo y el ID del usuario son requeridos' });
+  }
+
+  // Primero, obtenemos el ID del mazo basado en el nombre y el ID de usuario
+  const getMazoIdQuery = `
+    SELECT b.idbarajas FROM barajas b
+    JOIN barajas_de_usuario bu ON b.idbarajas = bu.idbarajas_de_usuario
+    WHERE b.nombre = ? AND bu.id_usuario = ?
+  `;
+  
+  db.query(getMazoIdQuery, [nombre, idUsuario], (err, results) => {
+    if (err) {
+      console.error('Error al obtener el ID del mazo:', err);
+      return res.status(500).json({ error: 'Error al obtener el ID del mazo' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Mazo no encontrado para el usuario especificado' });
+    }
+
+    const mazoId = results[0].idbarajas;
+
+    // Ahora que tenemos el ID del mazo, eliminamos las referencias en la tabla mazo_cartas
+    const deleteMazoCartasQuery = 'DELETE FROM mazo_cartas WHERE IDmazo = ?';
+    db.query(deleteMazoCartasQuery, [mazoId], (err) => {
+      if (err) {
+        console.error('Error al eliminar las referencias en mazo_cartas:', err);
+        return res.status(500).json({ error: 'Error al eliminar las referencias en mazo_cartas' });
+      }
+
+      // Eliminamos las referencias en la tabla barajas_de_usuario
+      const deleteRelacionQuery = 'DELETE FROM barajas_de_usuario WHERE idbarajas_de_usuario = ?';
+      db.query(deleteRelacionQuery, [mazoId], (err) => {
+        if (err) {
+          console.error('Error al eliminar las referencias del mazo en barajas_de_usuario:', err);
+          return res.status(500).json({ error: 'Error al eliminar las referencias del mazo en barajas_de_usuario' });
+        }
+
+        // Finalmente, eliminamos el mazo de la tabla barajas
+        const deleteMazoQuery = 'DELETE FROM barajas WHERE idbarajas = ?';
+        db.query(deleteMazoQuery, [mazoId], (err, result) => {
+          if (err) {
+            console.error('Error al eliminar el mazo:', err);
+            return res.status(500).json({ error: 'Error al eliminar el mazo' });
+          }
+
+          if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Mazo no encontrado' });
+          }
+
+          res.status(200).json({ message: 'Mazo eliminado exitosamente' });
+        });
+      });
+    });
+  });
+});
+
+
+// POST: Agrega cartas a un mazo especÃ­fico
 app.post('/api/mazocartas', (req, res) => {
-  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
   const { idmazo, idcarta, cantidad } = req.body;
 
   if (!idmazo || !idcarta || !cantidad) {
-    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -388,9 +518,9 @@ app.post('/api/mazocartas', (req, res) => {
   });
 });
 
-// PUT: Actualiza la cantidad de una carta en un mazo específico
+// PUT: Actualiza la cantidad de una carta en un mazo especÃ­fico
 app.put('/api/actualizarmazocartas/:idmazo/:idcarta', (req, res) => {
-  const { mazoId, IDcarta } = req.params; // Obtiene el ID del usuario de los parámetros
+  const { mazoId, IDcarta } = req.params; // Obtiene el ID del usuario de los parÃ¡metros
   const { cantidad } = req.body; // Obtiene el nombre del cuerpo de la solicitud
 
   if (!IDcarta || !cantidad) {
@@ -413,7 +543,7 @@ app.put('/api/actualizarmazocartas/:idmazo/:idcarta', (req, res) => {
   });
 });
 
-// DELETE: Elimina una carta específica de un mazo
+// DELETE: Elimina una carta especÃ­fica de un mazo
 app.delete('/api/eliminarmazocarta/:idmazo/:idcarta', (req, res) => {
   const { idmazo, idcarta } = req.params;
 
@@ -438,7 +568,7 @@ app.delete('/api/eliminarmazocarta/:idmazo/:idcarta', (req, res) => {
 });
 
 app.put('/api/usuario/:id', (req, res) => {
-  const userId = req.params.id; // Obtiene el ID del usuario de los parámetros
+  const userId = req.params.id; // Obtiene el ID del usuario de los parÃ¡metros
   const { nombre, imageNumber } = req.body; // Obtiene el nombre del cuerpo de la solicitud
 
   if (!nombre || !imageNumber) {
@@ -463,47 +593,75 @@ app.put('/api/usuario/:id', (req, res) => {
 
 // POST: Agrega cartas favoritas
 app.post('/api/cartasfavoritas', (req, res) => {
-  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
-  const { idusuario, idcarta } = req.body;
+  const { IDusuario, IDcarta } = req.body;
 
-  if (!idusuario || !idcarta) {
-    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
+  // Validar que se han proporcionado IDusuario e IDcarta
+  if (!IDusuario || !IDcarta) {
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
-  // Consulta para verificar si la carta ya está en la lista de favoritas
-  const checkQuery = 'SELECT * FROM cartas_favoritas WHERE IDusuario = ? AND IDcarta = ?';
-  db.query(checkQuery, [idusuario, idcarta], (err, results) => {
+  // Consulta para contar cuántas cartas favoritas tiene el usuario
+  const countQuery = 'SELECT COUNT(*) AS cartaCount FROM cartas_favoritas WHERE IDusuario = ?';
+  db.query(countQuery, [IDusuario], (err, countResult) => {
     if (err) {
-      console.error('Error al verificar carta:', err); // Mensaje de error
-      return res.status(500).json({ error: 'Error al verificar carta' });
+      console.error('Error al contar cartas favoritas:', err);
+      return res.status(500).json({ error: 'Error al contar cartas favoritas' });
     }
 
-    // Si la carta ya está en la lista de favoritas
-    if (results.length > 0) {
-      console.log('La carta ya está marcada como favorita'); // Mensaje en la consola
-      return res.status(409).json({ error: 'La carta ya está marcada como favorita' });
+    const cartaCount = countResult[0].cartaCount;
+
+    // Si hay 5 cartas favoritas, elimina la más antigua (IDnumero = 5)
+    if (cartaCount >= 5) {
+      const deleteQuery = `
+        DELETE FROM cartas_favoritas 
+        WHERE IDusuario = ? 
+        AND IDnumero = 5
+      `;
+      db.query(deleteQuery, [IDusuario], (err) => {
+        if (err) {
+          console.error('Error al eliminar la carta favorita más antigua:', err);
+          return res.status(500).json({ error: 'Error al eliminar la carta favorita más antigua' });
+        }
+      });
     }
 
-    // Si la carta no está en la lista de favoritas, procedemos a insertarla
-    const insertQuery = 'INSERT INTO cartas_favoritas (IDusuario, IDcarta) VALUES (?, ?)';
-    db.query(insertQuery, [idusuario, idcarta], (err, result) => {
+    // Reordenar los IDnumero para que el 1 pase a 2, el 2 a 3, etc.
+    const reorderQuery = `
+      SET @row_number = 0; 
+      UPDATE cartas_favoritas 
+      SET IDnumero = (@row_number := @row_number + 1) 
+      WHERE IDusuario = ? 
+      ORDER BY IDnumero
+    `;
+    
+    db.query(reorderQuery, [IDusuario], (err) => {
       if (err) {
-        console.error('Error al guardar carta:', err); // Mensaje de error
-        return res.status(500).json({ error: 'Error al guardar carta' });
+        console.error('Error al reordenar IDnumero:', err);
+        return res.status(500).json({ error: 'Error al reordenar IDnumero' });
       }
-      res.status(200).json({ message: 'Carta guardada exitosamente' });
+
+      // Inserta la nueva carta con IDnumero = 1
+      const insertQuery = `
+        INSERT INTO cartas_favoritas (IDusuario, IDnumero, IDcarta) 
+        VALUES (?, 1, ?)
+      `;
+      db.query(insertQuery, [IDusuario, IDcarta], (err) => {
+        if (err) {
+          console.error('Error al agregar nueva carta favorita:', err);
+          return res.status(500).json({ error: 'Error al agregar nueva carta favorita' });
+        }
+        res.status(200).json({ message: 'Nueva carta favorita agregada y IDnumero reordenados' });
+      });
     });
   });
 });
 
 // GET: Obtiene las cartas favoritas de un usuario
 app.get('/api/cartasfavoritas/:idusuario', (req, res) => {
-  const idusuario = req.params.idusuario; // Obtiene el ID del usuario de los parámetros de la ruta
+  const idusuario = req.params.idusuario; // Obtiene el ID del usuario de los parÃ¡metros de la ruta
 
-  // Verifica si el ID del usuario está presente
+  // Verifica si el ID del usuario estÃ¡ presente
   if (!idusuario) {
-    console.log('Falta el ID del usuario'); // Mensaje cuando falta el ID del usuario
     return res.status(400).json({ error: 'Falta el ID del usuario' });
   }
 
@@ -517,7 +675,6 @@ app.get('/api/cartasfavoritas/:idusuario', (req, res) => {
 
     // Si no hay cartas favoritas
     if (results.length === 0) {
-      console.log('No se encontraron cartas favoritas'); // Mensaje en la consola
       return res.status(404).json({ message: 'No se encontraron cartas favoritas' });
     }
 
@@ -528,11 +685,9 @@ app.get('/api/cartasfavoritas/:idusuario', (req, res) => {
 
 // DELETE: Elimina una carta favorita
 app.delete('/api/cartasfavoritas', (req, res) => {
-  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
   const { idusuario, idcarta } = req.body;
 
   if (!idusuario || !idcarta) {
-    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -546,12 +701,25 @@ app.delete('/api/cartasfavoritas', (req, res) => {
 
     // Verificar si alguna fila fue afectada (es decir, si la carta existía y fue eliminada)
     if (result.affectedRows === 0) {
-      console.log('La carta no se encontró en la lista de favoritas'); // Mensaje en la consola
       return res.status(404).json({ error: 'La carta no se encontró en la lista de favoritas' });
     }
 
-    console.log('Carta eliminada exitosamente'); // Mensaje en la consola
-    res.status(200).json({ message: 'Carta eliminada exitosamente' });
+    // Reordenar los IDnumero de las cartas restantes
+    const reorderQuery = `
+      SET @row_number = 0;
+      UPDATE cartas_favoritas 
+      SET IDnumero = (@row_number := @row_number + 1) 
+      WHERE IDusuario = ? 
+      ORDER BY IDnumero;
+    `;
+
+    db.query(reorderQuery, [idusuario], (err) => {
+      if (err) {
+        console.error('Error al reordenar los IDnumero:', err); // Mensaje de error
+        return res.status(500).json({ error: 'Error al reordenar los IDnumero' });
+      }
+      res.status(200).json({ message: 'Carta eliminada y IDnumero reordenados exitosamente' });
+    });
   });
 });
 
@@ -561,11 +729,10 @@ app.post('/api/ultimascartasvistas', (req, res) => {
 
   // Validar que se han proporcionado IDusuario e IDcarta
   if (!IDusuario || !IDcarta) {
-    console.log('Faltan datos del formulario');
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
-  // Consulta para contar cuántas cartas tiene el usuario
+  // Consulta para contar cuÃ¡ntas cartas tiene el usuario
   const countQuery = 'SELECT COUNT(*) AS cartaCount FROM ultimas_cartas_vistas WHERE IDusuario = ?';
   db.query(countQuery, [IDusuario], (err, countResult) => {
     if (err) {
@@ -575,7 +742,7 @@ app.post('/api/ultimascartasvistas', (req, res) => {
 
     const cartaCount = countResult[0].cartaCount;
 
-    // Si hay más de 4 cartas, elimina la carta más antigua (IDnumero = 5)
+    // Si hay mÃ¡s de 4 cartas, elimina la carta mÃ¡s antigua (IDnumero = 5)
     if (cartaCount >= 5) {
       const deleteQuery = `
         DELETE FROM ultimas_cartas_vistas 
@@ -584,11 +751,9 @@ app.post('/api/ultimascartasvistas', (req, res) => {
       `;
       db.query(deleteQuery, [IDusuario], (err) => {
         if (err) {
-          console.error('Error al eliminar la carta más antigua:', err);
-          return res.status(500).json({ error: 'Error al eliminar la carta más antigua' });
+          console.error('Error al eliminar la carta mÃ¡s antigua:', err);
+          return res.status(500).json({ error: 'Error al eliminar la carta mÃ¡s antigua' });
         }
-
-        console.log('Se eliminó la carta más antigua (IDnumero = 5)');
       });
     }
 
@@ -617,8 +782,6 @@ app.post('/api/ultimascartasvistas', (req, res) => {
           console.error('Error al agregar nueva carta:', err);
           return res.status(500).json({ error: 'Error al agregar nueva carta' });
         }
-
-        console.log('Nueva carta agregada y IDnumero reordenados exitosamente');
         res.status(200).json({ message: 'Nueva carta agregada y IDnumero reordenados' });
       });
     });
@@ -627,11 +790,10 @@ app.post('/api/ultimascartasvistas', (req, res) => {
 
 // GET: Obtiene las cartas vistas por un usuario
 app.get('/api/ultimascartasvistas/:IDusuario', (req, res) => {
-  const { IDusuario } = req.params; // Obtiene el IDusuario de los parámetros de la URL
+  const { IDusuario } = req.params; // Obtiene el IDusuario de los parÃ¡metros de la URL
 
   // Validar que se ha proporcionado un IDusuario
   if (!IDusuario) {
-    console.log('Falta el ID de usuario'); // Mensaje cuando falta el IDusuario
     return res.status(400).json({ error: 'Falta el ID de usuario' });
   }
 
@@ -654,6 +816,4 @@ app.get('/api/ultimascartasvistas/:IDusuario', (req, res) => {
 });
 
 // Iniciar el servidor
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Servidor escuchando en el puerto ${port}`);
-});
+https.createServer(options, app).listen(3000);

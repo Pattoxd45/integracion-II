@@ -65,17 +65,14 @@ const Navbar = () => {
             <li className="p-4 hover:opacity-70 transition cursor-pointer">
               <Link to="/noticias">Noticias</Link>
             </li>
-            <li className="p-4 hover:opacity-70 transition cursor-pointer">
-              <Link to="/decks">Barajas (esto eliminar)</Link>
-            </li>
           </ul>
 
           <div className="flex items-center space-x-[6px]">
             <div className="relative" ref={profileRef}>
               {userId ? (
-                <FaUserCheck onClick={handleProfileMenu} size={30} className="cursor-pointer text-[#e1e6ea] hover:opacity-70 transition" />
+                <FaUserCheck onClick={handleProfileMenu} size={30} className="cursor-pointer text-[#e1e6ea] hover:opacity-70 transition"/>
               ) : (
-                <CgProfile onClick={handleProfileMenu} size={30} className="cursor-pointer text-[#e1e6ea] hover:opacity-70 transition" />
+                <CgProfile onClick={handleProfileMenu} size={30} className="cursor-pointer text-[#e1e6ea] hover:opacity-70 transition"/>
               )}
               
               {profileMenu && (
@@ -85,6 +82,9 @@ const Navbar = () => {
                       <>
                         <li className="hover:opacity-70 transition">
                           <Link to="/Profile">Perfil</Link>
+                        </li>
+                        <li class name="hover:opacity-70 transition">
+                          <Link to="/decks">Barajas</Link>
                         </li>
                         <li className="hover:opacity-70 transition">
                           <Link to="/about">Acerca</Link>
