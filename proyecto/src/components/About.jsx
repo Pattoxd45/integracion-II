@@ -170,8 +170,6 @@ const About = () => {
       duracionPartida: "2 a 3 horas",
       TamMazo: "Normalmente entre 40 y 60 cartas",
     },
-    // Agrega más objetos de Info según sea necesario
-    // ...
   ];
 
   const [visibleCount, setVisibleCount] = useState(8); // Inicialmente mostrar 8 tarjetas
