@@ -194,7 +194,7 @@ const Decks = () => {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => toggleView('barajas')}
-              className={`w-[100px] h-[40px] rounded-md text-[#e2e7eb] font-semibold ${
+              className={`w-[100px] h-[46px] rounded-md text-[#e2e7eb] font-semibold ${
                 view === 'barajas' ? 'bg-[#2a5880]' : 'bg-[#9ebbd6]'
               }`}
             >
@@ -202,7 +202,7 @@ const Decks = () => {
             </button>
             <button
               onClick={() => toggleView('cartas')}
-              className={`w-[100px] h-[40px] rounded-md text-[#e2e7eb] font-semibold ${
+              className={`w-[100px] h-[46px] rounded-md text-[#e2e7eb] font-semibold ${
                 view === 'cartas' ? 'bg-[#2a5880]' : 'bg-[#9ebbd6]'
               }`}
             >
@@ -211,7 +211,7 @@ const Decks = () => {
           </div>
 
           {/* Botón "Buscar" */}
-          <button className="w-[91px] h-[40px] bg-[#2a5880] text-[#e2e7eb] font-semibold rounded-md text-center hover:bg-[#3587cf]">
+          <button className="w-[91px] h-[46px] bg-[#2a5880] text-[#e2e7eb] font-semibold rounded-md text-center hover:bg-[#3587cf]">
             Buscar
           </button>
         </div>
@@ -226,8 +226,8 @@ const Decks = () => {
           {decks.length > 0 ? (
             <>
               {decks.map((deck) => (
-                <div key={deck.idbarajas} className="flex flex-col items-center relative" onClick={() => openInsideDecksModal(deck.nombre)}>
-                  <div className="w-[220px] h-[320px] bg-[#12181E] border-[2px] border-[rgba(255,255,255,0.1)] rounded-md cursor-pointer overflow-hidden">
+                <div key={deck.idbarajas} className="flex flex-col items-center relative">
+                  <div className="w-[220px] h-[320px] bg-[#12181E] border-[2px] border-[rgba(255,255,255,0.1)] rounded-md cursor-pointer overflow-hidden" onClick={() => openInsideDecksModal(deck.nombre)}>
                     {/* Imagen dentro de la baraja */}
                     <img src={imagen8} alt={deck.nombre} className="w-full h-full object-cover" />
                   </div>
