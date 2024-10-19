@@ -204,120 +204,126 @@ const Cartas = () => {
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen">
-      <h1 className="text-white text-4xl mb-8">Magic the Gathering Cards</h1>
-      
-      {/* Componente de Favoritos */}
+      <h1 className="text-white text-4xl mb-8 text-center">Magic the Gathering Cards</h1>
+
       <Favorites favorites={favorites} toggleFavorite={toggleFavorite} />
 
-      <div className="w-full flex flex-col md:flex-row items-center mb-4">
-        <input
-        type="text"
-        value={searchQuery}
-        onChange={handleSearch}
-        placeholder="Buscar cartas..."
-        className="w-full md:w-auto p-2 rounded border border-gray-500"
-        />
-        <FaSearch className="ml-2 text-white" />
-        <select onChange={handleFilterChange('order')} className="w-full md:w-auto ml-0 md:ml-4 mt-2 md:mt-0 p-2 rounded border border-gray-500">
-          <option value="name">Ordenar por Nombre</option>
-          <option value="set">Ordenar por Set</option>
-          <option value="released">Ordenar por Fecha de Lanzamiento</option>
-          <option value="cdm">Ordenar por CDM</option>
-          </select>
-          <select onChange={handleFilterChange('dir')} className="w-full md:w-auto ml-0 md:ml-2 mt-2 md:mt-0 p-2 rounded border border-gray-500">
-            <option value="auto">Dirección Automática</option>
-            <option value="asc">Ascendente</option>
-            <option value="desc">Descendente</option>
-            </select>
-            </div>
-            
-      <div className="mb-4">
+      <div className="mb-4 flex flex-wrap overflow-x-auto">
+  <div className="relative w-full md:w-1/3 m-2">
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={handleSearch}
+      placeholder="Buscar cartas..."
+      className="p-2 rounded border border-gray-500 w-full pr-10" // Ajuste en padding para evitar que el texto se superponga con la lupa
+    />
+    <FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+  </div>
+
+  <select onChange={handleFilterChange('order')} 
+  className="border border-gray-300 rounded-md p-2 mb-4 w-full">
+    <option value="name">Ordenar por Nombre</option>
+    <option value="set">Ordenar por Set</option>
+    <option value="released">Ordenar por Fecha de Lanzamiento</option>
+    <option value="cdm">Ordenar por CDM</option>
+  </select>
+
+  <select onChange={handleFilterChange('dir')} 
+  className="border border-gray-300 rounded-md p-2 mb-4 w-full">
+    <option value="auto">Dirección Automática</option>
+    <option value="asc">Ascendente</option>
+    <option value="desc">Descendente</option>
+  </select>
+</div>
+
+
+      <div className="mb-4 flex flex-wrap">
         <label className="text-white mr-4">Colores:</label>
-        <div className="flex flex-wrap">
-          {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
-            <label key={color} className="text-white mr-4 mb-2">
-              <input
+        {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
+          <label key={color} className="text-white mr-4 flex items-center">
+            <input
               type="checkbox"
               value={color}
               onChange={handleColorsChange}
               className="mr-1"
-              />
-              {color}
-              </label>
-            ))}
-            </div>
-            </div>
+            />
+            {color}
+          </label>
+        ))}
+      </div>
 
-
-        <div className="mb-4 flex flex-wrap">
-          <div className="w-full md:w-auto mr-4 mb-2">
-            <label className="text-white mr-2">CDM:</label>
-            <input
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 mb-4">
+        <div className="flex flex-col">
+          <label className="text-white mb-1">CDM:</label>
+          <input
             type="number"
             value={filter.cdm}
             onChange={handleFilterChange('cdm')}
             placeholder="Costo de Maná"
-            className="w-full md:w-auto p-2 rounded border border-gray-500"
-            />
-            </div>
+            className="p-2 rounded border border-gray-500"
+          />
+        </div>
 
-        <div className="w-full md:w-auto mr-4 mb-2">
-            <label className="text-white mr-2">Poder:</label>
-            <input
+        <div className="flex flex-col">
+          <label className="text-white mb-1">Poder:</label>
+          <input
             type="number"
             value={filter.power}
             onChange={handleFilterChange('power')}
             placeholder="Poder"
-            className="w-full md:w-auto p-2 rounded border border-gray-500"
-            />
-            </div>
-
-        <div className="w-full md:w-auto mr-4 mb-2">
-          <label className="text-white mr-2">Resistencia:</label>
-          <input
-          type="number"
-          value={filter.toughness}
-          onChange={handleFilterChange('toughness')}
-          placeholder="Resistencia"
-          className="w-full md:w-auto p-2 rounded border border-gray-500"
+            className="p-2 rounded border border-gray-500"
           />
-          </div>
         </div>
 
-        <div className="mb-4">
-          <label className="text-white mr-4">Tipo:</label>
-          <select onChange={handleFilterChange('type')} className="w-full md:w-auto p-2 rounded border border-gray-500">
-          <option value="">Cualquier Tipo</option>
-          <option value="creature">Criatura</option>
-          <option value="artifact">Artefacto</option>
-          <option value="enchantment">Encantamiento</option>
-          <option value="land">Tierra</option>
-          </select>
-          </div>
+        <div className="flex flex-col">
+          <label className="text-white mb-1">Resistencia:</label>
+          <input
+            type="number"
+            value={filter.toughness}
+            onChange={handleFilterChange('toughness')}
+            placeholder="Resistencia"
+            className="p-2 rounded border border-gray-500"
+          />
+        </div>
+      </div>
 
-        <div className="mb-4">
-          <label className="text-white mr-4">Edición:</label>
-          <select onChange={handleFilterChange('edition')} className="w-full md:w-auto p-2 rounded border border-gray-500">
-          <option value="">Seleccionar Edición</option>
-          {sets.map((set) => (
-            <option key={set.code} value={set.code}>
-              {set.name}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4 mb-4">
+        <div className="flex flex-col">
+          <label className="text-white mb-1">Tipo:</label>
+          <select onChange={handleFilterChange('type')} className="p-2 rounded border border-gray-500">
+            <option value="">Cualquier Tipo</option>
+            <option value="creature">Criatura</option>
+            <option value="artifact">Artefacto</option>
+            <option value="enchantment">Encantamiento</option>
+            <option value="land">Tierra</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="text-white mb-1">Edición:</label>
+          <select onChange={handleFilterChange('edition')} className="p-2 rounded border border-gray-500">
+            <option value="">Seleccionar Edición</option>
+            {sets.map((set) => (
+              <option key={set.code} value={set.code}>
+                {set.name}
               </option>
             ))}
-            </select>
-            </div>
+          </select>
+        </div>
 
-        <div className="mb-4">
-          <label className="text-white mr-4">Subtipo:</label>
-          <select onChange={handleFilterChange('subtype')} className="w-full md:w-auto p-2 rounded border border-gray-500">
+        <div className="flex flex-col">
+          <label className="text-white mb-1">Subtipo:</label>
+          <select onChange={handleFilterChange('subtype')} className="p-2 rounded border border-gray-500">
             <option value="">Seleccionar Subtipo</option>
             {subtypes.map((subtype) => (
               <option key={subtype} value={subtype}>
-            {subtype}
-            </option>
-          ))}
+                {subtype}
+              </option>
+            ))}
           </select>
-          </div>
+        </div>
+      </div>
+
 
       {loading ? (
         <p className="text-white">Cargando cartas...</p>
