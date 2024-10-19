@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import Favorites from './Favorites'; 
+import axios from 'axios';
+import Favorites from './Favorites';
+
 const Cartas = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,17 +21,54 @@ const Cartas = () => {
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [userId, setUserId] = useState(1); // ID temporal del usuario
   const [selectedCard, setSelectedCard] = useState(null);
 
   useEffect(() => {
     fetch('https://api.scryfall.com/sets')
       .then(response => response.json())
       .then(data => setSets(data.data || []));
-      
+
     fetch('https://api.scryfall.com/catalog/card-types')
       .then(response => response.json())
       .then(data => setSubtypes(data.data || []));
+
+    fetchFavorites();
   }, []);
+
+  const fetchFavorites = async () => {
+    try {
+      const response = await axios.get(`/api/cartasfavoritas/${userId}`);
+      setFavorites(response.data);
+    } catch (error) {
+      console.error('Error al obtener cartas favoritas:', error);
+    }
+  };
+
+  const addFavorite = async (card) => {
+    try {
+      await axios.post('/api/cartasfavoritas', {
+        IDusuario: userId,
+        IDcarta: card.id,
+      });
+      fetchFavorites();
+    } catch (error) {
+      console.error('Error al agregar carta favorita:', error);
+    }
+  };
+
+  const removeFavorite = async (cardId) => {
+    try {
+      await axios.delete('/api/cartasfavoritas', {
+        data: { idusuario: userId, idcarta: cardId },
+      });
+      fetchFavorites();
+    } catch (error) {
+      console.error('Error al eliminar carta favorita:', error);
+    }
+  };
+
+  const isFavorite = (cardId) => favorites.some((fav) => fav.IDcarta === cardId);
 
   useEffect(() => {
     fetchCards();
@@ -38,7 +77,7 @@ const Cartas = () => {
   const fetchCards = () => {
     setLoading(true);
     const colorsQuery = filter.colors.length ? `+color:${filter.colors.join(',')}` : '';
-    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';  
+    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';
     const powerQuery = filter.power ? `+pow=${filter.power}` : '';
     const toughnessQuery = filter.toughness ? `+tou=${filter.toughness}` : '';
     const typeQuery = filter.type ? `+type:${filter.type}` : '';
@@ -73,16 +112,6 @@ const Cartas = () => {
     }));
   };
 
-  const toggleFavorite = (card) => {
-    setFavorites((prevFavorites) => {
-      if (prevFavorites.some((favorite) => favorite.id === card.id)) {
-        return prevFavorites.filter((favorite) => favorite.id !== card.id);
-      } else {
-        return [...prevFavorites, card];
-      }
-    });
-  };
-
   const handleCardClick = (card) => {
     setSelectedCard(card);
   };
@@ -107,7 +136,9 @@ const Cartas = () => {
     <div className="p-6 bg-gray-900 min-h-screen">
       <h1 className="text-white text-4xl mb-8">Magic the Gathering Cards</h1>
       
-      <Favorites favorites={favorites} toggleFavorite={toggleFavorite} />
+      <Favorites favorites={favorites} toggleFavorite={(card) => {
+        isFavorite(card.id) ? removeFavorite(card.id) : addFavorite(card);
+      }} />
 
       <div className="mb-4 flex items-center">
         <input
@@ -236,15 +267,13 @@ const Cartas = () => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    toggleFavorite(card);
+                    isFavorite(card.id) ? removeFavorite(card.id) : addFavorite(card);
                   }}
                   className={`absolute top-2 right-2 text-3xl ${
-                    favorites.some((favorite) => favorite.id === card.id)
-                      ? 'text-red-600'
-                      : 'text-white'
+                    isFavorite(card.id) ? 'text-red-600' : 'text-white'
                   }`}
                 >
-                  {favorites.some((favorite) => favorite.id === card.id) ? '♥' : '♡'}
+                  {isFavorite(card.id) ? '♥' : '♡'}
                 </button>
               </div>
             ))
