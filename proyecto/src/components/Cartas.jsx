@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { IoIosAdd } from 'react-icons/io'; // Importamos el icono de añadir
+import axios from 'axios';
 import { useLocation } from 'react-router-dom'; // Importar para detectar el estado de navegación
 import { getDecks, addCardsToDeck } from './db'; // Importar la función para obtener barajas y agregar cartas
 import Favorites from './Favorites'; // Importamos el componente de favoritos
 
 const Cartas = () => {
   const [cards, setCards] = useState([]);
+  const [userId] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState({
@@ -27,15 +29,53 @@ const Cartas = () => {
   const [selectedCards, setSelectedCards] = useState([]); // Estado para las cartas seleccionadas
   const [decks, setDecks] = useState([]); // Almacenar las barajas
   const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de barajas
-
   const location = useLocation(); // Hook para obtener el estado de navegación
   const addingCards = location.state?.addingCards || false; // Detectar si estamos añadiendo cartas
 
+  // Obtener cartas favoritas del backend
+  const fetchFavorites = async () => {
+    try {
+      const response = await axios.get(`/api/cartasfavoritas/${userId}`);
+      setFavorites(response.data);
+    } catch (error) {
+      console.error('Error al obtener cartas favoritas:', error);
+    }
+  };
+
+  // Agregar carta a favoritos
+  const addFavorite = async (card) => {
+    try {
+      await axios.post('/api/cartasfavoritas', {
+        IDusuario: userId,
+        IDcarta: card.id,
+      });
+      fetchFavorites(); // Actualizar lista de favoritos
+    } catch (error) {
+      console.error('Error al agregar carta favorita:', error);
+    }
+  };
+
+  // Eliminar carta de favoritos
+  const removeFavorite = async (cardId) => {
+    try {
+      await axios.delete('/api/cartasfavoritas', {
+        data: { idusuario: userId, idcarta: cardId },
+      });
+      fetchFavorites(); // Actualizar lista de favoritos
+    } catch (error) {
+      console.error('Error al eliminar carta favorita:', error);
+    }
+  };
+
+  // Verificar si una carta es favorita
+  const isFavorite = (cardId) => favorites.some((fav) => fav.IDcarta === cardId);
+
   useEffect(() => {
+    fetchFavorites(); // Cargar cartas favoritas del usuario
     fetch('https://api.scryfall.com/sets')
       .then(response => response.json())
       .then(data => setSets(data.data || []));
-      
+
     fetch('https://api.scryfall.com/catalog/card-types')
       .then(response => response.json())
       .then(data => setSubtypes(data.data || []));
@@ -297,16 +337,16 @@ const Cartas = () => {
 
                 {/* Botón de favorito */}
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(card);
-                  }}
-                  className={`absolute top-2 left-2 text-2xl ${
-                    favorites.some((favorite) => favorite.id === card.id) ? 'text-red-600' : 'text-white'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  isFavorite(card.id) ? removeFavorite(card.id) : addFavorite(card);
+                }}
+                className={`absolute top-2 left-2 text-2xl ${
+                  isFavorite(card.id) ? 'text-red-600' : 'text-white'
                   }`}
-                >
-                  {favorites.some((favorite) => favorite.id === card.id) ? '♥' : '♡'}
-                </button>
+                  >
+                    {isFavorite(card.id) ? '♥' : '♡'}
+                    </button>
 
                 {/* Mostrar círculo para selección si estamos añadiendo cartas */}
                 {addingCards && (
