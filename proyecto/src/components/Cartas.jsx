@@ -31,6 +31,11 @@ const Cartas = () => {
   const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de barajas
   const location = useLocation(); // Hook para obtener el estado de navegación
   const addingCards = location.state?.addingCards || false; // Detectar si estamos añadiendo cartas
+  const [showFilters, setShowFilters] = useState(false);
+
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };  
 
   // Obtener cartas favoritas del backend
   const fetchFavorites = async () => {
@@ -204,112 +209,115 @@ const Cartas = () => {
       {/* Componente de Favoritos */}
       <Favorites favorites={favorites} toggleFavorite={toggleFavorite} />
 
-      <div className="mb-4 flex items-center">
+      <div className="w-full flex flex-col md:flex-row items-center mb-4">
         <input
-          type="text"
-          value={searchQuery}
-          onChange={handleSearch}
-          placeholder="Buscar cartas..."
-          className="p-2 rounded border border-gray-500"
+        type="text"
+        value={searchQuery}
+        onChange={handleSearch}
+        placeholder="Buscar cartas..."
+        className="w-full md:w-auto p-2 rounded border border-gray-500"
         />
         <FaSearch className="ml-2 text-white" />
-        <select onChange={handleFilterChange('order')} className="ml-4 p-2 rounded border border-gray-500">
+        <select onChange={handleFilterChange('order')} className="w-full md:w-auto ml-0 md:ml-4 mt-2 md:mt-0 p-2 rounded border border-gray-500">
           <option value="name">Ordenar por Nombre</option>
           <option value="set">Ordenar por Set</option>
           <option value="released">Ordenar por Fecha de Lanzamiento</option>
           <option value="cdm">Ordenar por CDM</option>
-        </select>
-        <select onChange={handleFilterChange('dir')} className="ml-2 p-2 rounded border border-gray-500">
-          <option value="auto">Dirección Automática</option>
-          <option value="asc">Ascendente</option>
-          <option value="desc">Descendente</option>
-        </select>
-      </div>
-
+          </select>
+          <select onChange={handleFilterChange('dir')} className="w-full md:w-auto ml-0 md:ml-2 mt-2 md:mt-0 p-2 rounded border border-gray-500">
+            <option value="auto">Dirección Automática</option>
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+            </select>
+            </div>
+            
       <div className="mb-4">
         <label className="text-white mr-4">Colores:</label>
-        {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
-          <label key={color} className="text-white mr-4">
-            <input
+        <div className="flex flex-wrap">
+          {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
+            <label key={color} className="text-white mr-4 mb-2">
+              <input
               type="checkbox"
               value={color}
               onChange={handleColorsChange}
               className="mr-1"
-            />
-            {color}
-          </label>
-        ))}
-      </div>
+              />
+              {color}
+              </label>
+            ))}
+            </div>
+            </div>
 
-      <div className="mb-4 flex flex-wrap">
-        <div className="mr-4">
-          <label className="text-white mr-2">CDM:</label>
-          <input
+
+        <div className="mb-4 flex flex-wrap">
+          <div className="w-full md:w-auto mr-4 mb-2">
+            <label className="text-white mr-2">CDM:</label>
+            <input
             type="number"
             value={filter.cdm}
             onChange={handleFilterChange('cdm')}
             placeholder="Costo de Maná"
-            className="p-2 rounded border border-gray-500"
-          />
-        </div>
+            className="w-full md:w-auto p-2 rounded border border-gray-500"
+            />
+            </div>
 
-        <div className="mr-4">
-          <label className="text-white mr-2">Poder:</label>
-          <input
+        <div className="w-full md:w-auto mr-4 mb-2">
+            <label className="text-white mr-2">Poder:</label>
+            <input
             type="number"
             value={filter.power}
             onChange={handleFilterChange('power')}
             placeholder="Poder"
-            className="p-2 rounded border border-gray-500"
-          />
-        </div>
+            className="w-full md:w-auto p-2 rounded border border-gray-500"
+            />
+            </div>
 
-        <div className="mr-4">
+        <div className="w-full md:w-auto mr-4 mb-2">
           <label className="text-white mr-2">Resistencia:</label>
           <input
-            type="number"
-            value={filter.toughness}
-            onChange={handleFilterChange('toughness')}
-            placeholder="Resistencia"
-            className="p-2 rounded border border-gray-500"
+          type="number"
+          value={filter.toughness}
+          onChange={handleFilterChange('toughness')}
+          placeholder="Resistencia"
+          className="w-full md:w-auto p-2 rounded border border-gray-500"
           />
+          </div>
         </div>
-      </div>
 
-      <div className="mb-4">
-        <label className="text-white mr-4">Tipo:</label>
-        <select onChange={handleFilterChange('type')} className="p-2 rounded border border-gray-500">
+        <div className="mb-4">
+          <label className="text-white mr-4">Tipo:</label>
+          <select onChange={handleFilterChange('type')} className="w-full md:w-auto p-2 rounded border border-gray-500">
           <option value="">Cualquier Tipo</option>
           <option value="creature">Criatura</option>
           <option value="artifact">Artefacto</option>
           <option value="enchantment">Encantamiento</option>
           <option value="land">Tierra</option>
-        </select>
-      </div>
+          </select>
+          </div>
 
-      <div className="mb-4">
-        <label className="text-white mr-4">Edición:</label>
-        <select onChange={handleFilterChange('edition')} className="p-2 rounded border border-gray-500">
+        <div className="mb-4">
+          <label className="text-white mr-4">Edición:</label>
+          <select onChange={handleFilterChange('edition')} className="w-full md:w-auto p-2 rounded border border-gray-500">
           <option value="">Seleccionar Edición</option>
           {sets.map((set) => (
             <option key={set.code} value={set.code}>
               {set.name}
-            </option>
-          ))}
-        </select>
-      </div>
+              </option>
+            ))}
+            </select>
+            </div>
 
-      <div className="mb-4">
-        <label className="text-white mr-4">Subtipo:</label>
-        <select onChange={handleFilterChange('subtype')} className="p-2 rounded border border-gray-500">
-          <option value="">Seleccionar Subtipo</option>
-          {subtypes.map((subtype) => (
-            <option key={subtype} value={subtype}>
-              {subtype}
+        <div className="mb-4">
+          <label className="text-white mr-4">Subtipo:</label>
+          <select onChange={handleFilterChange('subtype')} className="w-full md:w-auto p-2 rounded border border-gray-500">
+            <option value="">Seleccionar Subtipo</option>
+            {subtypes.map((subtype) => (
+              <option key={subtype} value={subtype}>
+            {subtype}
             </option>
           ))}
-        </select>
-      </div>
+          </select>
+          </div>
 
       {loading ? (
         <p className="text-white">Cargando cartas...</p>
