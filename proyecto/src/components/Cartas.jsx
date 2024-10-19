@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import axios from 'axios';
-import Favorites from './Favorites';
+import { IoIosAdd } from 'react-icons/io'; // Importamos el icono de añadir
+import { useLocation } from 'react-router-dom'; // Importar para detectar el estado de navegación
+import { getDecks, addCardsToDeck } from './db'; // Importar la función para obtener barajas y agregar cartas
+import Favorites from './Favorites'; // Importamos el componente de favoritos
 
 const Cartas = () => {
   const [cards, setCards] = useState([]);
@@ -11,64 +13,33 @@ const Cartas = () => {
     order: 'name',
     dir: 'auto',
     colors: [],
-    cdm: '',
+    cdm: '',  
     power: '',
     toughness: '',
     type: '',
-    edition: '',
-    subtype: '',
+    edition: '', 
+    subtype: '', 
   });
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-  const [userId, setUserId] = useState(1); // ID temporal del usuario
-  const [selectedCard, setSelectedCard] = useState(null);
+  const [favorites, setFavorites] = useState([]); // Estado de favoritos
+  const [selectedCard, setSelectedCard] = useState(null); // Estado para popup de carta seleccionada
+  const [selectedCards, setSelectedCards] = useState([]); // Estado para las cartas seleccionadas
+  const [decks, setDecks] = useState([]); // Almacenar las barajas
+  const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de barajas
+
+  const location = useLocation(); // Hook para obtener el estado de navegación
+  const addingCards = location.state?.addingCards || false; // Detectar si estamos añadiendo cartas
 
   useEffect(() => {
     fetch('https://api.scryfall.com/sets')
       .then(response => response.json())
       .then(data => setSets(data.data || []));
-
+      
     fetch('https://api.scryfall.com/catalog/card-types')
       .then(response => response.json())
       .then(data => setSubtypes(data.data || []));
-
-    fetchFavorites();
   }, []);
-
-  const fetchFavorites = async () => {
-    try {
-      const response = await axios.get(`/api/cartasfavoritas/${userId}`);
-      setFavorites(response.data);
-    } catch (error) {
-      console.error('Error al obtener cartas favoritas:', error);
-    }
-  };
-
-  const addFavorite = async (card) => {
-    try {
-      await axios.post('/api/cartasfavoritas', {
-        IDusuario: userId,
-        IDcarta: card.id,
-      });
-      fetchFavorites();
-    } catch (error) {
-      console.error('Error al agregar carta favorita:', error);
-    }
-  };
-
-  const removeFavorite = async (cardId) => {
-    try {
-      await axios.delete('/api/cartasfavoritas', {
-        data: { idusuario: userId, idcarta: cardId },
-      });
-      fetchFavorites();
-    } catch (error) {
-      console.error('Error al eliminar carta favorita:', error);
-    }
-  };
-
-  const isFavorite = (cardId) => favorites.some((fav) => fav.IDcarta === cardId);
 
   useEffect(() => {
     fetchCards();
@@ -77,7 +48,7 @@ const Cartas = () => {
   const fetchCards = () => {
     setLoading(true);
     const colorsQuery = filter.colors.length ? `+color:${filter.colors.join(',')}` : '';
-    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';
+    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';  
     const powerQuery = filter.power ? `+pow=${filter.power}` : '';
     const toughnessQuery = filter.toughness ? `+tou=${filter.toughness}` : '';
     const typeQuery = filter.type ? `+type:${filter.type}` : '';
@@ -112,11 +83,32 @@ const Cartas = () => {
     }));
   };
 
+  // Manejar la selección de cartas (checkbox o círculo)
+  const handleSelectCard = (cardId) => {
+    if (selectedCards.includes(cardId)) {
+      setSelectedCards(selectedCards.filter(id => id !== cardId));
+    } else {
+      setSelectedCards([...selectedCards, cardId]);
+    }
+  };
+
+  // Manejar la selección de favoritos
+  const toggleFavorite = (card) => {
+    setFavorites((prevFavorites) => {
+      if (prevFavorites.some((favorite) => favorite.id === card.id)) {
+        return prevFavorites.filter((favorite) => favorite.id !== card.id);
+      } else {
+        return [...prevFavorites, card];
+      }
+    });
+  };
+
+  // Manejar el click de la carta (abrir popup)
   const handleCardClick = (card) => {
     setSelectedCard(card);
   };
 
-  const closeModal = () => {
+  const closeModalCard = () => {
     setSelectedCard(null);
   };
 
@@ -132,13 +124,45 @@ const Cartas = () => {
     setSelectedCard(cards[prevIndex]);
   };
 
+  // Abrir el modal y obtener las barajas de IndexedDB
+  const openModal = async () => {
+    const savedDecks = await getDecks(); // Obtener barajas de IndexedDB
+    setDecks(savedDecks || []);
+    setShowModal(true); // Mostrar el modal
+  };
+
+  // Cerrar el modal
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // Manejar la selección de una baraja para agregar cartas
+  const handleSelectDeck = async (deckId) => {
+    const selectedCardNames = selectedCards.map(cardId => {
+      const card = cards.find(card => card.id === cardId);
+      return {
+        id: card.id,
+        name: card.name,
+        image: card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`,
+        mana: card.mana_cost || "Desconocido",
+        type: card.type_line || "Desconocido",
+        power: card.power || null,
+        toughness: card.toughness || null,
+      };
+    });
+
+    // Agregar las cartas seleccionadas a la baraja
+    await addCardsToDeck(deckId, selectedCardNames);
+    setSelectedCards([]); // Limpiar las cartas seleccionadas
+    closeModal(); // Cerrar el modal
+  };
+
   return (
     <div className="p-6 bg-gray-900 min-h-screen">
       <h1 className="text-white text-4xl mb-8">Magic the Gathering Cards</h1>
       
-      <Favorites favorites={favorites} toggleFavorite={(card) => {
-        isFavorite(card.id) ? removeFavorite(card.id) : addFavorite(card);
-      }} />
+      {/* Componente de Favoritos */}
+      <Favorites favorites={favorites} toggleFavorite={toggleFavorite} />
 
       <div className="mb-4 flex items-center">
         <input
@@ -255,26 +279,49 @@ const Cartas = () => {
             cards.map((card) => (
               <div
                 key={card.id}
-                className="bg-gray-800 rounded-lg p-4 cursor-pointer relative"
+                className="relative bg-gray-800 p-4 rounded-lg shadow-lg cursor-pointer"
                 onClick={() => handleCardClick(card)}
               >
                 <img
-                  src={card.image_uris?.normal || `${process.env.PUBLIC_URL}/Cartas2.png`}
+                  src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`}
                   alt={card.name}
-                  className="rounded-lg"
+                  className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
                 />
-                <h3 className="text-white text-lg mt-2">{card.name}</h3>
+
+                <div className="mt-4">
+                  <h2 className="text-white text-lg font-bold">{card.name}</h2>
+                  <p className="text-gray-400">{card.type_line}</p>
+                  {card.power && <p className="text-gray-400">Poder: {card.power}</p>}
+                  {card.toughness && <p className="text-gray-400">Resistencia: {card.toughness}</p>}
+                </div>
+
+                {/* Botón de favorito */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    isFavorite(card.id) ? removeFavorite(card.id) : addFavorite(card);
+                    toggleFavorite(card);
                   }}
-                  className={`absolute top-2 right-2 text-3xl ${
-                    isFavorite(card.id) ? 'text-red-600' : 'text-white'
+                  className={`absolute top-2 left-2 text-2xl ${
+                    favorites.some((favorite) => favorite.id === card.id) ? 'text-red-600' : 'text-white'
                   }`}
                 >
-                  {isFavorite(card.id) ? '♥' : '♡'}
+                  {favorites.some((favorite) => favorite.id === card.id) ? '♥' : '♡'}
                 </button>
+
+                {/* Mostrar círculo para selección si estamos añadiendo cartas */}
+                {addingCards && (
+                  <div
+                    className={`absolute right-3 top-3 w-5 h-5 rounded-full border-2 ${
+                      selectedCards.includes(card.id)
+                        ? "bg-orange-500 border-white"
+                        : "border-white"
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectCard(card.id);
+                    }}
+                  ></div>
+                )}
               </div>
             ))
           ) : (
@@ -283,6 +330,53 @@ const Cartas = () => {
         </div>
       )}
 
+      {/* Botón flotante: solo visible si hay cartas seleccionadas */}
+      {selectedCards.length > 0 && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-[1200px]">
+          <div className="flex justify-end">
+            <button
+              className="bg-[#E83411] text-white rounded-[10px] p-[10px] hover:bg-[#b52e0e] transition-colors flex items-center justify-center"
+              style={{ width: "50px", height: "50px" }}
+              onClick={openModal}
+            >
+              <IoIosAdd className="text-white text-[24px]" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para seleccionar baraja */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
+          <div className="bg-white p-5 rounded-lg w-[400px]">
+            <h2 className="text-xl font-bold mb-4">Seleccionar Baraja</h2>
+            {decks.length > 0 ? (
+              <ul className="mb-4">
+                {decks.map((deck) => (
+                  <li key={deck.id} className="mb-2">
+                    <button
+                      className="w-full bg-[#E83411] text-white p-2 rounded-md"
+                      onClick={() => handleSelectDeck(deck.id)}
+                    >
+                      {deck.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-700">No hay barajas disponibles.</p>
+            )}
+            <button
+              className="bg-gray-400 px-4 py-2 rounded-md hover:bg-gray-500"
+              onClick={closeModal}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Popup de detalles de carta seleccionada */}
       {selectedCard && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
           <div className="flex bg-gray-900 p-6 rounded-lg w-full max-w-4xl flex-col">
@@ -320,7 +414,7 @@ const Cartas = () => {
             </div>
 
             <button
-              onClick={closeModal}
+              onClick={closeModalCard}
               className="mt-8 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition-colors w-full"
             >
               Cerrar
