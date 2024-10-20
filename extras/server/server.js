@@ -21,15 +21,15 @@ const allowedOrigins = [
   'http://localhost:3001',
   'http://magicarduct.online',
   'http://localhost:3000',
-  'http://localhost:8081',
-  'http://186.64.122.218:3000',
-  'http://186.64.122.218',
+  'http://localhost:8081', // Tu máquina local
+  'http://186.64.122.218:3000',  // IP del host remoto
+  'http://186.64.122.218', // Otro dominio permitido
   'https://localhost:3001',
   'https://magicarduct.online',
   'https://localhost:3000',
-  'https://localhost:8081',
-  'https://186.64.122.218:3000',
-  'https://186.64.122.218',
+  'https://localhost:8081', // Tu máquina local
+  'https://186.64.122.218:3000',  // IP del host remoto
+  'https://186.64.122.218', // Otro dominio permitido
 ];
 
 app.use(cors({
@@ -64,7 +64,7 @@ app.options('*', (req, res) => {
 
 app.use(bodyParser.json());
 
-// Conexión a la base de datos MySQL utilizando las variables de entorno
+// Conexiï¿½n a la base de datos MySQL utilizando las variables de entorno
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -77,10 +77,12 @@ db.connect((err) => {
     console.error('Error conectando a la base de datos:', err);
     return;
   }
+  console.log('Conectado a la base de datos MySQL.');
 });
 
-// Middleware para verificar que el usuario está autenticado
+// Middleware para verificar que el usuario estï¿½ autenticado
 const isAuthenticated = (req, res, next) => {
+  console.log('TOY AUTENTICAO WEBON!:', req.session.userId);
   if (req.session.userId) {
     next();
   } else {
@@ -92,8 +94,9 @@ const isAuthenticated = (req, res, next) => {
 // Endpoint de login
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
+  console.log('Datos de inicio de sesiï¿½n:', req.body);
   if (!email || !password) {
-    return res.status(400).json({ message: 'Correo y contraseña son requeridos.' });
+    return res.status(400).json({ message: 'Correo y contraseï¿½a son requeridos.' });
   }
 
   const query = 'SELECT idusuario FROM usuario WHERE correo = ? AND clave = ?';
@@ -102,28 +105,34 @@ app.post('/login', (req, res) => {
       return res.status(500).json({ message: 'Error en el servidor' });
     }
 
+    console.log('Resultados de la consulta:', results);
+
     if (results.length === 0) {
-      return res.status(401).json({ message: 'Correo o contraseña incorrectos.' });
+      return res.status(401).json({ message: 'Correo o contraseï¿½a incorrectos.' });
     }
 
-    // Iniciar sesión
+    // Iniciar sesiï¿½n
     req.session.userId = results[0].idusuario;
-    res.status(200).json({ message: 'Inicio de sesión exitoso', userId: results[0].idusuario });
+    console.log('pene:', req.session);
+    res.status(200).json({ message: 'Inicio de sesiï¿½n exitoso', userId: results[0].idusuario });
+    console.log('Funciono esta mierda o no?: ', results[0].idusuario);
   });
 });
 //Endpoint del logout
 app.post('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      return res.status(500).json({ message: 'Error cerrando sesión' });
+      return res.status(500).json({ message: 'Error cerrando sesiÃ³n' });
     }
-    res.status(200).json({ message: 'Sesión cerrada exitosamente' });
+    res.status(200).json({ message: 'SesiÃ³n cerrada exitosamente' });
   });
 });
 app.post('/register', (req, res) => {
+  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
   const { nombre, correo, clave } = req.body;
 
   if (!nombre || !correo || !clave) {
+    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -136,11 +145,12 @@ app.post('/register', (req, res) => {
     }
 
     if (results.length > 0) {
-      return res.status(400).json({ error: 'El correo ya está registrado' });
+      console.log('El correo ya estÃ¡ registrado'); // Mensaje de correo repetido
+      return res.status(400).json({ error: 'El correo ya estÃ¡ registrado' });
     }
 
-    // Insertar el nuevo usuario si el correo no está repetido
-    const query = 'INSERT INTO usuario (nombre, correo, clave) VALUES (?, ?, ?)';
+    // Insertar el nuevo usuario si el correo no estÃ¡ repetido
+    const query = 'INSERT INTO usuario (nombre, correo, clave, foto) VALUES (?, ?, ?, 1)';
     db.query(query, [nombre, correo, clave], (err, result) => {
       if (err) {
         console.error('Error al registrar el usuario:', err); // Mensaje de error
@@ -153,7 +163,9 @@ app.post('/register', (req, res) => {
 
 //Obtener datos de usuario
 app.get('/obtener-usuario', (req, res) => {
-  const userId = req.query.userId; // Obtener el userId de los parámetros de consulta
+  const userId = req.query.userId; // ObtÃ©n el userId de los parÃ¡metros de consulta
+
+  console.log('TENGO ESTO CAUSA:', userId); // Imprime el userId recibido
 
   // Consulta a la base de datos
   const query = 'SELECT nombre, correo, foto FROM usuario WHERE idusuario = ?';
@@ -165,8 +177,8 @@ app.get('/obtener-usuario', (req, res) => {
     }
 
     if (results.length > 0) {
-      const usuario = results[0]; // Asumiendo que solo habrá un resultado
-
+      const usuario = results[0]; // Asumiendo que solo habrÃ¡ un resultado
+      // AsegÃºrate de devolver el correo correctamente
       res.json({ userName: usuario.nombre, email: usuario.correo, image: usuario.foto });
     } else {
       res.status(404).json({ message: 'Usuario no encontrado' });
@@ -196,7 +208,7 @@ app.post('/api/mazocartas', async (req, res) => {
   const { IDcarta, IDmazo, cantidad } = req.body;
 
   if (!IDcarta || !IDmazo || !cantidad) {
-    return res.status(400).json({ error: 'Faltan parámetros requeridos' });
+    return res.status(400).json({ error: 'Faltan parï¿½metros requeridos' });
   }
 
   const query = `INSERT INTO mazo_cartas (IDmazo, IDcarta, cantidad) VALUES (?, ?, ?)
@@ -204,18 +216,24 @@ app.post('/api/mazocartas', async (req, res) => {
 
   try {
     await db.execute(query, [IDcarta, IDmazo, cantidad]);
-    res.status(200).json({ message: 'Carta añadida al mazo correctamente' });
+    res.status(200).json({ message: 'Carta aï¿½adida al mazo correctamente' });
   } catch (error) {
-    console.error('Error al añadir carta al mazo:', error);
+    console.error('Error al aï¿½adir carta al mazo:', error);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
 
-// GET: Obtiene todas las barajas de un usuario especí­fico por su ID
-app.get('/api/barajasdeusuaio/:IDusuario', async (req, res) => {
+// GET: Obtiene todas las barajas de un usuario específico por su ID
+app.get('/api/barajasdeusuario/:IDusuario', async (req, res) => {
   const { IDusuario } = req.params;
 
-  const query = `SELECT * FROM barajas_de_usuario WHERE id_usuario = ?`;
+  // Consulta para unir las tablas barajas_de_usuario y barajas
+  const query = `
+    SELECT bu.idbarajas_de_usuario, b.nombre 
+    FROM barajas_de_usuario bu
+    JOIN barajas b ON bu.idbarajas = b.idbarajas
+    WHERE bu.id_usuario = ?
+  `;
 
   try {
     const [rows] = await db.execute(query, [IDusuario]);
@@ -226,10 +244,11 @@ app.get('/api/barajasdeusuaio/:IDusuario', async (req, res) => {
       res.status(404).json({ error: 'No se encontraron barajas' });
     }
   } catch (error) {
-    console.error('No se encontraron barajas:', error);
+    console.error('Error al obtener barajas:', error);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
+
 
 // GET: Obtiene todas las barajas de un usuario específico por su ID
 app.get('/api/barajasdeusuaio2/:IDusuario', async (req, res) => {
@@ -262,7 +281,7 @@ app.get('/api/barajasdeusuaio2/:IDusuario', async (req, res) => {
   }
 });
 
-// GET: Obtiene todas las cartas de un mazo especí­fico por su ID
+// GET: Obtiene todas las cartas de un mazo especÃ­fico por su ID
 app.get('/api/mazocartas/:IDmazo', async (req, res) => {
   const { IDmazo } = req.params;
 
@@ -274,7 +293,7 @@ app.get('/api/mazocartas/:IDmazo', async (req, res) => {
     if (rows.length > 0) {
       res.status(200).json(rows);
     } else {
-      res.status(404).json({ error: 'No se encontró la carta en el mazo' });
+      res.status(404).json({ error: 'No se encontrï¿½ la carta en el mazo' });
     }
   } catch (error) {
     console.error('Error al obtener la carta del mazo:', error);
@@ -282,7 +301,7 @@ app.get('/api/mazocartas/:IDmazo', async (req, res) => {
   }
 });
 
-// GET: Obtiene información de una baraja especí­fica por su ID
+// GET: Obtiene informaciÃ³n de una baraja especÃ­fica por su ID
 app.get('/api/barajas/:IDbarajas', async (req, res) => {
   const { IDbarajas } = req.params;
 
@@ -304,9 +323,11 @@ app.get('/api/barajas/:IDbarajas', async (req, res) => {
 
 // POST: Crea un nuevo mazo y lo asocia a un usuario especÃ­fico
 app.post('/api/createmazo', (req, res) => {
+  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
   const { nombre, formato, descripcion, idusuario } = req.body;
 
   if (!nombre || !formato || !descripcion || !idusuario) {
+    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -320,6 +341,7 @@ app.post('/api/createmazo', (req, res) => {
 
     // Obtiene el ID del nuevo mazo
     const nuevoMazoId = result.insertId;
+    console.log('Nuevo mazo creado con ID:', nuevoMazoId);
 
     // Consulta para asociar el nuevo mazo al usuario
     const queryUsuarioMazo = 'INSERT INTO barajas_de_usuario (id_usuario, idbarajas_de_usuario) VALUES (?, ?)';
@@ -336,9 +358,11 @@ app.post('/api/createmazo', (req, res) => {
 });
 
 app.post('/api/createmazo2', (req, res) => {
+  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
   const { nombre, formato, descripcion, idusuario } = req.body;
 
   if (!nombre || !formato || !descripcion || !idusuario) {
+    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -502,9 +526,11 @@ app.delete('/api/eliminarmazo2/:nombre/:idUsuario', (req, res) => {
 
 // POST: Agrega cartas a un mazo especÃ­fico
 app.post('/api/mazocartas', (req, res) => {
+  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
   const { idmazo, idcarta, cantidad } = req.body;
 
   if (!idmazo || !idcarta || !cantidad) {
+    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -597,6 +623,7 @@ app.post('/api/cartasfavoritas', (req, res) => {
 
   // Validar que se han proporcionado IDusuario e IDcarta
   if (!IDusuario || !IDcarta) {
+    console.log('Faltan datos del formulario');
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -615,13 +642,15 @@ app.post('/api/cartasfavoritas', (req, res) => {
       const deleteQuery = `
         DELETE FROM cartas_favoritas 
         WHERE IDusuario = ? 
-        AND IDnumero = 5
+        AND numero = 5
       `;
       db.query(deleteQuery, [IDusuario], (err) => {
         if (err) {
           console.error('Error al eliminar la carta favorita más antigua:', err);
           return res.status(500).json({ error: 'Error al eliminar la carta favorita más antigua' });
         }
+
+        console.log('Se eliminó la carta favorita más antigua (IDnumero = 5)');
       });
     }
 
@@ -629,9 +658,9 @@ app.post('/api/cartasfavoritas', (req, res) => {
     const reorderQuery = `
       SET @row_number = 0; 
       UPDATE cartas_favoritas 
-      SET IDnumero = (@row_number := @row_number + 1) 
+      SET numero = (@row_number := @row_number + 1) 
       WHERE IDusuario = ? 
-      ORDER BY IDnumero
+      ORDER BY numero
     `;
     
     db.query(reorderQuery, [IDusuario], (err) => {
@@ -650,6 +679,8 @@ app.post('/api/cartasfavoritas', (req, res) => {
           console.error('Error al agregar nueva carta favorita:', err);
           return res.status(500).json({ error: 'Error al agregar nueva carta favorita' });
         }
+
+        console.log('Nueva carta favorita agregada y IDnumero reordenados exitosamente');
         res.status(200).json({ message: 'Nueva carta favorita agregada y IDnumero reordenados' });
       });
     });
@@ -662,6 +693,7 @@ app.get('/api/cartasfavoritas/:idusuario', (req, res) => {
 
   // Verifica si el ID del usuario estÃ¡ presente
   if (!idusuario) {
+    console.log('Falta el ID del usuario'); // Mensaje cuando falta el ID del usuario
     return res.status(400).json({ error: 'Falta el ID del usuario' });
   }
 
@@ -675,6 +707,7 @@ app.get('/api/cartasfavoritas/:idusuario', (req, res) => {
 
     // Si no hay cartas favoritas
     if (results.length === 0) {
+      console.log('No se encontraron cartas favoritas'); // Mensaje en la consola
       return res.status(404).json({ message: 'No se encontraron cartas favoritas' });
     }
 
@@ -685,9 +718,11 @@ app.get('/api/cartasfavoritas/:idusuario', (req, res) => {
 
 // DELETE: Elimina una carta favorita
 app.delete('/api/cartasfavoritas', (req, res) => {
+  console.log('Datos recibidos:', req.body); // Imprime los datos recibidos
   const { idusuario, idcarta } = req.body;
 
   if (!idusuario || !idcarta) {
+    console.log('Faltan datos del formulario'); // Mensaje cuando faltan datos
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -701,23 +736,32 @@ app.delete('/api/cartasfavoritas', (req, res) => {
 
     // Verificar si alguna fila fue afectada (es decir, si la carta existía y fue eliminada)
     if (result.affectedRows === 0) {
+      console.log('La carta no se encontró en la lista de favoritas'); // Mensaje en la consola
       return res.status(404).json({ error: 'La carta no se encontró en la lista de favoritas' });
     }
+
+    console.log('Carta eliminada exitosamente'); // Mensaje en la consola
 
     // Reordenar los IDnumero de las cartas restantes
     const reorderQuery = `
       SET @row_number = 0;
       UPDATE cartas_favoritas 
-      SET IDnumero = (@row_number := @row_number + 1) 
-      WHERE IDusuario = ? 
-      ORDER BY IDnumero;
+      SET numero = (@row_number := @row_number + 1) 
+      WHERE IDusuario = 10 
+      ORDER BY numero;
     `;
 
     db.query(reorderQuery, [idusuario], (err) => {
-      if (err) {
+      if (err.code === 'ER_WARN') {
+        // Manejar la advertencia, pero no detener la ejecución
+        console.warn('Advertencia al reordenar los IDnumero:', err.sqlMessage); // Mensaje de advertencia
+        // Puedes optar por continuar la ejecución aquí si lo deseas
+      } else {
         console.error('Error al reordenar los IDnumero:', err); // Mensaje de error
         return res.status(500).json({ error: 'Error al reordenar los IDnumero' });
       }
+
+      console.log('IDnumero reordenados exitosamente'); // Mensaje en la consola
       res.status(200).json({ message: 'Carta eliminada y IDnumero reordenados exitosamente' });
     });
   });
@@ -729,6 +773,7 @@ app.post('/api/ultimascartasvistas', (req, res) => {
 
   // Validar que se han proporcionado IDusuario e IDcarta
   if (!IDusuario || !IDcarta) {
+    console.log('Faltan datos del formulario');
     return res.status(400).json({ error: 'Faltan datos del formulario' });
   }
 
@@ -754,6 +799,8 @@ app.post('/api/ultimascartasvistas', (req, res) => {
           console.error('Error al eliminar la carta mÃ¡s antigua:', err);
           return res.status(500).json({ error: 'Error al eliminar la carta mÃ¡s antigua' });
         }
+
+        console.log('Se eliminÃ³ la carta mÃ¡s antigua (IDnumero = 5)');
       });
     }
 
@@ -782,6 +829,8 @@ app.post('/api/ultimascartasvistas', (req, res) => {
           console.error('Error al agregar nueva carta:', err);
           return res.status(500).json({ error: 'Error al agregar nueva carta' });
         }
+
+        console.log('Nueva carta agregada y IDnumero reordenados exitosamente');
         res.status(200).json({ message: 'Nueva carta agregada y IDnumero reordenados' });
       });
     });
@@ -794,6 +843,7 @@ app.get('/api/ultimascartasvistas/:IDusuario', (req, res) => {
 
   // Validar que se ha proporcionado un IDusuario
   if (!IDusuario) {
+    console.log('Falta el ID de usuario'); // Mensaje cuando falta el IDusuario
     return res.status(400).json({ error: 'Falta el ID de usuario' });
   }
 

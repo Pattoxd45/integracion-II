@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from './UserContext';
+import { useNavigate } from 'react-router-dom';
 import { FaPen } from 'react-icons/fa';
 import image1 from '../assets/azul.png';
 import image2 from '../assets/verde.png';
@@ -14,7 +15,7 @@ function Profile() {
   const [editData, setEditData] = useState({
     name: '',
     image: '',
-    imageNumber: 0, // Agregar el número de imagen
+    imageNumber: 0,
   });
   const [profile, setProfile] = useState({
     name: '',
@@ -24,8 +25,11 @@ function Profile() {
     decks: [],
   });
   const [loading, setLoading] = useState(true);
+  const [decks, setDecks] = useState([]);
+  const [favoriteCards, setFavoriteCards] = useState([]);
 
-  // Imágenes disponibles para seleccionar
+  const navigate = useNavigate();
+
   const images = [
     { src: image1, alt: 'Azul' },
     { src: image2, alt: 'Verde' },
@@ -48,8 +52,6 @@ function Profile() {
         }
 
         const userData = await response.json();
-        console.log(userData);
-
         const profileImage = getProfileImage(userData.image);
         setProfile((prevProfile) => ({
           ...prevProfile,
@@ -66,6 +68,71 @@ function Profile() {
     };
 
     fetchUserProfile();
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchDecks = async () => {
+      if (!userId) {
+        console.log('No se encontró userId');
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setDecks(data);
+        } else {
+          console.error("Error al obtener las barajas");
+        }
+      } catch (error) {
+        console.error("Error en la petición:", error);
+      }
+    };
+
+    fetchDecks();
+  }, [userId]);
+
+  // Nueva función para obtener las cartas favoritas
+  const fetchFavoriteCards = async () => {
+    if (!userId) return;
+  
+    try {
+      // Petición a tu backend para obtener las cartas favoritas
+      const response = await fetch(`https://magicarduct.online:3000/api/cartasfavoritas/${userId}`);
+      if (!response.ok) {
+        throw new Error("Error al obtener cartas favoritas");
+      }
+  
+      const favoriteCards = await response.json(); // Supongamos que es un array de objetos con IDusuario, IDcarta, y numero
+      const favoriteCardsData = [];
+  
+      // Ahora hacemos peticiones a Scryfall para obtener los detalles de cada carta
+      for (const card of favoriteCards) {
+        const cardId = card.IDcarta; // Extraemos el ID de carta
+        const cardResponse = await fetch(`https://api.scryfall.com/cards/${cardId}`);
+        if (cardResponse.ok) {
+          const cardData = await cardResponse.json();
+          favoriteCardsData.push({
+            id: cardData.id,
+            name: cardData.name,
+            imageUrl: cardData.image_uris?.normal || 'https://via.placeholder.com/150', // Placeholder si no hay imagen
+          });
+        } else {
+          console.error(`Error al obtener la carta con ID ${cardId}`);
+        }
+      }
+  
+      setFavoriteCards(favoriteCardsData);
+    } catch (error) {
+      console.error("Error en la petición:", error);
+    }
+  };
+  
+  
+
+  useEffect(() => {
+    fetchFavoriteCards();
   }, [userId]);
 
   const getProfileImage = (userId) => {
@@ -87,6 +154,32 @@ function Profile() {
     }
   };
 
+  const handleDeleteFavoriteCard = async (cardId) => {
+    try {
+      const response = await fetch('https://magicarduct.online:3000/api/cartasfavoritas', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          idusuario: userId,  // Suponiendo que userId está disponible en el contexto
+          idcarta: cardId,
+        }),
+      });
+  
+      if (response.ok) {
+        console.log("Carta eliminada exitosamente");
+        // Opcional: Aquí podrías volver a llamar a fetchFavoriteCards() para actualizar la lista
+        fetchFavoriteCards();
+      } else {
+        console.error("Error al eliminar la carta");
+      }
+    } catch (error) {
+      console.error("Error en la petición de eliminación:", error);
+    }
+    window.location.reload();
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setEditData((prev) => ({ ...prev, [name]: value }));
@@ -101,19 +194,18 @@ function Profile() {
         },
         body: JSON.stringify({
           nombre: editData.name,
-          imageNumber: editData.imageNumber, // Enviar el número de imagen
+          imageNumber: editData.imageNumber,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Error al actualizar el usuario');
       }
-  
+
       const result = await response.json();
       console.log(result);
-  
+
       setIsEditing(false);
-      // Recargar la página después de guardar
       window.location.reload();
     } catch (error) {
       console.error('Error:', error);
@@ -140,8 +232,12 @@ function Profile() {
       case image6:
         return 6;
       default:
-        return 0; // Imagen por defecto
+        return 0;
     }
+  };
+
+  const handleDeckClick = (deckId) => {
+    navigate(`/decks`);
   };
 
   if (loading) {
@@ -177,7 +273,7 @@ function Profile() {
                     setEditData((prev) => ({
                       ...prev,
                       image: img.src,
-                      imageNumber: index + 1 // Cambia el número de imagen (1-6)
+                      imageNumber: index + 1,
                     }));
                   }}
                 />
@@ -217,42 +313,45 @@ function Profile() {
         <p className="text-gray-200 text-center">{profile.email}</p>
       </div>
 
-      {/* Contenido */}
       <div className="flex-grow md:ml-40 p-8 space-y-8">
-        {/* Sección de cartas favoritas */}
         <div className="bg-black p-6 rounded-lg shadow-md border border-red-500">
-          <h3 className="text-xl font-semibold mb-4 text-red-500">Cartas Favoritas</h3>
+          <h3 className="text-xl font-semibold mb-4 text-red-500">Mazos</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {profile.favoriteCards.length > 0 ? (
-              profile.favoriteCards.map((card, index) => (
-                <div key={index} className="text-center">
-                  <img
-                    src={card.image}
-                    alt={card.name}
-                    className="w-full h-auto rounded-lg mb-2 transition-transform transform hover:scale-105 hover:brightness-90 duration-300 ease-in-out border-2 border-red-500"
-                  />
-                  <p className="text-sm font-medium text-gray-200">{card.name}</p>
+            {decks.length > 0 ? (
+              decks.map((deck) => (
+                <div
+                  key={deck.idbarajas} // Asegúrate de que cada _id sea único
+                  className="bg-gray-800 p-4 rounded-lg cursor-pointer hover:bg-gray-700"
+                  onClick={() => handleDeckClick(deck.idbarajas)}
+                >
+                  <h4 className="text-gray-200">{deck.name}</h4>
                 </div>
               ))
             ) : (
-              <p className="text-gray-400">No hay cartas favoritas aún.</p>
+              <p className="text-gray-400">No tienes mazos creados.</p>
             )}
           </div>
         </div>
 
-        {/* Sección de mazos */}
         <div className="bg-black p-6 rounded-lg shadow-md border border-red-500">
-          <h3 className="text-xl font-semibold mb-4 text-red-500">Mazos Creados</h3>
-          <div className="space-y-4">
-            {profile.decks.length > 0 ? (
-              profile.decks.map((deck, index) => (
-                <div key={index} className="bg-gray-800 p-4 rounded-md border border-red-500">
-                  <h4 className="text-lg font-semibold text-red-500">{deck.name}</h4>
-                  <p className="text-gray-200">{deck.description}</p>
+          <h3 className="text-xl font-semibold mb-4 text-red-500">Cartas Favoritas</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {favoriteCards.length > 0 ? (
+              favoriteCards.map((card) => (
+                <div key={card.id} className="bg-gray-800 p-4 rounded-lg relative">
+                  <img src={card.imageUrl} alt={card.name} className="w-full h-auto mb-2" />
+                  <h4 className="text-gray-200">{card.name}</h4>
+                  <button
+                    onClick={() => handleDeleteFavoriteCard(card.id)}
+                    className="absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none"
+                    title="Eliminar carta favorita"
+                  >
+                    ❤️
+                  </button>
                 </div>
               ))
             ) : (
-              <p className="text-gray-400">No hay mazos creados aún.</p>
+              <p className="text-gray-400">No hay cartas favoritas.</p>
             )}
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Cards from "./components/Cards";
@@ -19,35 +19,33 @@ function App() {
   return (
     <div className="App flex flex-col min-h-screen">
       <UserProvider>
-        <Router>
-          <Navbar />
-          <div className="flex-grow">
-            <Routes>
-              <Route path="/" element={
-                <>
-                  <Hero />
-                  <Cards />
-                  <News />
-                </>
-              } />
-              <Route path="/cartas" element={<Cartas />} />
-              <Route path="/decks" element={<Decks />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/noticias" element={
-                <>
-                  <h1 className="text-center text-orange-500 text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
-                  <Noticias /><br></br>
-                  <h2 className="text-center text-orange-500 text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
-                  <Events /><br></br>
-                  <h3 className="text-center text-orange-500 text-4xl font-bold">CREADORES DE CONTENIDO</h3>
-                  <Creadores />
-                </>
-              } />
-            </Routes>
-          </div>
-          <Footer />
-        </Router>
+        <Navbar />
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/" element={
+              <>
+                <Hero />
+                <Cards />
+                <News />
+              </>
+            } />
+            <Route path="/cartas" element={<Cartas />} />
+            <Route path="/decks" element={<Decks />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/noticias" element={
+              <>
+                <h1 className="text-center text-orange-500 text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
+                <Noticias /><br></br>
+                <h2 className="text-center text-orange-500 text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
+                <Events /><br></br>
+                <h3 className="text-center text-orange-500 text-4xl font-bold">CREADORES DE CONTENIDO</h3>
+                <Creadores />
+              </>
+            } />
+          </Routes>
+        </div>
+        <Footer />
       </UserProvider>
     </div>
   );
