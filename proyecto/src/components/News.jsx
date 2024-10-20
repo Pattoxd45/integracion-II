@@ -32,7 +32,7 @@ const News = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get("https://magicarduct.online:3001/api/news");
+        const response = await axios.get("https://magicarduct.online:3001/api/news2");
         const newsWithImages = assignImagesToNews(response.data); // Asignar imágenes a cada noticia
         setNews(newsWithImages);
         if (response.data.length === 0) {

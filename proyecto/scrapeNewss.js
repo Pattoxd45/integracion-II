@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-async function scrapeNews() {
+async function scrapeNewss() {
     const { data } = await axios.get('https://magic.wizards.com/es/news');
     const $ = cheerio.load(data);
 
@@ -19,11 +19,11 @@ async function scrapeNews() {
             description,
             authorName,
             authorImageUrl,
-            link: `https://magic.wizards.com${link}`
+            link,
         });
     });
 
     return articles;
 }
 
-module.exports = scrapeNews;
+module.exports = scrapeNewss;

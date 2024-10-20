@@ -25,7 +25,7 @@ const Noticias = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/noticias'); // Cambiar a http si estás en local
+        const response = await fetch('https://magicarduct.online:3001/api/noticias2'); // Cambiar a http si estás en local
         if (!response.ok) {
           throw new Error('Error en la conexión');
         }

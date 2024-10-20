@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-async function scrapeNoticias() {
+async function scrapeNoticiass() {
     const meristationUrl = 'https://as.com/meristation/juegos/magic-the-gathering/noticias/';
     const ignUrl = 'https://es.ign.com/magic-the-gathering';
 
@@ -60,4 +60,4 @@ async function scrapeNoticias() {
     return articles;
 }
 
-module.exports = scrapeNoticias;
+module.exports = scrapeNoticiass;

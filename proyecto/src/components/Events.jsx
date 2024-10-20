@@ -9,7 +9,7 @@ const Events = () => {
   const [loading, setLoading] = useState(true); // Estado de carga
 
   useEffect(() => {
-    axios.get("http://localhost:3001/api/events") // Cambié la ruta
+    axios.get("https://magicarduct.online:3001/api/events2") // Cambié la ruta
       .then(response => {
         setEvents(response.data);
       })

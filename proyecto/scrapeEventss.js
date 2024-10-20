@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-async function scrapeEvents() {
+async function scrapeEventss() {
     const { data } = await axios.get('https://magic.gg/events');
     const $ = cheerio.load(data);
 
@@ -24,4 +24,4 @@ async function scrapeEvents() {
     return events;
 }
 
-module.exports = scrapeEvents;
+module.exports = scrapeEventss;
