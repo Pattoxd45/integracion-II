@@ -235,9 +235,6 @@ const Cartas = () => {
   </select>
 </div>
 
-
-
-      {/* Componente de filtros */}
       <FilterSection 
         showFilters={showFilters} 
         toggleFilters={toggleFilters} 
@@ -272,7 +269,6 @@ const Cartas = () => {
                   {card.toughness && <p className="text-gray-400">Resistencia: {card.toughness}</p>}
                 </div>
 
-                {/* Botón de favorito */}
                 <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -285,7 +281,6 @@ const Cartas = () => {
                     {isFavorite(card.id) ? '♥' : '♡'}
                     </button>
 
-                {/* Mostrar círculo para selección si estamos añadiendo cartas */}
                 {addingCards && (
                   <div
                     className={`absolute right-3 top-3 w-5 h-5 rounded-full border-2 ${
@@ -307,7 +302,6 @@ const Cartas = () => {
         </div>
       )}
 
-      {/* Botón flotante: solo visible si hay cartas seleccionadas */}
       {selectedCards.length > 0 && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-[1200px]">
           <div className="flex justify-end">
@@ -322,7 +316,6 @@ const Cartas = () => {
         </div>
       )}
 
-      {/* Modal para seleccionar baraja */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
           <div className="bg-white p-5 rounded-lg w-[400px]">
@@ -353,7 +346,6 @@ const Cartas = () => {
         </div>
       )}
 
-      {/* Popup de detalles de carta seleccionada */}
       {selectedCard && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
           <div className="flex bg-gray-900 p-6 rounded-lg w-full max-w-4xl flex-col">
