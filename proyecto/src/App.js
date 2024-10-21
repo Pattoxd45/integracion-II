@@ -11,7 +11,7 @@ import Noticias from "./components/Noticias";
 import Events from "./components/Events";
 import Profile from "./components/Profile";
 import Decks from "./components/Decks";
-import About from "./components/about";
+import About from "./components/About";
 
 import { UserProvider } from "./components/UserContext";
 
