@@ -35,11 +35,12 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/noticias" element={
               <>
-                <h1 className="text-center text-orange-500 text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
+                <br></br>
+                <h1 className="text-center text-[#e2e7eb] text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
                 <Noticias /><br></br>
-                <h2 className="text-center text-orange-500 text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
+                <h2 className="text-center text-[#e2e7eb] text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
                 <Events /><br></br>
-                <h3 className="text-center text-orange-500 text-4xl font-bold">CREADORES DE CONTENIDO</h3>
+                <h3 className="text-center text-[#e2e7eb] text-4xl font-bold">CREADORES DE CONTENIDO</h3>
                 <Creadores />
               </>
             } />

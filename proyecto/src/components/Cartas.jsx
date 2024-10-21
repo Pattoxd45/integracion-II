@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import { IoIosAdd } from 'react-icons/io'; // Importamos el icono de añadir
-import { useLocation } from 'react-router-dom'; // Importar para detectar el estado de navegación
-import { getDecks, addCardsToDeck } from './db'; // Importar la función para obtener barajas y agregar cartas
-import Favorites from './Favorites'; // Importamos el componente de favoritos
+import { IoIosAdd } from "react-icons/io";
+import Favorites from './Favorites'; 
+import { useUser } from './UserContext';
 
 const Cartas = () => {
+  const { userId } = useUser(); // Obtener el userId del contexto
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,24 +13,24 @@ const Cartas = () => {
     order: 'name',
     dir: 'auto',
     colors: [],
-    cdm: '',  
+    cdm: '',
     power: '',
     toughness: '',
     type: '',
-    edition: '', 
-    subtype: '', 
+    edition: '',
+    subtype: '',
   });
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
-  const [favorites, setFavorites] = useState([]); // Estado de favoritos
-  const [selectedCard, setSelectedCard] = useState(null); // Estado para popup de carta seleccionada
-  const [selectedCards, setSelectedCards] = useState([]); // Estado para las cartas seleccionadas
-  const [decks, setDecks] = useState([]); // Almacenar las barajas
-  const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de barajas
+  const [favorites, setFavorites] = useState([]);
+  const [selectedCards, setSelectedCards] = useState([]); // Cartas seleccionadas
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [decks, setDecks] = useState([]); // Barajas del usuario
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
+  const [selectedDeck, setSelectedDeck] = useState(null); // Baraja seleccionada
+  const [filtersVisible, setFiltersVisible] = useState(false); // Estado para mostrar u ocultar filtros
 
-  const location = useLocation(); // Hook para obtener el estado de navegación
-  const addingCards = location.state?.addingCards || false; // Detectar si estamos añadiendo cartas
-
+  // Cargar sets y subtipos
   useEffect(() => {
     fetch('https://api.scryfall.com/sets')
       .then(response => response.json())
@@ -41,11 +41,32 @@ const Cartas = () => {
       .then(data => setSubtypes(data.data || []));
   }, []);
 
+  // Obtener las barajas del usuario
   useEffect(() => {
-    fetchCards();
-  }, [searchQuery, filter]);
+    const fetchDecks = async () => {
+      if (!userId) {
+        console.log('No se encontró userId');
+        return; // Si no hay usuario, no hacemos nada
+      }
 
-  const fetchCards = () => {
+      try {
+        const response = await fetch(`https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setDecks(data); // Almacenar las barajas en el estado
+        } else {
+          console.error("Error al obtener las barajas");
+        }
+      } catch (error) {
+        console.error("Error en la petición:", error); // Mostrar error en consola
+      }
+    };
+
+    fetchDecks();
+  }, [userId]);
+
+  // Función para obtener las cartas según los filtros
+  const fetchCards = useCallback(() => {
     setLoading(true);
     const colorsQuery = filter.colors.length ? `+color:${filter.colors.join(',')}` : '';
     const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';  
@@ -68,7 +89,11 @@ const Cartas = () => {
         setLoading(false);
         setCards([]);
       });
-  };
+  }, [searchQuery, filter]);
+
+  useEffect(() => {
+    fetchCards();
+  }, [searchQuery, filter, fetchCards]);
 
   const handleSearch = (event) => setSearchQuery(event.target.value);
   const handleFilterChange = (field) => (event) => {
@@ -83,16 +108,6 @@ const Cartas = () => {
     }));
   };
 
-  // Manejar la selección de cartas (checkbox o círculo)
-  const handleSelectCard = (cardId) => {
-    if (selectedCards.includes(cardId)) {
-      setSelectedCards(selectedCards.filter(id => id !== cardId));
-    } else {
-      setSelectedCards([...selectedCards, cardId]);
-    }
-  };
-
-  // Manejar la selección de favoritos
   const toggleFavorite = (card) => {
     setFavorites((prevFavorites) => {
       if (prevFavorites.some((favorite) => favorite.id === card.id)) {
@@ -103,12 +118,19 @@ const Cartas = () => {
     });
   };
 
-  // Manejar el click de la carta (abrir popup)
+  const toggleSelectCard = (card) => {
+    if (selectedCards.some((selected) => selected.id === card.id)) {
+      setSelectedCards([]); // Deselect if clicked again
+    } else {
+      setSelectedCards([card]); // Only allow one card to be selected at a time
+    }
+  };
+
   const handleCardClick = (card) => {
     setSelectedCard(card);
   };
 
-  const closeModalCard = () => {
+  const closeModal = () => {
     setSelectedCard(null);
   };
 
@@ -124,44 +146,56 @@ const Cartas = () => {
     setSelectedCard(cards[prevIndex]);
   };
 
-  // Abrir el modal y obtener las barajas de IndexedDB
-  const openModal = async () => {
-    const savedDecks = await getDecks(); // Obtener barajas de IndexedDB
-    setDecks(savedDecks || []);
-    setShowModal(true); // Mostrar el modal
+  const openModal = () => setIsModalOpen(true);
+  const closeDeckModal = () => setIsModalOpen(false);
+
+  const handleDeckSelect = (deck) => {
+    if (selectedDeck?.idbarajas === deck.idbarajas) {
+      setSelectedDeck(null); // Deselecciona si se hace clic de nuevo
+    } else {
+      setSelectedDeck(deck); // Selecciona la baraja
+    }
   };
 
-  // Cerrar el modal
-  const closeModal = () => {
-    setShowModal(false);
+  // Función que envía la carta seleccionada al mazo a través de la API
+  const handleAddCardsToDeck = async () => {
+    if (!selectedDeck || selectedCards.length === 0) {
+      console.log('No se ha seleccionado ninguna baraja o carta');
+      return;
+    }
+
+    const selectedCardId = selectedCards[0].id; // Obtener el ID de Scryfall de la primera carta seleccionada
+
+    try {
+      const response = await fetch('https://magicarduct.online:3000/api/agregarcartas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          IDmazo: selectedDeck.idbarajas, // ID del mazo seleccionado
+          IDcarta: selectedCardId, // ID de la carta seleccionada
+          cantidad: 1 // Siempre 1
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Carta añadida correctamente:', data);
+      } else {
+        console.error('Error al añadir la carta al mazo:', await response.json());
+      }
+    } catch (error) {
+      console.error('Error al realizar la solicitud:', error);
+    }
   };
 
-  // Manejar la selección de una baraja para agregar cartas
-  const handleSelectDeck = async (deckId) => {
-    const selectedCardNames = selectedCards.map(cardId => {
-      const card = cards.find(card => card.id === cardId);
-      return {
-        id: card.id,
-        name: card.name,
-        image: card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`,
-        mana: card.mana_cost || "Desconocido",
-        type: card.type_line || "Desconocido",
-        power: card.power || null,
-        toughness: card.toughness || null,
-      };
-    });
-
-    // Agregar las cartas seleccionadas a la baraja
-    await addCardsToDeck(deckId, selectedCardNames);
-    setSelectedCards([]); // Limpiar las cartas seleccionadas
-    closeModal(); // Cerrar el modal
+  const toggleFiltersVisibility = () => {
+    setFiltersVisible(!filtersVisible);
   };
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen">
-      <h1 className="text-white text-4xl mb-8">Magic the Gathering Cards</h1>
-      
-      {/* Componente de Favoritos */}
+    <div className="p-6 min-h-screen">
       <Favorites favorites={favorites} toggleFavorite={toggleFavorite} />
 
       <div className="mb-4 flex items-center">
@@ -172,214 +206,224 @@ const Cartas = () => {
           placeholder="Buscar cartas..."
           className="p-2 rounded border border-gray-500"
         />
-        <FaSearch className="ml-2 text-white" />
-        <select onChange={handleFilterChange('order')} className="ml-4 p-2 rounded border border-gray-500">
-          <option value="name">Ordenar por Nombre</option>
-          <option value="set">Ordenar por Set</option>
-          <option value="released">Ordenar por Fecha de Lanzamiento</option>
-          <option value="cdm">Ordenar por CDM</option>
-        </select>
-        <select onChange={handleFilterChange('dir')} className="ml-2 p-2 rounded border border-gray-500">
-          <option value="auto">Dirección Automática</option>
-          <option value="asc">Ascendente</option>
-          <option value="desc">Descendente</option>
-        </select>
+        <FaSearch className="ml-2 text-[#e2e7eb]" />
+        <button
+          onClick={toggleFiltersVisibility}
+          className="ml-4 bg-[#2a5880] text-[#e2e7eb] rounded-[10px] p-[10px] hover:opacity-70 transition"
+        >
+          Filtros
+        </button>
       </div>
 
-      <div className="mb-4">
-        <label className="text-white mr-4">Colores:</label>
-        {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
-          <label key={color} className="text-white mr-4">
-            <input
-              type="checkbox"
-              value={color}
-              onChange={handleColorsChange}
-              className="mr-1"
-            />
-            {color}
-          </label>
-        ))}
-      </div>
+      {/* Mostrar filtros si están visibles */}
+      {filtersVisible && (
+        <div className="filters-section mb-4">
+          <div className="mb-4">
+            <label className="text-[#e2e7eb] mr-4">Colores:</label>
+            {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
+              <label key={color} className="text-[#e2e7eb] mr-4">
+                <input
+                  type="checkbox"
+                  value={color}
+                  onChange={handleColorsChange}
+                  className="mr-1"
+                />
+                {color}
+              </label>
+            ))}
+          </div>
 
-      <div className="mb-4 flex flex-wrap">
-        <div className="mr-4">
-          <label className="text-white mr-2">CDM:</label>
-          <input
-            type="number"
-            value={filter.cdm}
-            onChange={handleFilterChange('cdm')}
-            placeholder="Costo de Maná"
-            className="p-2 rounded border border-gray-500"
-          />
+          <div className="mb-4 flex flex-wrap">
+            <div className="mr-4">
+              <label className="text-[#e2e7eb] mr-2">CDM:</label>
+              <input
+                type="number"
+                value={filter.cdm}
+                onChange={handleFilterChange('cdm')}
+                placeholder="Costo de Maná"
+                className="p-2 rounded border border-gray-500"
+              />
+            </div>
+
+            <div className="mr-4">
+              <label className="text-[#e2e7eb] mr-2">Poder:</label>
+              <input
+                type="number"
+                value={filter.power}
+                onChange={handleFilterChange('power')}
+                placeholder="Poder"
+                className="p-2 rounded border border-gray-500"
+              />
+            </div>
+
+            <div className="mr-4">
+              <label className="text-[#e2e7eb] mr-2">Resistencia:</label>
+              <input
+                type="number"
+                value={filter.toughness}
+                onChange={handleFilterChange('toughness')}
+                placeholder="Resistencia"
+                className="p-2 rounded border border-gray-500"
+              />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="text-[#e2e7eb] mr-4">Tipo:</label>
+            <select onChange={handleFilterChange('type')} className="p-2 rounded border border-gray-500">
+              <option value="">Cualquier Tipo</option>
+              <option value="creature">Criatura</option>
+              <option value="artifact">Artefacto</option>
+              <option value="enchantment">Encantamiento</option>
+              <option value="land">Tierra</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="text-[#e2e7eb] mr-4">Edición:</label>
+            <select onChange={handleFilterChange('edition')} className="p-2 rounded border border-gray-500">
+              <option value="">Seleccionar Edición</option>
+              {sets.map((set) => (
+                <option key={set.code} value={set.code}>
+                  {set.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="text-[#e2e7eb] mr-4">Subtipo:</label>
+            <select onChange={handleFilterChange('subtype')} className="p-2 rounded border border-gray-500">
+              <option value="">Seleccionar Subtipo</option>
+              {subtypes.map((subtype) => (
+                <option key={subtype} value={subtype}>
+                  {subtype}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-
-        <div className="mr-4">
-          <label className="text-white mr-2">Poder:</label>
-          <input
-            type="number"
-            value={filter.power}
-            onChange={handleFilterChange('power')}
-            placeholder="Poder"
-            className="p-2 rounded border border-gray-500"
-          />
-        </div>
-
-        <div className="mr-4">
-          <label className="text-white mr-2">Resistencia:</label>
-          <input
-            type="number"
-            value={filter.toughness}
-            onChange={handleFilterChange('toughness')}
-            placeholder="Resistencia"
-            className="p-2 rounded border border-gray-500"
-          />
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <label className="text-white mr-4">Tipo:</label>
-        <select onChange={handleFilterChange('type')} className="p-2 rounded border border-gray-500">
-          <option value="">Cualquier Tipo</option>
-          <option value="creature">Criatura</option>
-          <option value="artifact">Artefacto</option>
-          <option value="enchantment">Encantamiento</option>
-          <option value="land">Tierra</option>
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label className="text-white mr-4">Edición:</label>
-        <select onChange={handleFilterChange('edition')} className="p-2 rounded border border-gray-500">
-          <option value="">Seleccionar Edición</option>
-          {sets.map((set) => (
-            <option key={set.code} value={set.code}>
-              {set.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label className="text-white mr-4">Subtipo:</label>
-        <select onChange={handleFilterChange('subtype')} className="p-2 rounded border border-gray-500">
-          <option value="">Seleccionar Subtipo</option>
-          {subtypes.map((subtype) => (
-            <option key={subtype} value={subtype}>
-              {subtype}
-            </option>
-          ))}
-        </select>
-      </div>
+      )}
 
       {loading ? (
-        <p className="text-white">Cargando cartas...</p>
+        <p className="text-[#e2e7eb]">Cargando cartas...</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.isArray(cards) && cards.length > 0 ? (
             cards.map((card) => (
               <div
                 key={card.id}
-                className="relative bg-gray-800 p-4 rounded-lg shadow-lg cursor-pointer"
+                className="bg-[#12181E] rounded-lg p-4 cursor-pointer relative"
                 onClick={() => handleCardClick(card)}
               >
                 <img
-                  src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`}
+                  src={card.image_uris?.normal || `${process.env.PUBLIC_URL}/Cartas2.png`}
                   alt={card.name}
-                  className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
+                  className="rounded-lg"
                 />
-
-                <div className="mt-4">
-                  <h2 className="text-white text-lg font-bold">{card.name}</h2>
-                  <p className="text-gray-400">{card.type_line}</p>
-                  {card.power && <p className="text-gray-400">Poder: {card.power}</p>}
-                  {card.toughness && <p className="text-gray-400">Resistencia: {card.toughness}</p>}
-                </div>
-
-                {/* Botón de favorito */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(card);
-                  }}
-                  className={`absolute top-2 left-2 text-2xl ${
-                    favorites.some((favorite) => favorite.id === card.id) ? 'text-red-600' : 'text-white'
-                  }`}
-                >
-                  {favorites.some((favorite) => favorite.id === card.id) ? '♥' : '♡'}
-                </button>
-
-                {/* Mostrar círculo para selección si estamos añadiendo cartas */}
-                {addingCards && (
-                  <div
-                    className={`absolute right-3 top-3 w-5 h-5 rounded-full border-2 ${
-                      selectedCards.includes(card.id)
-                        ? "bg-orange-500 border-white"
-                        : "border-white"
-                    }`}
+                <h3 className="text-[#e2e7eb] text-lg mt-2">{card.name}</h3>
+                <div className="absolute top-2 right-2 flex items-center space-x-2">
+                  {/* Ícono de favorito */}
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleSelectCard(card.id);
+                      toggleFavorite(card);
                     }}
-                  ></div>
-                )}
+                    className={`text-3xl ${
+                      favorites.some((favorite) => favorite.id === card.id)
+                        ? 'text-red-600'
+                        : 'text-[#e2e7eb]'
+                    }`}
+                  >
+                    {favorites.some((favorite) => favorite.id === card.id) ? '♥' : '♡'}
+                  </button>
+
+                  {/* Círculo de selección */}
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSelectCard(card);
+                    }}
+                    className={`w-5 h-5 rounded-full border-2 ${
+                      selectedCards.some((selected) => selected.id === card.id)
+                        ? 'bg-[#2a5880] border-[#2a5880]'
+                        : 'bg-white border-gray-300'
+                    } cursor-pointer`}
+                  />
+                </div>
               </div>
             ))
           ) : (
-            <p className="text-white">No se encontraron cartas.</p>
+            <p className="text-[#e2e7eb]">No se encontraron cartas.</p>
           )}
         </div>
       )}
 
-      {/* Botón flotante: solo visible si hay cartas seleccionadas */}
+      {/* Mostrar el botón de añadir si hay cartas seleccionadas */}
       {selectedCards.length > 0 && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-[1200px]">
           <div className="flex justify-end">
             <button
-              className="bg-[#E83411] text-white rounded-[10px] p-[10px] hover:bg-[#b52e0e] transition-colors flex items-center justify-center"
-              style={{ width: "50px", height: "50px" }}
               onClick={openModal}
+              className="bg-[#2a5880] text-[#e2e7eb] rounded-[10px] p-[10px] hover:opacity-70 transition flex items-center justify-center"
+              style={{ width: "50px", height: "50px" }}
             >
-              <IoIosAdd className="text-white text-[24px]" />
+              <IoIosAdd className="text-[#e2e7eb] text-[24px]" />
             </button>
           </div>
         </div>
       )}
 
-      {/* Modal para seleccionar baraja */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
-          <div className="bg-white p-5 rounded-lg w-[400px]">
-            <h2 className="text-xl font-bold mb-4">Seleccionar Baraja</h2>
+      {/* Modal para seleccionar la baraja */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+          <div
+            className="bg-[#0b0f14] p-6 rounded-lg min-w-[500px]"
+            style={{ maxWidth: selectedDeck ? `${selectedDeck.nombre.length + 10}ch` : "400px" }}
+          >
+            <h2 className="text-[#e2e7eb] text-2xl mb-4">Selecciona una baraja</h2>
+
+            {/* Mostrar las barajas del usuario */}
             {decks.length > 0 ? (
               <ul className="mb-4">
                 {decks.map((deck) => (
-                  <li key={deck.id} className="mb-2">
-                    <button
-                      className="w-full bg-[#E83411] text-white p-2 rounded-md"
-                      onClick={() => handleSelectDeck(deck.id)}
-                    >
-                      {deck.name}
-                    </button>
+                  <li
+                    key={deck.idbarajas}
+                    onClick={() => handleDeckSelect(deck)}
+                    className={`text-[#e2e7eb] mb-2 flex items-center cursor-pointer ${
+                      selectedDeck?.idbarajas === deck.idbarajas ? "bg-[#2a5880]" : "bg-[#1E1E1E]"
+                    } p-2 rounded-lg`}
+                  >
+                    {deck.nombre}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-gray-700">No hay barajas disponibles.</p>
+              <p className="text-[#e2e7eb]">No tienes barajas disponibles.</p>
             )}
-            <button
-              className="bg-gray-400 px-4 py-2 rounded-md hover:bg-gray-500"
-              onClick={closeModal}
-            >
-              Cerrar
-            </button>
+
+            {/* Botones de cancelar y añadir */}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={closeDeckModal}
+                className="bg-gray-500 text-[#e2e7eb] px-4 py-2 rounded hover:bg-gray-700 transition"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAddCardsToDeck}
+                className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#3587cf] transition"
+              >
+                Añadir
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Popup de detalles de carta seleccionada */}
       {selectedCard && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
-          <div className="flex bg-gray-900 p-6 rounded-lg w-full max-w-4xl flex-col">
+          <div className="flex bg-[#0b0f14] p-6 rounded-lg w-full max-w-4xl flex-col">
             <div className="w-full p-4 flex">
               <div className="w-1/2 p-4">
                 <img
@@ -389,33 +433,33 @@ const Cartas = () => {
                 />
               </div>
               <div className="w-1/2 p-4">
-                <h2 className="text-white text-2xl mb-4">{selectedCard.name}</h2>
-                <p className="text-white"><strong>Tipo:</strong> {selectedCard.type_line}</p>
-                <p className="text-white"><strong>Costo de Maná:</strong> {selectedCard.mana_cost || 'N/A'}</p>
-                <p className="text-white"><strong>Texto:</strong> {selectedCard.oracle_text || 'N/A'}</p>
-                <p className="text-white"><strong>Rareza:</strong> {selectedCard.rarity}</p>
-                <p className="text-white"><strong>Edición:</strong> {selectedCard.set_name}</p>
+                <h2 className="text-[#e2e7eb] text-2xl mb-4">{selectedCard.name}</h2>
+                <p className="text-[#e2e7eb]"><strong>Tipo:</strong> {selectedCard.type_line}</p>
+                <p className="text-[#e2e7eb]"><strong>Costo de Maná:</strong> {selectedCard.mana_cost || 'N/A'}</p>
+                <p className="text-[#e2e7eb]"><strong>Texto:</strong> {selectedCard.oracle_text || 'N/A'}</p>
+                <p className="text-[#e2e7eb]"><strong>Rareza:</strong> {selectedCard.rarity}</p>
+                <p className="text-[#e2e7eb]"><strong>Edición:</strong> {selectedCard.set_name}</p>
               </div>
             </div>
 
-            <div className="flex justify-between mt-8">
+            <div className="flex justify-between">
               <button
                 onClick={handlePreviousCard}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors w-full mr-2"
+                className="bg-[#3587cf] text-[#e2e7eb] px-4 py-2 rounded hover:opacity-60 transition w-full mr-2"
               >
                 Anterior
               </button>
               <button
                 onClick={handleNextCard}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors w-full ml-2"
+                className="bg-[#3587cf] text-[#e2e7eb] px-4 py-2 rounded hover:opacity-60 transition w-full ml-2"
               >
                 Siguiente
               </button>
             </div>
 
             <button
-              onClick={closeModalCard}
-              className="mt-8 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition-colors w-full"
+              onClick={closeModal}
+              className="mt-4 bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:opacity-60 transition w-full"
             >
               Cerrar
             </button>
@@ -424,6 +468,6 @@ const Cartas = () => {
       )}
     </div>
   );
-};
+};  
 
 export default Cartas;

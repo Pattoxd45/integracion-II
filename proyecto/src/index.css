@@ -4,7 +4,9 @@
 
 @import url('https://fonts.googleapis.com/css?family=Varta:700|Varta:400');
 
+
 body {
+  background-color: #0b0f14;
   font-family: 'Varta', sans-serif;
   font-weight: 400;
 }
