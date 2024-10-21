@@ -81,7 +81,7 @@ const Navbar = () => {
                     {userId ? (
                       <>
                         <li className="hover:opacity-70 transition">
-                          <Link to="/Profile">Perfil</Link>
+                          <Link to="/profile">Perfil</Link>
                         </li>
                         <li class name="hover:opacity-70 transition">
                           <Link to="/decks">Barajas</Link>

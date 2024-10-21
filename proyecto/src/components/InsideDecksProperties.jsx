@@ -202,9 +202,6 @@ const InsideDecksProperties = () => {
           </div>
         </div>
       </div>
-
-      {/* Rectángulo adicional con width completo y altura fija */}
-      <div className="w-full h-[550px] bg-[#12181E] rounded-md"></div>
     </div>
   );
 };

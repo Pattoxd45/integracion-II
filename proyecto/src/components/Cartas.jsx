@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { IoIosAdd } from "react-icons/io";
 import Favorites from './Favorites'; 
-import { useUser } from './UserContext'; // Asumiendo que tienes un contexto para obtener el userId
+import { useUser } from './UserContext';
 
 const Cartas = () => {
   const { userId } = useUser(); // Obtener el userId del contexto
@@ -28,6 +28,7 @@ const Cartas = () => {
   const [decks, setDecks] = useState([]); // Barajas del usuario
   const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
   const [selectedDeck, setSelectedDeck] = useState(null); // Baraja seleccionada
+  const [filtersVisible, setFiltersVisible] = useState(false); // Estado para mostrar u ocultar filtros
 
   // Cargar sets y subtipos
   useEffect(() => {
@@ -119,9 +120,9 @@ const Cartas = () => {
 
   const toggleSelectCard = (card) => {
     if (selectedCards.some((selected) => selected.id === card.id)) {
-      setSelectedCards(selectedCards.filter((selected) => selected.id !== card.id));
+      setSelectedCards([]); // Deselect if clicked again
     } else {
-      setSelectedCards([...selectedCards, card]);
+      setSelectedCards([card]); // Only allow one card to be selected at a time
     }
   };
 
@@ -156,17 +157,41 @@ const Cartas = () => {
     }
   };
 
-  // Función que imprime por consola el id de la baraja y las cartas seleccionadas
-  const handleAddCardsToDeck = () => {
+  // Función que envía la carta seleccionada al mazo a través de la API
+  const handleAddCardsToDeck = async () => {
     if (!selectedDeck || selectedCards.length === 0) {
       console.log('No se ha seleccionado ninguna baraja o carta');
       return;
     }
 
-    const selectedCardIds = selectedCards.map(card => card.id);
+    const selectedCardId = selectedCards[0].id; // Obtener el ID de Scryfall de la primera carta seleccionada
 
-    console.log('Baraja seleccionada:', selectedDeck.idbarajas);
-    console.log('Cartas seleccionadas:', selectedCardIds);
+    try {
+      const response = await fetch('https://magicarduct.online:3000/api/agregarcartas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          IDmazo: selectedDeck.idbarajas, // ID del mazo seleccionado
+          IDcarta: selectedCardId, // ID de la carta seleccionada
+          cantidad: 1 // Siempre 1
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Carta añadida correctamente:', data);
+      } else {
+        console.error('Error al añadir la carta al mazo:', await response.json());
+      }
+    } catch (error) {
+      console.error('Error al realizar la solicitud:', error);
+    }
+  };
+
+  const toggleFiltersVisibility = () => {
+    setFiltersVisible(!filtersVisible);
   };
 
   return (
@@ -182,103 +207,103 @@ const Cartas = () => {
           className="p-2 rounded border border-gray-500"
         />
         <FaSearch className="ml-2 text-[#e2e7eb]" />
-        <select onChange={handleFilterChange('order')} className="ml-4 p-2 rounded border border-gray-500">
-          <option value="name">Ordenar por Nombre</option>
-          <option value="set">Ordenar por Set</option>
-          <option value="released">Ordenar por Fecha de Lanzamiento</option>
-          <option value="cdm">Ordenar por CDM</option>
-        </select>
-        <select onChange={handleFilterChange('dir')} className="ml-2 p-2 rounded border border-gray-500">
-          <option value="auto">Dirección Automática</option>
-          <option value="asc">Ascendente</option>
-          <option value="desc">Descendente</option>
-        </select>
+        <button
+          onClick={toggleFiltersVisibility}
+          className="ml-4 bg-[#2a5880] text-[#e2e7eb] rounded-[10px] p-[10px] hover:opacity-70 transition"
+        >
+          Filtros
+        </button>
       </div>
 
-      <div className="mb-4">
-        <label className="text-[#e2e7eb] mr-4">Colores:</label>
-        {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
-          <label key={color} className="text-[#e2e7eb] mr-4">
-            <input
-              type="checkbox"
-              value={color}
-              onChange={handleColorsChange}
-              className="mr-1"
-            />
-            {color}
-          </label>
-        ))}
-      </div>
+      {/* Mostrar filtros si están visibles */}
+      {filtersVisible && (
+        <div className="filters-section mb-4">
+          <div className="mb-4">
+            <label className="text-[#e2e7eb] mr-4">Colores:</label>
+            {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
+              <label key={color} className="text-[#e2e7eb] mr-4">
+                <input
+                  type="checkbox"
+                  value={color}
+                  onChange={handleColorsChange}
+                  className="mr-1"
+                />
+                {color}
+              </label>
+            ))}
+          </div>
 
-      <div className="mb-4 flex flex-wrap">
-        <div className="mr-4">
-          <label className="text-[#e2e7eb] mr-2">CDM:</label>
-          <input
-            type="number"
-            value={filter.cdm}
-            onChange={handleFilterChange('cdm')}
-            placeholder="Costo de Maná"
-            className="p-2 rounded border border-gray-500"
-          />
+          <div className="mb-4 flex flex-wrap">
+            <div className="mr-4">
+              <label className="text-[#e2e7eb] mr-2">CDM:</label>
+              <input
+                type="number"
+                value={filter.cdm}
+                onChange={handleFilterChange('cdm')}
+                placeholder="Costo de Maná"
+                className="p-2 rounded border border-gray-500"
+              />
+            </div>
+
+            <div className="mr-4">
+              <label className="text-[#e2e7eb] mr-2">Poder:</label>
+              <input
+                type="number"
+                value={filter.power}
+                onChange={handleFilterChange('power')}
+                placeholder="Poder"
+                className="p-2 rounded border border-gray-500"
+              />
+            </div>
+
+            <div className="mr-4">
+              <label className="text-[#e2e7eb] mr-2">Resistencia:</label>
+              <input
+                type="number"
+                value={filter.toughness}
+                onChange={handleFilterChange('toughness')}
+                placeholder="Resistencia"
+                className="p-2 rounded border border-gray-500"
+              />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="text-[#e2e7eb] mr-4">Tipo:</label>
+            <select onChange={handleFilterChange('type')} className="p-2 rounded border border-gray-500">
+              <option value="">Cualquier Tipo</option>
+              <option value="creature">Criatura</option>
+              <option value="artifact">Artefacto</option>
+              <option value="enchantment">Encantamiento</option>
+              <option value="land">Tierra</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="text-[#e2e7eb] mr-4">Edición:</label>
+            <select onChange={handleFilterChange('edition')} className="p-2 rounded border border-gray-500">
+              <option value="">Seleccionar Edición</option>
+              {sets.map((set) => (
+                <option key={set.code} value={set.code}>
+                  {set.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="text-[#e2e7eb] mr-4">Subtipo:</label>
+            <select onChange={handleFilterChange('subtype')} className="p-2 rounded border border-gray-500">
+              <option value="">Seleccionar Subtipo</option>
+              {subtypes.map((subtype) => (
+                <option key={subtype} value={subtype}>
+                  {subtype}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-
-        <div className="mr-4">
-          <label className="text-[#e2e7eb] mr-2">Poder:</label>
-          <input
-            type="number"
-            value={filter.power}
-            onChange={handleFilterChange('power')}
-            placeholder="Poder"
-            className="p-2 rounded border border-gray-500"
-          />
-        </div>
-
-        <div className="mr-4">
-          <label className="text-[#e2e7eb] mr-2">Resistencia:</label>
-          <input
-            type="number"
-            value={filter.toughness}
-            onChange={handleFilterChange('toughness')}
-            placeholder="Resistencia"
-            className="p-2 rounded border border-gray-500"
-          />
-        </div>
-      </div>
-
-      <div className="mb-4">
-        <label className="text-[#e2e7eb] mr-4">Tipo:</label>
-        <select onChange={handleFilterChange('type')} className="p-2 rounded border border-gray-500">
-          <option value="">Cualquier Tipo</option>
-          <option value="creature">Criatura</option>
-          <option value="artifact">Artefacto</option>
-          <option value="enchantment">Encantamiento</option>
-          <option value="land">Tierra</option>
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label className="text-[#e2e7eb] mr-4">Edición:</label>
-        <select onChange={handleFilterChange('edition')} className="p-2 rounded border border-gray-500">
-          <option value="">Seleccionar Edición</option>
-          {sets.map((set) => (
-            <option key={set.code} value={set.code}>
-              {set.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label className="text-[#e2e7eb] mr-4">Subtipo:</label>
-        <select onChange={handleFilterChange('subtype')} className="p-2 rounded border border-gray-500">
-          <option value="">Seleccionar Subtipo</option>
-          {subtypes.map((subtype) => (
-            <option key={subtype} value={subtype}>
-              {subtype}
-            </option>
-          ))}
-        </select>
-      </div>
+      )}
 
       {loading ? (
         <p className="text-[#e2e7eb]">Cargando cartas...</p>
