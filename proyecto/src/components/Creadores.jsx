@@ -1,21 +1,19 @@
 import React from "react";
-// npm install react-slick
 import Slider from "react-slick";
-// npm install slick-carousel
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 // Importa las imágenes directamente
-import imagen1 from "../images/imagen_1.jpg";
-import imagen2 from "../images/imagen_2.jpg";
-import imagen3 from "../images/imagen_3.jpg";
-import imagen4 from "../images/imagen_4.jpg";
-import imagen5 from "../images/imagen_5.jpg";
-import imagen6 from "../images/imagen_6.jpg";
-import imagen7 from "../images/imagen_7.jpg";
-import imagen8 from "../images/imagen_8.jpg";
-import imagen9 from "../images/imagen_9.jpg";
-import imagen10 from "../images/imagen_10.jpg";
+import imagen1 from "../images/imgCreadores/imagen_1.jpg";
+import imagen2 from "../images/imgCreadores/imagen_2.jpg";
+import imagen3 from "../images/imgCreadores/imagen_3.jpg";
+import imagen4 from "../images/imgCreadores/imagen_4.jpg";
+import imagen5 from "../images/imgCreadores/imagen_5.jpg";
+import imagen6 from "../images/imgCreadores/imagen_6.jpg";
+import imagen7 from "../images/imgCreadores/imagen_7.jpg";
+import imagen8 from "../images/imgCreadores/imagen_8.jpg";
+import imagen9 from "../images/imgCreadores/imagen_9.jpg";
+import imagen10 from "../images/imgCreadores/imagen_10.jpg";
 
 const Creadores = () => {
   const settings = {
@@ -30,19 +28,19 @@ const Creadores = () => {
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: 3, // Muestra 3 en pantallas grandes
         },
       },
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2, // Muestra 2 en tablets
         },
       },
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 1, // Muestra 1 en móviles
         },
       },
     ],
@@ -66,17 +64,17 @@ const Creadores = () => {
       <div className="p-10 rounded-lg text-white w-full">
         <Slider {...settings}>
           {creators.map((creator, index) => (
-            <div key={index} className="px-6">
+            <div key={index} className="flex justify-center">
               <a href={creator.link} target="_blank" rel="noopener noreferrer">
-                <div className="card w-[200px] h-[350px] bg-[#000] flex flex-col rounded-lg border-4 border-[#E83411] shadow-xl hover:border-[#e85438] transition-all duration-300 hover:shadow-[0_0_30px_rgba(232,52,17,1)]">
-                  <div className="flex-1 w-full h-[30%]">
+                <div className="card w-full max-w-[220px] bg-[#000] flex flex-col rounded-lg border-4 border-[#E83411] shadow-xl hover:border-[#e85438] transition-all duration-300 hover:shadow-[0_0_30px_rgba(232,52,17,1)]">
+                  <div className="relative w-full aspect-[4/3]">
                     <img
                       src={creator.imgSrc}
                       alt={creator.name}
-                      className="w-full object-cover border-b-4 border-[#E83411]"
+                      className="absolute inset-0 w-full h-full object-cover border-b-4 border-[#E83411] rounded-t-lg"
                     />
                   </div>
-                  <div className="h-[40%] flex flex-col justify-center text-center p-2">
+                  <div className="flex-1 flex flex-col justify-center text-center p-2">
                     <div className="font-bold text-[#FF7F50]">{creator.name}</div>
                     <div className="text-[#FFDAB9]">{creator.description}</div>
                   </div>

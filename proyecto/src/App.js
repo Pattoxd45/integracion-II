@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Cards from "./components/Cards";
@@ -10,35 +10,44 @@ import Creadores from "./components/Creadores";
 import Noticias from "./components/Noticias";
 import Events from "./components/Events";
 import Profile from "./components/Profile";
+import Decks from "./components/Decks";
+import About from "./components/About";
+
+import { UserProvider } from "./components/UserContext";
 
 function App() {
   return (
-    <div className="App">
-      <Router>
+    <div className="App flex flex-col min-h-screen">
+      <UserProvider>
         <Navbar />
-        <Routes>
-          <Route path="/" element={
-            <>
-              <Hero />
-              <Cards />
-              <News />
-            </>
-          } />
-          <Route path="/cartas" element={<Cartas />} />  
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/noticias" element={
-            <>
-              <h1 className="title">NOTICIAS IMPORTANTES</h1>
-              <Noticias />
-              <h2 className="title">PROXIMOS EVENTOS</h2>
-              <Events />
-              <h3 className="title">CREADORES DE CONTENIDO</h3>
-              <Creadores />
-            </>
-          } />
-        </Routes>
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/" element={
+              <>
+                <Hero />
+                <Cards />
+                <News />
+              </>
+            } />
+            <Route path="/cartas" element={<Cartas />} />
+            <Route path="/decks" element={<Decks />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/noticias" element={
+              <>
+                <br></br>
+                <h1 className="text-center text-[#e2e7eb] text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
+                <Noticias /><br></br>
+                <h2 className="text-center text-[#e2e7eb] text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
+                <Events /><br></br>
+                <h3 className="text-center text-[#e2e7eb] text-4xl font-bold">CREADORES DE CONTENIDO</h3>
+                <Creadores />
+              </>
+            } />
+          </Routes>
+        </div>
         <Footer />
-      </Router>
+      </UserProvider>
     </div>
   );
 }

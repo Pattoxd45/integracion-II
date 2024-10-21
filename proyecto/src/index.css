@@ -2,9 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css?family=Varta:700|Varta:400');
+
+
 body {
-  background-color: #ddd;
+  background-color: #0b0f14;
+  font-family: 'Varta', sans-serif;
+  font-weight: 400;
 }
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Varta', sans-serif;
+  font-weight: 700;
+}
+
+html {font-size: 100%;} /* 16px */
+
+h1 {font-size: 1.802rem; /* 28.8px */}
+
+h2 {font-size: 1.602rem; /* 25.6px */}
+
+h3 {font-size: 1.424rem; /* 22.72px */}
+
+h4 {font-size: 1.266rem; /* 20.32px */}
+
+h5 {font-size: 1.125rem; /* 18.08px */}
+
+small {font-size: 0.889rem; /* 14.24px */}
 
 .card {
   width: 220px;
@@ -31,14 +55,4 @@ body {
     height: 420px; /* Ajusta el alto a 420px */
   }
 
-}
-
-.title {
-  font-family: 'Montserrat', sans-serif; /* Cambia a Montserrat */
-  font-weight: 700; /* Estilo bold */
-  font-size: 3rem; /* Tamaño de la fuente */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra más pronunciada */
-  text-align: center; /* Centra el texto */
-  margin: 20px 0; /* Espacio arriba y abajo */
-  color: #E83411; /* Color naranja */
 }
