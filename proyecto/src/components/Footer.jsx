@@ -43,8 +43,8 @@ const Footer = () => {
               <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
                 Reglas Oficiales de MTG
               </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Tiendas Oficiales
+              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer" >
+              <a href="/tiendas">Tiendas oficiales</a>
               </li>
               <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
                 Aplicaciones de MTG

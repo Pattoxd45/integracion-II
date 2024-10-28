@@ -66,12 +66,12 @@ const Creadores = () => {
           {creators.map((creator, index) => (
             <div key={index} className="flex justify-center">
               <a href={creator.link} target="_blank" rel="noopener noreferrer">
-                <div className="card w-full max-w-[220px] bg-[#000] flex flex-col rounded-lg border-4 border-[#E83411] shadow-xl hover:border-[#e85438] transition-all duration-300 hover:shadow-[0_0_30px_rgba(232,52,17,1)]">
+                <div className="card w-full max-w-[220px] bg-[#000] flex flex-col rounded-lg border-4 border-[#2a5880] shadow-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(45,89,128,1)]">
                   <div className="relative w-full aspect-[4/3]">
                     <img
                       src={creator.imgSrc}
                       alt={creator.name}
-                      className="absolute inset-0 w-full h-full object-cover border-b-4 border-[#E83411] rounded-t-lg"
+                      className="absolute inset-0 w-full h-full object-cover border-b-4 border-[#2a5880] rounded-t-lg"
                     />
                   </div>
                   <div className="flex-1 flex flex-col justify-center text-center p-2">
