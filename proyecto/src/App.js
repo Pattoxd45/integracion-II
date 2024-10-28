@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 //import Hero from "./components/Hero";
 import Cards from "./components/Cards";
@@ -13,10 +13,12 @@ import Profile from "./components/Profile";
 import Decks from "./components/Decks";
 import About from "./components/about";
 
+import { UserProvider } from "./components/UserContext";
+
 function App() {
   return (
     <div className="App flex flex-col min-h-screen">
-      <Router>
+      <UserProvider>
         <Navbar />
         <div className="flex-grow">
           <Routes>
@@ -34,17 +36,18 @@ function App() {
             <Route path="/noticias" element={
               <>
                 <br></br>
-                <Noticias /> <br></br>
-                <h2 className="text-center text-orange-500 text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
+                <h1 className="text-center text-[#e2e7eb] text-4xl font-bold">ÚLTIMAS NOTICIAS</h1>
+                <Noticias /><br></br>
+                <h2 className="text-center text-[#e2e7eb] text-4xl font-bold">PRÓXIMOS EVENTOS</h2>
                 <Events /><br></br>
-                <h3 className="text-center text-orange-500 text-4xl font-bold">CREADORES DE CONTENIDO</h3>
+                <h3 className="text-center text-[#e2e7eb] text-4xl font-bold">CREADORES DE CONTENIDO</h3>
                 <Creadores />
               </>
             } />
           </Routes>
         </div>
         <Footer />
-      </Router>
+      </UserProvider>
     </div>
   );
 }
