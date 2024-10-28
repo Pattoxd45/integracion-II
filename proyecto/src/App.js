@@ -11,14 +11,14 @@ import Noticias from "./components/Noticias";
 import Events from "./components/Events";
 import Profile from "./components/Profile";
 import Decks from "./components/Decks";
-import About from "./components/about";
+import About from "./components/About";
 
-import { UserProvider } from "./components/UserContext";
+//import { UserProvider } from "./components/UserContext";
 
 function App() {
   return (
     <div className="App flex flex-col min-h-screen">
-      <UserProvider>
+
         <Navbar />
         <div className="flex-grow">
           <Routes>
@@ -32,7 +32,7 @@ function App() {
             <Route path="/cartas" element={<Cartas />} />
             <Route path="/decks" element={<Decks />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/About" element={<About />} />
             <Route path="/noticias" element={
               <>
                 <br></br>
@@ -47,7 +47,6 @@ function App() {
           </Routes>
         </div>
         <Footer />
-      </UserProvider>
     </div>
   );
 }
