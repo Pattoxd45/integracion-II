@@ -1,0 +1,7 @@
+Register no funcional: se ha solucionado cambiando el apartado imagen a no obligatorio.
+Barajas de usuario no devuelve ID's necesitados: se ha solucionado devolviendo id de usuario, nombre e id de baraja.
+/api/mazocartas repetido dos veces con distintas funciones: se ha solucionado renombrando y editando levemente las consultas.
+No se podia agregar el ID de las cartas debido al formato distinto que usaba la API de Scryfall con la nuestra: se ha solucionado cambiando de INT a VARCHAR el ID.
+La forma en que se agregaba los datos a mazo_cartas era incorrecto: se ha solucionado cambiando el orden y siguiendo lo pedido en la consulta.
+agregarcartas (ex mazocartas) no agregaba a la bd: se ha solucionado cambiando la ejecución de execute a query.
+mazocartas (para la devolución de datos) no devolvia datos: se ha solucionado corrigiendo el endpoint.
