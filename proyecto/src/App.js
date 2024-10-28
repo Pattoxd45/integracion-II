@@ -12,21 +12,14 @@ import Events from "./components/Events";
 import Profile from "./components/Profile";
 import Decks from "./components/Decks";
 import About from "./components/About";
+import Tiendas from './components/Tiendas';
 
-<<<<<<< HEAD
-//import { UserProvider } from "./components/UserContext";
-=======
 import { UserProvider } from "./components/UserContext";
->>>>>>> chelo
 
 function App() {
   return (
     <div className="App flex flex-col min-h-screen">
-<<<<<<< HEAD
-
-=======
       <UserProvider>
->>>>>>> chelo
         <Navbar />
         <div className="flex-grow">
           <Routes>
@@ -40,11 +33,8 @@ function App() {
             <Route path="/cartas" element={<Cartas />} />
             <Route path="/decks" element={<Decks />} />
             <Route path="/profile" element={<Profile />} />
-<<<<<<< HEAD
-            <Route path="/About" element={<About />} />
-=======
+            <Route path="/tiendas" element={<Tiendas />} />
             <Route path="/about" element={<About />} />
->>>>>>> chelo
             <Route path="/noticias" element={
               <>
                 <br></br>
@@ -59,10 +49,7 @@ function App() {
           </Routes>
         </div>
         <Footer />
-<<<<<<< HEAD
-=======
       </UserProvider>
->>>>>>> chelo
     </div>
   );
 }
