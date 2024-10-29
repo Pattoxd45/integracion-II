@@ -61,18 +61,18 @@ const DetTiendas = ({ store, onClose }) => {
               )
             ) : (
               <>
-                {store.instagramUrl && (
-                  <a href={store.instagramUrl} target="_blank" rel="noopener noreferrer">
-                    <img src={require('../images/icons/instagram.png')} alt="Instagram" className="h-8 w-8" />
-                  </a>
-                )}
                 {store.facebookUrl && (
                   <a href={store.facebookUrl} target="_blank" rel="noopener noreferrer">
                     <img src={require('../images/icons/facebook.png')} alt="Facebook" className="h-8 w-8" />
                   </a>
                 )}
-                {store.websiteUrl && (
-                  <a href={store.websiteUrl} target="_blank" rel="noopener noreferrer">
+                {store.instagramUrl && (
+                  <a href={store.instagramUrl} target="_blank" rel="noopener noreferrer">
+                    <img src={require('../images/icons/instagram.png')} alt="Instagram" className="h-8 w-8" />
+                  </a>
+                )}
+                {store.twitterUrl && (
+                  <a href={store.twitterUrl} target="_blank" rel="noopener noreferrer">
                     <img src={require('../images/icons/website.png')} alt="Sitio Web" className="h-8 w-8" />
                   </a>
                 )}
