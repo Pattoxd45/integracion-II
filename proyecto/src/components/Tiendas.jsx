@@ -2,8 +2,16 @@ import React, { useState } from "react";
 import DetTiendas from "./DetTiendas";
 
 // Función para importar todas las imágenes de una carpeta
-const importAll = (r) => r.keys().map(r);
-const images = importAll(require.context('../images/imgNews', false, /\.(png|jpe?g|svg|webp)$/));
+const importAllImages = (r) => {
+  const images = {};
+  r.keys().forEach((item) => {
+    images[item.replace('./', '')] = r(item); // Guardar en un objeto
+  });
+  return images;
+};
+
+// Usar require.context para importar imágenes
+const images = importAllImages(require.context('../images/imgTiendas', false, /\.(png|jpe?g|svg|webp)$/));
 
 // Cargar datos de tiendas desde archivos JSON
 const physicalStoresData = require('../info/ListTFisicas.json');
@@ -90,27 +98,27 @@ const Tiendas = () => {
       {/* Modal con detalles de la tienda */}
       {selectedStore && (
         <DetTiendas store={selectedStore} onClose={closeModal} />
-      )}<br></br>
+      )}
+      <br />
     </div>
   );
 };
 
-const StoreCard = ({ store, onClick }) => {
-  // Asegúrate de que imgUrl contenga solo el nombre del archivo de imagen
-  const imgSrc = images.find(image => image.includes(store.imgUrl));
-
-  return (
-    <div
-      onClick={() => onClick(store)} // Manejar clic en la tienda
-      className="bg-[#12171E] rounded-lg overflow-hidden shadow-lg flex flex-col cursor-pointer max-h-[300px] max-w-[300px] transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-[#2d5980]/50"
-    >
-      <img src={imgSrc} alt={store.name} className="object-cover w-full h-[60%] max-h-[180px]" />
-      <div className="p-4 flex-grow">
-        <h2 className="text-lg font-bold text-[#e2e7eb]">{store.name}</h2>
-        <p className="text-[#e2e7eb]">{store.description}</p>
-      </div>
+const StoreCard = ({ store, onClick }) => (
+  <div
+    onClick={() => onClick(store)} // Manejar clic en la tienda
+    className="bg-[#12171E] rounded-lg overflow-hidden shadow-lg flex flex-col cursor-pointer max-h-[300px] max-w-[300px] transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-[#2d5980]/50" // Clases de Tailwind para efectos
+  >
+    <img 
+      src={images[store.imgUrl]} // Accediendo a la imagen usando el objeto de imágenes
+      alt={store.name} 
+      className="object-cover w-full h-[60%] max-h-[180px]" 
+    />
+    <div className="p-4 flex-grow">
+      <h2 className="text-lg font-bold text-[#e2e7eb]">{store.name}</h2>
+      <p className="text-[#e2e7eb]">{store.description}</p>
     </div>
-  );
-};
+  </div>
+);
 
 export default Tiendas;

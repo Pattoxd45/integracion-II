@@ -1,5 +1,17 @@
 import React from "react";
 
+// Función para importar todas las imágenes de una carpeta
+const importAllImages = (r) => {
+  const images = {};
+  r.keys().forEach((item) => {
+    images[item.replace('./', '')] = r(item); // Guardar en un objeto
+  });
+  return images;
+};
+
+// Usar require.context para importar imágenes
+const images = importAllImages(require.context('../images/imgTiendas', false, /\.(png|jpe?g|svg|webp)$/));
+
 const DetTiendas = ({ store, onClose }) => {
   const isOnlineStore = !store.direccion; // Verificar si es una tienda online
 
@@ -24,7 +36,11 @@ const DetTiendas = ({ store, onClose }) => {
               allowFullScreen
             ></iframe>
           ) : (
-            <img src={store.imgUrl} alt={store.name} className="w-full h-auto object-cover" />
+            <img 
+              src={images[store.imgUrl]} // Accediendo a la imagen de la tienda online
+              alt={store.name} 
+              className="w-full h-auto object-cover" 
+            />
           )}
         </div>
 
@@ -52,31 +68,42 @@ const DetTiendas = ({ store, onClose }) => {
 
           {/* Contenedor de iconos de redes sociales alineados a la izquierda */}
           <div className="flex space-x-4 mt-4">
-            {/* Mostrar solo el logo del sitio web si es una tienda online */}
-            {isOnlineStore ? (
-              store.websiteUrl && (
-                <a href={store.websiteUrl} target="_blank" rel="noopener noreferrer">
-                  <img src={require('../images/icons/website.png')} alt="Sitio Web" className="h-8 w-8" />
-                </a>
-              )
-            ) : (
-              <>
-                {store.facebookUrl && (
-                  <a href={store.facebookUrl} target="_blank" rel="noopener noreferrer">
-                    <img src={require('../images/icons/facebook.png')} alt="Facebook" className="h-8 w-8" />
-                  </a>
-                )}
-                {store.instagramUrl && (
-                  <a href={store.instagramUrl} target="_blank" rel="noopener noreferrer">
-                    <img src={require('../images/icons/instagram.png')} alt="Instagram" className="h-8 w-8" />
-                  </a>
-                )}
-                {store.twitterUrl && (
-                  <a href={store.twitterUrl} target="_blank" rel="noopener noreferrer">
-                    <img src={require('../images/icons/website.png')} alt="Sitio Web" className="h-8 w-8" />
-                  </a>
-                )}
-              </>
+            {/* Mostrar iconos de redes sociales para tiendas online y físicas */}
+            {store.websiteUrl && (
+              <a href={store.websiteUrl} target="_blank" rel="noopener noreferrer">
+                <img 
+                  src={require('../images/icons/website.png')} 
+                  alt="Sitio Web" 
+                  className="h-8 w-8 hover:brightness-150 hover:scale-110 transition-transform duration-300 ease-in-out" 
+                />
+              </a>
+            )}
+            {store.facebookUrl && (
+              <a href={store.facebookUrl} target="_blank" rel="noopener noreferrer">
+                <img 
+                  src={require('../images/icons/facebook.png')} 
+                  alt="Facebook" 
+                  className="h-8 w-8 hover:brightness-150 hover:scale-110 transition-transform duration-300 ease-in-out" 
+                />
+              </a>
+            )}
+            {store.instagramUrl && (
+              <a href={store.instagramUrl} target="_blank" rel="noopener noreferrer">
+                <img 
+                  src={require('../images/icons/instagram.png')} 
+                  alt="Instagram" 
+                  className="h-8 w-8 hover:brightness-150 hover:scale-110 transition-transform duration-300 ease-in-out" 
+                />
+              </a>
+            )}
+            {store.twitterUrl && (
+              <a href={store.twitterUrl} target="_blank" rel="noopener noreferrer">
+                <img 
+                  src={require('../images/icons/website.png')} 
+                  alt="Sitio Web" 
+                  className="h-8 w-8 hover:brightness-150 hover:scale-110 transition-transform duration-300 ease-in-out" 
+                />
+              </a>
             )}
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
-//import Hero from "./components/Hero";
+import Hero from "./components/Hero";
 import Cards from "./components/Cards";
 import News from "./components/News";
 import Footer from "./components/Footer";
@@ -13,6 +13,7 @@ import Profile from "./components/Profile";
 import Decks from "./components/Decks";
 import About from "./components/About";
 import Tiendas from './components/Tiendas';
+import Tutorial from "./components/Tutorial";
 
 import { UserProvider } from "./components/UserContext";
 
@@ -25,9 +26,10 @@ function App() {
           <Routes>
             <Route path="/" element={
               <>
-              <News />
-              {/*<Hero />*/} <br/>
+              <Hero /> 
               <Cards />
+              <News />
+              <Tutorial />
               </>
             } />
             <Route path="/cartas" element={<Cartas />} />
