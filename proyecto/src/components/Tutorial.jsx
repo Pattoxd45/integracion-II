@@ -1,66 +1,80 @@
-// src/components/Tutorial.jsx
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 
-const Tutorial = () => {
-  const [cards, setCards] = useState([]);
-  const [loading, setLoading] = useState(true);
+const TutorialCard = () => {
+  const [cardImage, setCardImage] = useState(null);
+  const [info, setInfo] = useState(null);
 
+  // Cargar una carta aleatoria al cargar el componente
   useEffect(() => {
-    const fetchCards = async () => {
-      try {
-        const cardPromises = Array.from({ length: 5 }, () => 
-          axios.get('https://api.scryfall.com/cards/random')
-        );
-        const responses = await Promise.all(cardPromises);
-        setCards(responses.map(response => response.data));
-      } catch (error) {
-        console.error('Error fetching cards:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCards();
+    fetchRandomCard();
   }, []);
 
-  if (loading) {
-    return <div className="text-2xl text-blue-500">Cargando cartas...</div>;
-  }
+  // Función para obtener una carta aleatoria de Scryfall
+  const fetchRandomCard = async () => {
+    try {
+      const response = await fetch('https://api.scryfall.com/cards/random');
+      const data = await response.json();
+      if (data.image_uris) {
+        setCardImage(data.image_uris.normal);
+      } else {
+        console.error('No se encontró imagen para esta carta');
+      }
+    } catch (error) {
+      console.error('Error al obtener la carta:', error);
+    }
+  };
+
+  // Define las áreas con nombre y descripción
+  const areas = [
+    { name: 'Costo de Mana', description: 'El costo para jugar esta carta.', style: { top: '5%', left: '85%', width: '10%', height: '10%' } },
+    { name: 'Nombre de la Carta', description: 'El nombre de esta carta.', style: { top: '5%', left: '10%', width: '30%', height: '10%' } },
+    { name: 'Supertipo / Tipo / Subtipo', description: 'Clasificación de la carta.', style: { top: '30%', left: '10%', width: '30%', height: '10%' } },
+    { name: 'Edición / Rareza', description: 'La edición y rareza de la carta.', style: { top: '30%', left: '75%', width: '15%', height: '10%' } },
+    { name: 'Habilidades', description: 'Los efectos o habilidades de la carta.', style: { top: '45%', left: '10%', width: '70%', height: '20%' } },
+    { name: 'Texto Decorativo (Flavor)', description: 'Texto narrativo o de ambiente.', style: { top: '75%', left: '10%', width: '70%', height: '10%' } },
+    { name: 'Poder / Resistencia', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '90%', left: '85%', width: '10%', height: '10%' } },
+  ];
 
   return (
-    <div className="p-8 bg-gray-900 text-white text-center">
-      <h1 className="text-4xl font-bold mb-4">Bienvenido a Magic: The Gathering</h1>
-      <p className="mb-8 text-lg">Este tutorial te enseñará lo básico sobre cómo jugar.</p>
+    <div className="flex flex-col items-center  text-blue-300 min-h-screen py-8">
+      <h2 className="text-2xl font-bold mb-6">Partes de una Carta de Magic: The Gathering</h2>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {cards.map((card, index) => (
-          <div 
-            key={index} 
-            className="bg-gray-800 rounded-lg p-4 transition transform hover:-translate-y-1 hover:shadow-lg"
-          >
-            <h2 className="text-xl font-semibold mb-2">{card.name}</h2>
-            {card.image_uris && (
-              <img
-                src={card.image_uris.normal} 
-                alt={card.name} 
-                className="w-full h-auto mb-4 rounded-lg shadow-lg"
-              />
-            )}
-            <p className="text-sm mb-2">{card.type_line}</p>
-            <p className="text-sm">{card.oracle_text}</p>
-          </div>
-        ))}
-      </div>
-
+      {/* Botón para obtener otra carta */}
       <button 
-        onClick={() => window.scrollTo(0, 0)}
-        className="mt-8 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+        onClick={fetchRandomCard} 
+        className="mb-4 bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
       >
-        Volver al inicio
+        Obtener otra carta
       </button>
+      
+      {/* Imagen de la carta con áreas clicables */}
+      {cardImage && (
+        <div className="relative">
+          <img src={cardImage} alt="Carta MTG" className="w-96" />
+          
+          {areas.map((area, index) => (
+            <button
+              key={index}
+              onClick={() => setInfo(area)}
+              style={{ ...area.style, position: 'absolute', background: 'rgba(0, 0, 255, 0.3)' }}
+              className="border border-blue-400 rounded opacity-0 hover:opacity-50"
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Mostrar información de la sección seleccionada */}
+      {info && (
+        <div className="mt-8 p-4 bg-blue-800 text-blue-200 rounded shadow-lg w-80 text-center">
+          <h3 className="text-xl font-semibold mb-2">{info.name}</h3>
+          <p>{info.description}</p>
+          <button onClick={() => setInfo(null)} className="mt-4 bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded">
+            Cerrar
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Tutorial;
+export default TutorialCard;
