@@ -120,7 +120,7 @@ const News = () => {
                   <p className="mt-2 line-clamp-2 sm:line-clamp-3">
                     {newsItem.description}
                   </p>
-                  <a href={newsItem.link} target="_blank" rel="noopener noreferrer" className="text-[#bcc1c5] hover:opacity-70">
+                  <a href={'https://magic.wizards.com'+newsItem.link} target="_blank" rel="noopener noreferrer" className="text-[#bcc1c5] hover:opacity-70">
                     Ver más...
                   </a>
                 </div>
