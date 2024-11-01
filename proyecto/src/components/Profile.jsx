@@ -156,28 +156,23 @@ function Profile() {
 
   const handleDeleteFavoriteCard = async (cardId) => {
     try {
-      const response = await fetch('https://magicarduct.online:3000/api/cartasfavoritas', {
+      const response = await fetch(`https://magicarduct.online:3000/api/cartasfavoritas/${userId}/${cardId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          idusuario: userId,  // Suponiendo que userId está disponible en el contexto
-          idcarta: cardId,
-        }),
       });
   
       if (response.ok) {
         console.log("Carta eliminada exitosamente");
-        // Opcional: Aquí podrías volver a llamar a fetchFavoriteCards() para actualizar la lista
-        fetchFavoriteCards();
+
       } else {
         console.error("Error al eliminar la carta");
       }
     } catch (error) {
       console.error("Error en la petición de eliminación:", error);
     }
-    window.location.reload();
+    //window.location.reload();
   };
 
   const handleChange = (e) => {
