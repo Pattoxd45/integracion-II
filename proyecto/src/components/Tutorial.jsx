@@ -9,7 +9,7 @@ const TutorialCard = () => {
   const [step, setStep] = useState(0);
   const [selectedCards, setSelectedCards] = useState([]);
   const [addedCards, setAddedCards] = useState([]);
-  const [loading, setLoading] = useState(false); // Estado para indicar si las cartas están cargando
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchRandomCard();
@@ -58,7 +58,6 @@ const TutorialCard = () => {
 
   const handleNextClick = async () => {
     if (showDeck) {
-      // Verifica si se han agregado al menos 6 cartas
       if (addedCards.length < 6) {
         alert("Debes agregar al menos 6 cartas para continuar.");
         return;
@@ -66,7 +65,6 @@ const TutorialCard = () => {
         alert("No puedes agregar más de 10 cartas.");
         return;
       }
-      // Reinicia el estado para el siguiente paso
       setShowDeck(false);
       fetchRandomCard();
       setInfo(null);
@@ -75,14 +73,15 @@ const TutorialCard = () => {
       setStep(1);
     } else if (step === 1) {
       setStep(2);
-    } else {
-      setLoading(true); // Indica que las cartas se están cargando
+    } else if (step === 2) {
+      setLoading(true);
       const deckCards = await fetchDeckCards();
-      setLoading(false); // Indica que las cartas han dejado de cargarse
+      setLoading(false);
       setCardImage(null);
       setShowDeck(true);
       setDeck(deckCards);
       setSelectedCards([]);
+      setStep(3); // Asegúrate de avanzar al paso 3
     }
   };
 
@@ -93,10 +92,9 @@ const TutorialCard = () => {
       setShowDeck(false);
       setCardImage(null);
       
-      // Reinicia el mazo y cartas agregadas al volver al paso 0
       if (step === 1) {
-        setAddedCards([]); // Reinicia las cartas añadidas
-        setDeck([]); // Reinicia el mazo
+        setAddedCards([]);
+        setDeck([]);
       }
   
       fetchRandomCard();
@@ -106,11 +104,10 @@ const TutorialCard = () => {
       setInfo(null);
       fetchRandomCard();
       setShifted(false);
-      setAddedCards([]); // Asegúrate de reiniciar al salir
-      setDeck([]); // Asegúrate de reiniciar al salir
+      setAddedCards([]);
+      setDeck([]);
     }
   };
-  
 
   const handleCardSelect = (cardUrl) => {
     if (selectedCards.includes(cardUrl)) {
@@ -121,7 +118,6 @@ const TutorialCard = () => {
   };
 
   const handleAddCards = async () => {
-    // Verifica si se ha seleccionado al menos una carta
     if (selectedCards.length === 0) {
       alert("Debes seleccionar al menos una carta para agregar.");
       return;
@@ -132,8 +128,19 @@ const TutorialCard = () => {
     }
     setAddedCards([...addedCards, ...selectedCards]);
     setSelectedCards([]);
-    const newDeckCards = await fetchDeckCards(); // Recarga las cartas
+    const newDeckCards = await fetchDeckCards();
     setDeck(newDeckCards);
+  };
+
+  const handleFinish = () => {
+    // Restablecer todo el estado a la bienvenida
+    setStep(0);
+    setAddedCards([]);
+    setDeck([]);
+    setSelectedCards([]);
+    setInfo(null);
+    setShowDeck(false);
+    fetchRandomCard(); // Opcional: puedes mantener la carta actual o generar una nueva
   };
 
   return (
@@ -154,7 +161,7 @@ const TutorialCard = () => {
       {step === 1 && (
         <div className="text-center">
           <h2 className="text-2xl font-semibold mb-6">Reglas Básicas</h2>
-          <p className="mb-4">Antes de explorar las partes de la carta, es importante entender algunas reglas básicas del juego:</p>
+          <p className="mb-4">Antes de explorar este tutorial, es importante entender algunas reglas básicas del juego:</p>
           <ul className="mb-4 text-left">
             <li>- Cada jugador comienza con un mazo de cartas.</li>
             <li>- El objetivo es reducir la vida del oponente a cero.</li>
@@ -191,12 +198,9 @@ const TutorialCard = () => {
               )}
             </div>
             {info && (
-              <div className="ml-4 mt-4 p-2 bg-blue-800 text-blue-200 rounded shadow-lg w-[200px] h-[150px] flex flex-col justify-center text-center">
-                <h3 className="text-lg font-semibold mb-1">{info.name}</h3>
-                <p className="text-sm">{info.description}</p>
-                <button onClick={() => { setInfo(null); setShifted(false); }} className="mt-2 bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded">
-                  Cerrar
-                </button>
+              <div className="ml-4 mt-4 p-2 bg-blue-800 text-blue-200 rounded shadow-lg w-[200px] h-[150px] flex flex-col justify-center">
+                <h3 className="font-semibold">{info.name}</h3>
+                <p>{info.description}</p>
               </div>
             )}
           </div>
@@ -204,53 +208,77 @@ const TutorialCard = () => {
       )}
       {showDeck && (
         <div className="mt-6 text-center">
-          <h2 className="text-xl font-semibold mb-4">Selecciona cartas para tu mazo</h2>
-          {loading ? (
-            <div className="flex justify-center items-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-            </div>
-          ) : (
-            <div className="flex justify-center space-x-4">
-              {deck.map((cardUrl, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleCardSelect(cardUrl)}
-                  className={`cursor-pointer border ${selectedCards.includes(cardUrl) ? 'border-4 border-green-500' : 'border-2 border-gray-600'}`}
-                >
-                  <img src={cardUrl} alt={`Carta ${index + 1}`} className="w-33 h-auto rounded-lg" />
-                </div>
-              ))}
-            </div>
-          )}
-          <div className="text-center mt-4">
-            <button
-              onClick={handleAddCards}
-              disabled={selectedCards.length < 1} // Desactiva el botón si hay menos de 1 carta seleccionada
-              className="bg-green-600 hover:bg-green-700 text-green-200 font-bold py-2 px-4 rounded disabled:opacity-50"
-            >
-              Agregar
-            </button>
+        <h2 className="text-xl font-semibold mb-4">Selecciona cartas para tu mazo</h2>
+        {loading ? (
+          <div className="flex justify-center items-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
           </div>
-          <div className="mt-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">Cartas en tu mazo</h2>
-            <div className="flex justify-center space-x-4">
-              {addedCards.map((cardUrl, index) => (
-                <img key={index} src={cardUrl} alt={`Carta añadida ${index + 1}`} className="w-20 h-auto rounded-lg border-2 border-gray-600" />
-              ))}
-            </div>
+        ) : (
+          <div className="flex justify-center space-x-4">
+            {deck.map((cardUrl, index) => (
+              <div
+                key={index}
+                onClick={() => handleCardSelect(cardUrl)}
+                className={`cursor-pointer border ${selectedCards.includes(cardUrl) ? 'border-4 border-green-500' : 'border-2 border-gray-600'}`}
+              >
+                <img src={cardUrl} alt={`Carta ${index + 1}`} className="w-33 h-auto rounded-lg" />
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="text-center mt-4">
+          <button
+            onClick={handleAddCards}
+            disabled={selectedCards.length < 1} // Desactiva el botón si hay menos de 1 carta seleccionada
+            className="bg-green-600 hover:bg-green-700 text-green-200 font-bold py-2 px-4 rounded disabled:opacity-50"
+          >
+            Agregar
+          </button>
+        </div>
+        <div className="mt-6 text-center">
+          <h2 className="text-xl font-semibold mb-2">Cartas en tu mazo</h2>
+          <div className="flex justify-center space-x-4">
+            {addedCards.map((cardUrl, index) => (
+              <img key={index} src={cardUrl} alt={`Carta añadida ${index + 1}`} className="w-20 h-auto rounded-lg border-2 border-gray-600" />
+            ))}
           </div>
         </div>
+      </div>
       )}
-      {step > 0 && (
-        <div className="flex justify-center mt-4">
-          <button onClick={handlePreviousClick} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2">
+      <div className="flex space-x-4">
+        {step > 0 && (
+          <button 
+            onClick={handlePreviousClick} 
+            className="bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
+          >
             Anterior
           </button>
-          <button onClick={handleNextClick} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-2">
+        )}
+        {step === 2 && !showDeck && (
+          <button 
+            onClick={handleNextClick} 
+            className="bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
+          >
             Siguiente
           </button>
-        </div>
-      )}
+        )}
+        {showDeck && (
+          <button 
+            onClick={handleFinish} 
+            className="bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
+          >
+            Finalizar
+          </button>
+        )}
+        {step === 1 && (
+          <button 
+            onClick={handleNextClick} 
+            className="bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
+          >
+            Siguiente
+          </button>
+        )}
+      </div>
     </div>
   );
 };
