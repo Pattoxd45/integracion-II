@@ -203,7 +203,7 @@ const Reglas = ({ selectedCardIndex, tarjetas, onClose }) => {
         </div>
         <button 
           onClick={onClose} 
-          className="absolute top-2 right-2 text-[#3587cf] hover:text-[#e2e7eb]"
+          className="absolute top-2 right-2 text-[#2a5880] hover:text-[#2d5980]"
         >
           ❌
         </button>

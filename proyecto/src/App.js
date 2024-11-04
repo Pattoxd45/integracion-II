@@ -12,6 +12,8 @@ import Events from "./components/Events";
 import Profile from "./components/Profile";
 import Decks from "./components/Decks";
 import About from "./components/About";
+import Tiendas from './components/Tiendas';
+import Tutorial from "./components/Tutorial";
 
 import { UserProvider } from "./components/UserContext";
 
@@ -27,11 +29,13 @@ function App() {
                 <Hero />
                 <Cards />
                 <News />
+                <Tutorial />
               </>
             } />
             <Route path="/cartas" element={<Cartas />} />
             <Route path="/decks" element={<Decks />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/tiendas" element={<Tiendas />} />
             <Route path="/about" element={<About />} />
             <Route path="/noticias" element={
               <>

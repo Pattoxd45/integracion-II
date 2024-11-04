@@ -14,6 +14,7 @@ const Decks = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Controla si el modal está abierto
   const [isInsideDecksOpen, setIsInsideDecksOpen] = useState(false); // Controla si el modal de InsideDecks está abierto
   const [selectedDeckName, setSelectedDeckName] = useState(''); // Estado para almacenar el nombre de la baraja seleccionada
+  const [selectedDeckId, setSelectedDeckId] = useState(null);
   const [searchTerm, setSearchTerm] = useState(''); // Estado para el texto del buscador
   const [view, setView] = useState('barajas');
   const [newDeckName, setNewDeckName] = useState(''); // Nombre de la nueva baraja
@@ -48,6 +49,14 @@ const Decks = () => {
 
     fetchDecks();
   }, [userId]); // Se ejecuta cuando el userId está disponible
+
+  const lockScroll = () => {
+    document.body.style.overflow = 'hidden';
+  };
+
+  const unlockScroll = () => {
+    document.body.style.overflow = '';
+  };
 
   // Función para abrir el modal de creación
   const openModal = () => {
@@ -106,16 +115,25 @@ const Decks = () => {
   };
 
   // Función para abrir InsideDecks en el modal
-  const openInsideDecksModal = (deckName) => {
+  const openInsideDecksModal = (deckName, deckId) => {
     setSelectedDeckName(deckName); // Establece el nombre de la baraja seleccionada
+    setSelectedDeckId(deckId); // Establece el ID de la baraja seleccionada
     setIsInsideDecksOpen(true); // Abre el modal de InsideDecks
+    lockScroll(); // Bloquea el scroll del body
   };
 
   // Función para cerrar InsideDecks
   const closeInsideDecksModal = () => {
     setIsInsideDecksOpen(false); // Cierra el modal de InsideDecks
     setSelectedDeckName(''); // Limpia el nombre de la baraja seleccionada
+    unlockScroll(); // Habilita el scroll del body
   };
+
+  useEffect(() => {
+    return () => {
+      unlockScroll();
+    };
+  }, []);
 
   // Función para renombrar una baraja
   const handleRenameDeck = async () => {
@@ -227,7 +245,7 @@ const Decks = () => {
             <>
               {decks.map((deck) => (
                 <div key={deck.idbarajas} className="flex flex-col items-center relative">
-                  <div className="w-[220px] h-[320px] bg-[#12181E] border-[2px] border-[rgba(255,255,255,0.1)] rounded-md cursor-pointer overflow-hidden" onClick={() => openInsideDecksModal(deck.nombre)}>
+                  <div className="w-[220px] h-[320px] bg-[#12181E] border-[2px] border-[rgba(255,255,255,0.1)] rounded-md cursor-pointer overflow-hidden" onClick={() => openInsideDecksModal(deck.nombre, deck.idbarajas)}>
                     {/* Imagen dentro de la baraja */}
                     <img src={imagen8} alt={deck.nombre} className="w-full h-full object-cover" />
                   </div>
@@ -289,9 +307,9 @@ const Decks = () => {
       {/* Modal de InsideDecks */}
       {isInsideDecksOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-          <div className="relative bg-[#0b0f14] border-2 border-[#9ebbd6] rounded-md w-[80%] h-[90vh] p-6 shadow-lg">
+          <div className="w-[80%] h-[90vh] p-6 shadow-lg">
             {/* InsideDecks */}
-            <InsideDecks closeModal={closeInsideDecksModal} deckName={selectedDeckName} />
+            <InsideDecks closeModal={closeInsideDecksModal} deckName={selectedDeckName} deckId={selectedDeckId} />
           </div>
         </div>
       )}
