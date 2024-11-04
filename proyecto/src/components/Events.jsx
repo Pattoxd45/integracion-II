@@ -51,7 +51,7 @@ const Events = () => {
     <div className="max-w-[1200px] mx-auto px-4 space-y-6 mb-6 text-white">
       {loading && ( // Mostrar spinner solo cuando está cargando
         <div className="flex justify-center items-center h-full">
-        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-[#e2e7eb] border-t-transparent rounded-full animate-spin"></div>
       </div>
       )}
       {!loading && ( // Mostrar contenido solo cuando loading sea false
@@ -67,7 +67,7 @@ const Events = () => {
                   key={index} 
                   className="relative w-[calc(33.33%-1rem)] bg-black overflow-hidden h-[200px] shadow-xl flex flex-col items-center justify-center mx-2 border border-black"
                 >
-                  <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-orange-500 to-transparent pointer-events-none"></div>
+                  <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-[#2a5880] to-transparent pointer-events-none"></div>
                   <div className="flex flex-col items-center justify-center h-full text-center">
                     <h2 className="text-lg md:text-xl sm:text-base font-bold">{event.title}</h2> {/* Tamaño dinámico */}
                     <p className="mt-1 text-base md:text-lg sm:text-sm">{event.date}</p> {/* Cambiado a dinámico */}
@@ -76,7 +76,7 @@ const Events = () => {
                       href={event.url} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="mt-2 px-4 py-2 bg-orange-500 text-black text-base md:text-lg sm:text-sm rounded"
+                      className="mt-2 px-4 py-2 bg-[#2a5880] text-white text-base md:text-lg sm:text-sm rounded hover:shadow-[0_0_30px_rgba(45,89,128,1)]"
                     >
                       Más información
                     </a>

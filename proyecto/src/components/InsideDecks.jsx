@@ -1,17 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { MdEdit } from "react-icons/md";
+import { MdEdit, MdEditOff } from "react-icons/md";
 import { BiArrowBack } from "react-icons/bi";
+import { IoMdTrash } from "react-icons/io";
+import { IoIosAdd } from "react-icons/io";
 import ScaleLoader from "react-spinners/ScaleLoader";
 import InsideDecksProperties from "./InsideDecksProperties";
+import { useNavigate } from "react-router-dom";
 
 const InsideDecks = ({ closeModal, deckName, deckId }) => {
   const modalRef = useRef(null);
+  const navigate = useNavigate();
 
   const [cards, setCards] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredCards, setFilteredCards] = useState([]);
   const [editMode, setEditMode] = useState(false);
+  const [selectedCards, setSelectedCards] = useState([]);
   const [activeView, setActiveView] = useState("Cartas");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
@@ -72,21 +77,19 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
   };
 
   const handleCardClick = (card) => {
-    setSelectedCard(card);
+    if (!editMode) setSelectedCard(card);
   };
 
   const closeCardDetails = () => {
     setSelectedCard(null);
   };
 
-  // Función para cerrar el modal al hacer clic fuera de él
   const handleOutsideClick = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       closeModal();
     }
   };
 
-  // Función para cerrar el modal al presionar la tecla Escape
   const handleEscapeKey = (e) => {
     if (e.key === "Escape") {
       closeModal();
@@ -102,6 +105,33 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
       document.removeEventListener("keydown", handleEscapeKey);
     };
   }, []);
+
+  const toggleEditMode = () => {
+    setEditMode((prevMode) => !prevMode);
+    setSelectedCards([]);
+  };
+
+  const handleSelectCard = (cardId) => {
+    setSelectedCards((prevSelected) =>
+      prevSelected.includes(cardId)
+        ? prevSelected.filter((id) => id !== cardId)
+        : [...prevSelected, cardId]
+    );
+  };
+
+  const deleteSelectedCards = async () => {
+    for (const cardId of selectedCards) {
+      try {
+        await fetch(`https://magicarduct.online:3000/api/eliminarmazocarta/${deckId}/${cardId}`, {
+          method: "DELETE"
+        });
+      } catch (error) {
+        console.error(`Error al eliminar la carta con ID ${cardId} del mazo:`, error);
+      }
+    }
+    fetchDeckCards();
+    setSelectedCards([]);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center">
@@ -158,8 +188,9 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                 </button>
                 <button
                   className="w-[46px] h-[46px] bg-[#2a5880] text-[#e1e6ea] font-semibold rounded-md text-center hover:opacity-80 transition flex items-center justify-center"
+                  onClick={toggleEditMode}
                 >
-                  <MdEdit size={20} />
+                  {editMode ? <MdEditOff size={20} /> : <MdEdit size={20} />}
                 </button>
               </div>
 
@@ -175,7 +206,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                         <div
                           key={card.id}
                           onClick={() => handleCardClick(card)}
-                          className="mr-[6px] flex items-center bg-[#12171e] rounded-lg cursor-pointer"
+                          className="mr-[6px] flex items-center bg-[#12171e] rounded-lg cursor-pointer relative"
                           style={{ height: "132px" }}
                         >
                           <img
@@ -190,12 +221,22 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                           >
                             {card.name}
                           </h4>
+                          {editMode && (
+                            <input
+                              type="checkbox"
+                              checked={selectedCards.includes(card.id)}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                handleSelectCard(card.id);
+                              }}
+                              className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5"
+                            />
+                          )}
                         </div>
                       ))
                     ) : (
                       <p className="text-[#e1e6ea]">No se han encontrado cartas en este mazo.</p>
                     )}
-
                     <div className="h-4" />
                   </div>
                 )}
@@ -206,12 +247,11 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
           )}
         </div>
 
-        {/* Popup de detalles de la carta con ajustes de margen y alineación */}
         {selectedCard && (
-          <div className="absolute top-1/2 right-4 transform -translate-y-1/2 w-[68.25%] h-[93%] bg-[#12171E] p-6 text-[#e1e6ea] overflow-y-auto flex rounded-lg mr-4 custom-scrollbar">
+          <div className="absolute top-1/2 right-4 transform -translate-y-1/2 w-[68.25%] h-[95%] bg-[#12171E] p-6 text-[#e1e6ea] overflow-y-auto flex rounded-lg mr-4 custom-scrollbar">
             <button
               onClick={closeCardDetails}
-              className="absolute top-2 left-6 text-[#e1e6ea] hover:text-red-500 transition"
+              className="absolute top-2 left-6 text-[#e1e6ea] hover:text-[#85888b] transition"
             >
               <BiArrowBack size={24} />
             </button>
@@ -233,14 +273,32 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
             </div>
           </div>
         )}
+
+        <div className="absolute bottom-4 right-4 flex space-x-4">
+          {editMode && selectedCards.length > 0 && (
+            <button
+              onClick={deleteSelectedCards}
+              className="bg-[#2a5880] text-white p-3 rounded-md shadow-lg hover:bg-[#1a2c3a] transition"
+            >
+              <IoMdTrash size={24} />
+            </button>
+          )}
+          <button
+            onClick={() => navigate("/cartas")}
+            className="bg-[#2a5880] text-white p-3 rounded-md shadow-lg hover:bg-[#1a2c3a] transition"
+          >
+            <IoIosAdd size={24} />
+          </button>
+        </div>
       </div>
+
       <style jsx>{`
         /* Estilo del scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(255,255,255,0.1);
+          background-color: rgba(255, 255, 255, 0.1);
           border-radius: 10px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {

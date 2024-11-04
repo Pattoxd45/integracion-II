@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Card Kingdom",
+    "description": "Card Kingdom ha estado entregando Magic a todo el mundo desde 1999.",
+    "imgUrl": "cardKingdom.webp",
+    "facebookUrl": "https://web.facebook.com/CardKingdom/?_rdc=1&_rdr",
+    "websiteUrl": "https://www.cardkingdom.com/"
+  },
+  {
+    "name": "CoolStuffInc",
+    "description": "Nuestro objetivo es satisfacer todas sus necesidades de juego con nuestros excelentes precios, envíos rápidos y justos, inventario en línea preciso y en tiempo real, y una política de calificación de cartas inigualable. Sin embargo, nuestra principal prioridad es brindar un servicio superior porque sabemos que los clientes satisfechos valen más que un dinero fácil.",
+    "imgUrl": "coolStuffInc.jpg",
+    "facebookUrl": "https://web.facebook.com/coolstuffinc/?locale2=es_ES&_rdc=1&_rdr",
+    "websiteUrl": "https://www.coolstuffinc.com/magic+the+gathering/"
+  },
+  {
+    "name": "Amazon",
+    "description": "La mejor manera de aprender magia",
+    "imgUrl": "amazon.png",
+    "websiteUrl": "https://www.amazon.com/stores/page/1C5A2505-C20D-44F5-B31D-E91265896FF4"
+  },
+  {
+    "name": "Ebay",
+    "description": "En eBay encuentras fabulosas ofertas en Magic: the Gathering Juegos de cartas coleccionables. Encontrarás artículos nuevos o usados en Magic: the Gathering",
+    "imgUrl": "ebay.png",
+    "websiteUrl": "https://cl.ebay.com/b/Magic-The-Gathering-Trading-Card-Games/2536/bn_7117593350"
+  },
+  {
+    "name": "Start City Games",
+    "description": "Star City Games® es el principal minorista de juegos de cartas coleccionables y organizador de eventos del mundo. Nuestro inventario incluye millones de unidades individuales de Magic: The Gathering, productos sellados de MTG, Flesh and Blood y MetaZoo, una amplia selección de suministros de juegos populares y miles de artículos especiales únicos.",
+    "imgUrl": "StartCityGames.jpg",
+    "instagramUrl": "https://www.instagram.com/starcitygames/",
+    "facebookUrl": "https://web.facebook.com/StarCityGames?_rdc=1&_rdr",
+    "websiteUrl": "https://starcitygames.com/"
+  },
+  {
+    "name": "Magic Madhouse",
+    "description": "Bienvenido a Magic Madhouse, la principal fuente en línea del Reino Unido para Magic: The Gathering, Pokémon, Yu-Gi-Oh",
+    "imgUrl": "MagicMadhouse.png",
+    "instagramUrl": "https://www.instagram.com/magicmadhouse/",
+    "facebookUrl": "https://web.facebook.com/MagicMadhouse?_rdc=1&_rdr",
+    "websiteUrl": "https://magicmadhouse.co.uk/tabletop-games/board-games?utm_source=google&utm_term=&utm_campaign=&utm_medium=cpc&utm_content=|pcrid||pkw||pmt||pdv|c|&gclsrc=aw.ds&gad_source=1&gclid=Cj0KCQjwsoe5BhDiARIsAOXVoUtA_OqlUn93jiagjQbvW1C2zK_YyJlokDyOoXX3sQ4GKD4_baxbVY8aAvs1EALw_wcB"
+  }
+]
