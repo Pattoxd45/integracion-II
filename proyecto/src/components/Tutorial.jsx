@@ -5,7 +5,11 @@ const TutorialCard = () => {
   const [info, setInfo] = useState(null);
   const [shifted, setShifted] = useState(false);
   const [showDeck, setShowDeck] = useState(false);
-  const [deck, setDeck] = useState([]); // Estado para almacenar las cartas del mazo
+  const [deck, setDeck] = useState([]);
+  const [step, setStep] = useState(0);
+  const [selectedCards, setSelectedCards] = useState([]);
+  const [addedCards, setAddedCards] = useState([]);
+  const [loading, setLoading] = useState(false); // Estado para indicar si las cartas están cargando
 
   useEffect(() => {
     fetchRandomCard();
@@ -13,6 +17,7 @@ const TutorialCard = () => {
 
   const fetchRandomCard = async () => {
     try {
+      setLoading(true);
       const response = await fetch('https://api.scryfall.com/cards/random');
       const data = await response.json();
       if (data.image_uris) {
@@ -22,14 +27,17 @@ const TutorialCard = () => {
       }
     } catch (error) {
       console.error('Error al obtener la carta:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Función para obtener 20 cartas para simular un mazo
   const fetchDeckCards = async () => {
-    const deckPromises = Array.from({ length: 20 }, () => fetch('https://api.scryfall.com/cards/random'));
+    setLoading(true);
+    const deckPromises = Array.from({ length: 4 }, () => fetch('https://api.scryfall.com/cards/random'));
     const responses = await Promise.all(deckPromises);
     const deckData = await Promise.all(responses.map(response => response.json()));
+    setLoading(false);
     return deckData.filter(data => data.image_uris).map(data => data.image_uris.normal);
   };
 
@@ -50,105 +58,199 @@ const TutorialCard = () => {
 
   const handleNextClick = async () => {
     if (showDeck) {
+      // Verifica si se han agregado al menos 6 cartas
+      if (addedCards.length < 6) {
+        alert("Debes agregar al menos 6 cartas para continuar.");
+        return;
+      } else if (addedCards.length > 10) {
+        alert("No puedes agregar más de 10 cartas.");
+        return;
+      }
+      // Reinicia el estado para el siguiente paso
       setShowDeck(false);
       fetchRandomCard();
       setInfo(null);
       setShifted(false);
+    } else if (step === 0) {
+      setStep(1);
+    } else if (step === 1) {
+      setStep(2);
     } else {
+      setLoading(true); // Indica que las cartas se están cargando
       const deckCards = await fetchDeckCards();
+      setLoading(false); // Indica que las cartas han dejado de cargarse
       setCardImage(null);
       setShowDeck(true);
       setDeck(deckCards);
+      setSelectedCards([]);
     }
   };
 
   const handlePreviousClick = () => {
-    setShowDeck(false); // Oculta el mazo
-    setInfo(null); // Resetea la información
-    fetchRandomCard(); // Obtiene una nueva carta
-    setShifted(false); // Resetea el estado de desplazamiento
+    if (step > 0) {
+      setStep(step - 1);
+      setInfo(null);
+      setShowDeck(false);
+      setCardImage(null);
+      
+      // Reinicia el mazo y cartas agregadas al volver al paso 0
+      if (step === 1) {
+        setAddedCards([]); // Reinicia las cartas añadidas
+        setDeck([]); // Reinicia el mazo
+      }
+  
+      fetchRandomCard();
+      setShifted(false);
+    } else {
+      setShowDeck(false);
+      setInfo(null);
+      fetchRandomCard();
+      setShifted(false);
+      setAddedCards([]); // Asegúrate de reiniciar al salir
+      setDeck([]); // Asegúrate de reiniciar al salir
+    }
+  };
+  
+
+  const handleCardSelect = (cardUrl) => {
+    if (selectedCards.includes(cardUrl)) {
+      setSelectedCards(selectedCards.filter(url => url !== cardUrl));
+    } else {
+      setSelectedCards([...selectedCards, cardUrl]);
+    }
+  };
+
+  const handleAddCards = async () => {
+    // Verifica si se ha seleccionado al menos una carta
+    if (selectedCards.length === 0) {
+      alert("Debes seleccionar al menos una carta para agregar.");
+      return;
+    }
+    if (addedCards.length + selectedCards.length > 10) {
+      alert("No puedes agregar más de 10 cartas en total.");
+      return;
+    }
+    setAddedCards([...addedCards, ...selectedCards]);
+    setSelectedCards([]);
+    const newDeckCards = await fetchDeckCards(); // Recarga las cartas
+    setDeck(newDeckCards);
   };
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 space-y-6 mb-6 text-[#e2e7eb] flex flex-col items-center">
       <h1 className="text-3xl font-bold mb-2 text-center">Tutorial</h1>
-      {!showDeck && <h2 className="text-2xl font-semibold mb-6 text-center">Partes de la carta</h2>}
-      {!showDeck && (
-        <div className="flex items-start">
-          <div className={`relative bg-[#12171E] rounded-lg overflow-hidden shadow-xl w-[300px] h-[450px] transition-transform ${shifted ? 'translate-x-[-20%]' : ''}`}>
-            {cardImage && (
-              <>
-                <img 
-                  src={cardImage} 
-                  alt="Carta MTG" 
-                  className="object-cover w-full h-full"
-                />
-                {areas.map((area, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleAreaClick(area)}
-                    style={{
-                      ...area.style,
-                      position: 'absolute',
-                      background: 'transparent',
-                      border: '2px solid blue',
-                    }}
-                    className="rounded cursor-pointer"
-                  />
-                ))}
-              </>
-            )}
-          </div>
-          {info && (
-            <div className="ml-4 mt-4 p-2 bg-blue-800 text-blue-200 rounded shadow-lg w-[200px] h-[150px] flex flex-col justify-center text-center">
-              <h3 className="text-lg font-semibold mb-1">{info.name}</h3>
-              <p className="text-sm">{info.description}</p>
-              <button onClick={() => { setInfo(null); setShifted(false); }} className="mt-2 bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-1 px-3 rounded">
-                Cerrar
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-      {showDeck && (
-        <div className="mt-6 relative">
-          <h2 className="text-2xl font-semibold mb-4 text-center">Creación de Mazo</h2>
-          <div className="flex flex-wrap justify-center relative">
-            {deck.map((card, index) => (
-              <div 
-                key={index} 
-                className="relative transition-transform duration-300 hover:scale-105" // Añadido efecto hover
-                style={{
-                  margin: '0 -20px', // Ajusta el margen para la superposición
-                  zIndex: deck.length - index, // Asegura que las cartas se superpongan correctamente
-                }}
-              >
-                <img 
-                  src={card} 
-                  alt={`Carta ${index + 1}`} 
-                  className="w-[100px] h-[150px] object-cover" 
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      <div className="mt-4 flex justify-center space-x-4">
-        {showDeck && ( // Muestra el botón "Anterior" solo cuando se está en la vista del mazo
+      {step === 0 && (
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-6">Bienvenido al Tutorial de Cartas</h2>
+          <p className="mb-4">En este tutorial, aprenderás sobre las diferentes partes de una carta y cómo usarlas en tu juego.</p>
           <button 
-            onClick={handlePreviousClick} 
+            onClick={() => setStep(1)} 
             className="bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
           >
+            Comenzar
+          </button>
+        </div>
+      )}
+      {step === 1 && (
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold mb-6">Reglas Básicas</h2>
+          <p className="mb-4">Antes de explorar las partes de la carta, es importante entender algunas reglas básicas del juego:</p>
+          <ul className="mb-4 text-left">
+            <li>- Cada jugador comienza con un mazo de cartas.</li>
+            <li>- El objetivo es reducir la vida del oponente a cero.</li>
+            <li>- Las cartas tienen diferentes tipos y habilidades que pueden afectar el juego.</li>
+          </ul>
+        </div>
+      )}
+      {step === 2 && !showDeck && (
+        <>
+          <h2 className="text-2xl font-semibold mb-6 text-center">Partes de la carta</h2>
+          <div className="flex items-start">
+            <div className={`relative bg-[#12171E] rounded-lg overflow-hidden shadow-xl w-[300px] h-[450px] transition-transform ${shifted ? 'translate-x-[-20%]' : ''}`}>
+              {loading ? (
+                <div className="flex justify-center items-center w-full h-full">
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+                </div>
+              ) : (
+                <>
+                  <img src={cardImage} alt="Carta MTG" className="object-cover w-full h-full" />
+                  {areas.map((area, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleAreaClick(area)}
+                      style={{
+                        ...area.style,
+                        position: 'absolute',
+                        background: 'transparent',
+                        border: '2px solid blue',
+                      }}
+                      className="rounded cursor-pointer"
+                    />
+                  ))}
+                </>
+              )}
+            </div>
+            {info && (
+              <div className="ml-4 mt-4 p-2 bg-blue-800 text-blue-200 rounded shadow-lg w-[200px] h-[150px] flex flex-col justify-center text-center">
+                <h3 className="text-lg font-semibold mb-1">{info.name}</h3>
+                <p className="text-sm">{info.description}</p>
+                <button onClick={() => { setInfo(null); setShifted(false); }} className="mt-2 bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded">
+                  Cerrar
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+      {showDeck && (
+        <div className="mt-6 text-center">
+          <h2 className="text-xl font-semibold mb-4">Selecciona cartas para tu mazo</h2>
+          {loading ? (
+            <div className="flex justify-center items-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+            </div>
+          ) : (
+            <div className="flex justify-center space-x-4">
+              {deck.map((cardUrl, index) => (
+                <div
+                  key={index}
+                  onClick={() => handleCardSelect(cardUrl)}
+                  className={`cursor-pointer border ${selectedCards.includes(cardUrl) ? 'border-4 border-green-500' : 'border-2 border-gray-600'}`}
+                >
+                  <img src={cardUrl} alt={`Carta ${index + 1}`} className="w-33 h-auto rounded-lg" />
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="text-center mt-4">
+            <button
+              onClick={handleAddCards}
+              disabled={selectedCards.length < 1} // Desactiva el botón si hay menos de 1 carta seleccionada
+              className="bg-green-600 hover:bg-green-700 text-green-200 font-bold py-2 px-4 rounded disabled:opacity-50"
+            >
+              Agregar
+            </button>
+          </div>
+          <div className="mt-6 text-center">
+            <h2 className="text-xl font-semibold mb-2">Cartas en tu mazo</h2>
+            <div className="flex justify-center space-x-4">
+              {addedCards.map((cardUrl, index) => (
+                <img key={index} src={cardUrl} alt={`Carta añadida ${index + 1}`} className="w-20 h-auto rounded-lg border-2 border-gray-600" />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      {step > 0 && (
+        <div className="flex justify-center mt-4">
+          <button onClick={handlePreviousClick} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2">
             Anterior
           </button>
-        )}
-        <button 
-          onClick={handleNextClick} 
-          className="bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
-        >
-          {showDeck ? 'Siguiente' : 'Siguiente'}
-        </button>
-      </div>
+          <button onClick={handleNextClick} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-2">
+            Siguiente
+          </button>
+        </div>
+      )}
     </div>
   );
 };
