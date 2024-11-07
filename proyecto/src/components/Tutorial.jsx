@@ -4,6 +4,7 @@ import tablero from "../images/imgFormatos/tablero.jpg";
 const TutorialCard = () => {
   const [cardImage, setCardImage] = useState(null);
   const [info, setInfo] = useState(null);
+  const [info1, setInfo1] = useState(null);
   const [shifted, setShifted] = useState(false);
   const [showDeck, setShowDeck] = useState(false);
   const [deck, setDeck] = useState([]);
@@ -53,18 +54,28 @@ const TutorialCard = () => {
   ];
 
   const areasTablero = [
-    { name: 'BattleField', description: 'El costo para jugar esta carta.', style: { top: '5%', left: '70%', width: '26%', height: '8%' } },
-    { name: 'Lands', description: 'El nombre de esta carta.', style: { top: '5%', left: '3%', width: '65%', height: '8%' } },
-    { name: 'Commander Tax', description: 'Clasificación de la carta.', style: { top: '56%', left: '3%', width: '75%', height: '6%' } },
-    { name: 'Comand Zone', description: 'La edición y rareza de la carta.', style: { top: '56%', left: '79%', width: '18%', height: '6%' } },
-    { name: 'Library', description: 'Los efectos o habilidades de la carta.', style: { top: '62%', left: '3%', width: '94%', height: '28%' } },
-    { name: 'Exile', description: 'Texto narrativo o de ambiente.', style: { top: '90%', left: '3%', width: '60%', height: '8%' } },
-    { name: 'Life Total', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '90%', left: '77%', width: '20%', height: '8%' } },
-    { name: 'Graveyard', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '90%', left: '77%', width: '20%', height: '8%' } },
+    { name: 'BattleField', description: 'El costo para jugar esta carta.', style: { top: '2%', left: '1%', width: '73%', height: '67%' } },
+    { name: 'Lands', description: 'El nombre de esta carta.', style: { top: '70%', left: '1%', width: '73%', height: '28%' } },
+    { name: 'Commander Tax', description: 'Clasificación de la carta.', style: { top: '2%', left: '75%', width: '11%', height: '11%' } },
+    { name: 'Comand Zone', description: 'La edición y rareza de la carta.', style: { top: '16%', left: '75%', width: '11%', height: '25%' } },
+    { name: 'Library', description: 'Los efectos o habilidades de la carta.', style: { top: '44%', left: '75%', width: '11%', height: '26%' } },
+    { name: 'Exile', description: 'Texto narrativo o de ambiente.', style: { top: '72%', left: '75%', width: '11%', height: '27%' } },
+    { name: 'Life Total', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '2%', left: '87%', width: '12%', height: '40%' } },
+    { name: 'Graveyard', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '44%', left: '87%', width: '12%', height: '54%' } },
+    { name: 'Tierra1', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '73%', left: '4%', width: '11%', height: '18%', borderRadius: '100%'}}, 
+    { name: 'Tierra2', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '72%', left: '18%', width: '11%', height: '19%', borderRadius: '100%'}},
+    { name: 'Tierra3', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '73%', left: '32%', width: '11%', height: '18%', borderRadius: '100%'}},
+    { name: 'Tierra4', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '73%', left: '46%', width: '11%', height: '18%', borderRadius: '100%'}},
+    { name: 'Tierra5', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '73%', left: '60%', width: '11%', height: '18%', borderRadius: '100%'}},
   ]
 
   const handleAreaClick = (area) => {
     setInfo(area);
+    setShifted(true);
+  };
+
+  const handleAreaClick1 = (area) => {
+    setInfo1(area);
     setShifted(true);
   };
 
@@ -95,7 +106,7 @@ const TutorialCard = () => {
       setShowDeck(true);
       setDeck(deckCards);
       setSelectedCards([]);
-      setStep(3); // Asegúrate de avanzar al paso 3
+      setStep(4); 
     }
   };
 
@@ -184,29 +195,49 @@ const TutorialCard = () => {
         </div>
       )}
       {step === 2 && (
-  <>
-    <h2 className="text-2xl font-semibold mb-6 text-center">Partes del Tablero</h2>
-    <img src={tablero} alt="Tablero MTG" className="object-contain w-1/2 h-auto mx-auto" />
-    {areas.map((area, index) => (
+        <>
+          <h2 className="text-2xl font-semibold mb-6 text-center">Partes del Tablero</h2>
+          <div className="flex items-start">
+            <div className={`relative bg-[#12171E] rounded-lg overflow-hidden shadow-xl w-[580px] h-[340px] transition-transform ${shifted ? 'translate-x-[-20%]' : ''}`}>
+              {loading ? (
+                <div className="flex justify-center items-center w-full h-full">
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+                </div>
+              ) : (
+                <>
+<img
+              src={tablero}
+              alt="Tablero MTG"
+              className="object-contain w-full h-auto"
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />                  {areasTablero.map((area, index) => (
                     <button
                       key={index}
-                      onClick={() => handleAreaClick(area)}
+                      onClick={() => handleAreaClick1(area)}
                       style={{
                         ...area.style,
                         position: 'absolute',
                         background: 'transparent',
-                        border: '2px solid blue',
+                        border: '2px solid transparent',
                       }}
                       className="rounded cursor-pointer"
                     />
                   ))}
-  </>
-)}
-
-
+                </>
+              )}
+            </div>
+            {info1 && (
+              <div className="ml-4 mt-4 p-2 bg-blue-800 text-blue-200 rounded shadow-lg w-[200px] h-[150px] flex flex-col justify-center">
+                <h3 className="font-semibold">{info1.name}</h3>
+                <p>{info1.description}</p>
+              </div>
+            )}
+          </div>
+        </>
+      )}
       {step === 3 && !showDeck && (
         <>
-          <h2 className="text-2xl font-semibold mb-6 text-center">Partes de la Carta</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-center">Partes de la carta</h2>
           <div className="flex items-start">
             <div className={`relative bg-[#12171E] rounded-lg overflow-hidden shadow-xl w-[300px] h-[450px] transition-transform ${shifted ? 'translate-x-[-20%]' : ''}`}>
               {loading ? (
