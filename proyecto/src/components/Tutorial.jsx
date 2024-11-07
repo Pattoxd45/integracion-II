@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import tablero from "../images/imgFormatos/tablero.jpg";
 
 const TutorialCard = () => {
   const [cardImage, setCardImage] = useState(null);
@@ -51,6 +52,17 @@ const TutorialCard = () => {
     { name: 'Poder / Resistencia', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '90%', left: '77%', width: '20%', height: '8%' } },
   ];
 
+  const areasTablero = [
+    { name: 'BattleField', description: 'El costo para jugar esta carta.', style: { top: '5%', left: '70%', width: '26%', height: '8%' } },
+    { name: 'Lands', description: 'El nombre de esta carta.', style: { top: '5%', left: '3%', width: '65%', height: '8%' } },
+    { name: 'Commander Tax', description: 'Clasificación de la carta.', style: { top: '56%', left: '3%', width: '75%', height: '6%' } },
+    { name: 'Comand Zone', description: 'La edición y rareza de la carta.', style: { top: '56%', left: '79%', width: '18%', height: '6%' } },
+    { name: 'Library', description: 'Los efectos o habilidades de la carta.', style: { top: '62%', left: '3%', width: '94%', height: '28%' } },
+    { name: 'Exile', description: 'Texto narrativo o de ambiente.', style: { top: '90%', left: '3%', width: '60%', height: '8%' } },
+    { name: 'Life Total', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '90%', left: '77%', width: '20%', height: '8%' } },
+    { name: 'Graveyard', description: 'La fuerza y resistencia de la carta en combate.', style: { top: '90%', left: '77%', width: '20%', height: '8%' } },
+  ]
+
   const handleAreaClick = (area) => {
     setInfo(area);
     setShifted(true);
@@ -74,6 +86,8 @@ const TutorialCard = () => {
     } else if (step === 1) {
       setStep(2);
     } else if (step === 2) {
+      setStep(3);
+    }else if (step === 3) {
       setLoading(true);
       const deckCards = await fetchDeckCards();
       setLoading(false);
@@ -169,9 +183,30 @@ const TutorialCard = () => {
           </ul>
         </div>
       )}
-      {step === 2 && !showDeck && (
+      {step === 2 && (
+  <>
+    <h2 className="text-2xl font-semibold mb-6 text-center">Partes del Tablero</h2>
+    <img src={tablero} alt="Tablero MTG" className="object-contain w-1/2 h-auto mx-auto" />
+    {areas.map((area, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleAreaClick(area)}
+                      style={{
+                        ...area.style,
+                        position: 'absolute',
+                        background: 'transparent',
+                        border: '2px solid blue',
+                      }}
+                      className="rounded cursor-pointer"
+                    />
+                  ))}
+  </>
+)}
+
+
+      {step === 3 && !showDeck && (
         <>
-          <h2 className="text-2xl font-semibold mb-6 text-center">Partes de la carta</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-center">Partes de la Carta</h2>
           <div className="flex items-start">
             <div className={`relative bg-[#12171E] rounded-lg overflow-hidden shadow-xl w-[300px] h-[450px] transition-transform ${shifted ? 'translate-x-[-20%]' : ''}`}>
               {loading ? (
@@ -254,7 +289,7 @@ const TutorialCard = () => {
             Anterior
           </button>
         )}
-        {step === 2 && !showDeck && (
+        {step > 0 && !showDeck && (
           <button 
             onClick={handleNextClick} 
             className="bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
@@ -268,14 +303,6 @@ const TutorialCard = () => {
             className="bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
           >
             Finalizar
-          </button>
-        )}
-        {step === 1 && (
-          <button 
-            onClick={handleNextClick} 
-            className="bg-blue-600 hover:bg-blue-700 text-blue-200 font-bold py-2 px-4 rounded"
-          >
-            Siguiente
           </button>
         )}
       </div>
