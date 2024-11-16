@@ -30,7 +30,7 @@
   {
     "name": "Isengard Store",
     "description": "Tienda de tcg, grato lugar donde pasar el rato",
-    "imgUrl": "isengardstrore.png",
+    "imgUrl": "isengardstore.png",
     "direccion": "Manuel Rodríguez 561, 1530508 Copiapó, Atacama",
     "region": "Atacama",
     "facebookUrl": "https://web.facebook.com/isengardstore/?locale=es_LA&_rdc=1&_rdr"
@@ -273,7 +273,7 @@
   {
     "name": "Oasis Games",
     "description": "Tienda de cartas coleccionables en Chile: * Magic The Gathering (WPN) * Pokémon TCG Compra, Vende y Juega en Oasis Games!",
-    "imgUrl": "oasis.jpg",
+    "imgUrl": "oasisgames.jpg",
     "direccion": "Los Militares 4611, Local 5, Santiago, Las Condes",
     "region": "Metropolitana",
     "instagramUrl": "https://www.instagram.com/oasisgameschile/", 
