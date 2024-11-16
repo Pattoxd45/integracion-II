@@ -26,4 +26,8 @@ async function scrapeNewss() {
     return articles;
 }
 
+<<<<<<<< HEAD:extras/scrapeNewss.js
 module.exports = scrapeNewss;
+========
+module.exports = scrapeNewss;
+>>>>>>>> chelo:proyecto/scrapeNewss.js

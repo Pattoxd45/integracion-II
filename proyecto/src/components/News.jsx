@@ -13,7 +13,9 @@ const importAll = (r) => {
   return images;
 };
 
-const images = importAll(require.context('../images/imgNews', false, /\.(png|jpe?g|svg|webp)$/));
+const images = importAll(
+  require.context("../images/imgNews", false, /\.(png|jpe?g|svg|webp)$/),
+);
 
 const News = () => {
   const [news, setNews] = useState([]);
@@ -25,14 +27,16 @@ const News = () => {
     const shuffledImages = shuffleArray(Object.values(images)); // Barajar las imágenes
     return newsData.map((item, index) => ({
       ...item,
-      image: shuffledImages[index % shuffledImages.length] // Asignar imagen única
+      image: shuffledImages[index % shuffledImages.length], // Asignar imagen única
     }));
   }, []); // La dependencia es vacía, ya que solo depende de 'images'
 
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get("https://magicarduct.online:3001/api/news2");
+        const response = await axios.get(
+          "https://magicarduct.online:3001/api/news2",
+        );
         const newsWithImages = assignImagesToNews(response.data); // Asignar imágenes a cada noticia
         setNews(newsWithImages);
         if (response.data.length === 0) {
@@ -47,7 +51,7 @@ const News = () => {
     };
 
     fetchNews();
-  }, [assignImagesToNews]);  // Ahora solo se ejecuta si cambia 'assignImagesToNews'
+  }, [assignImagesToNews]); // Ahora solo se ejecuta si cambia 'assignImagesToNews'
 
   // Función para barajar el array de imágenes
   const shuffleArray = (array) => {
@@ -64,14 +68,14 @@ const News = () => {
       className={className}
       style={{
         ...style,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)', // Fondo oscuro
-        borderRadius: '50%', // Hacer las flechas redondas
-        height: '16px', // Tamaño de las flechas
-        width: '16px', // Tamaño de las flechas
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1 // Asegurar que se muestren por encima
+        backgroundColor: "rgba(0, 0, 0, 0.6)", // Fondo oscuro
+        borderRadius: "50%", // Hacer las flechas redondas
+        height: "16px", // Tamaño de las flechas
+        width: "16px", // Tamaño de las flechas
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1, // Asegurar que se muestren por encima
       }}
       onClick={onClick}
     >
@@ -87,16 +91,16 @@ const News = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
-    prevArrow: <CustomArrow className="slick-prev">{'<'}</CustomArrow>, // Personaliza la flecha anterior
-    nextArrow: <CustomArrow className="slick-next">{'>'}</CustomArrow> // Personaliza la flecha siguiente
+    prevArrow: <CustomArrow className="slick-prev">{"<"}</CustomArrow>, // Personaliza la flecha anterior
+    nextArrow: <CustomArrow className="slick-next">{">"}</CustomArrow>, // Personaliza la flecha siguiente
   };
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 space-y-6 mb-6 text-[#e2e7eb]">
       {loading && (
         <div className="flex justify-center items-center h-full">
-        <div className="w-8 h-8 border-4 border-[#12171E] border-t-transparent rounded-full animate-spin"></div>
-      </div>
+          <div className="w-8 h-8 border-4 border-[#12171E] border-t-transparent rounded-full animate-spin"></div>
+        </div>
       )}
       {!loading && error && (
         <div className="bg-gradient-to-b from-[#12171E] via-[#222b38] to-[#222e3f] text-[#e2e7eb] text-center p-4 rounded-lg">
@@ -109,10 +113,10 @@ const News = () => {
             <div key={index}>
               <div className="flex flex-col md:flex-row bg-[#12171E] rounded-lg overflow-hidden shadow-xl h-auto">
                 <div className="flex-shrink-0 w-full md:w-2/5 flex items-center justify-center">
-                  <img 
-                    src={newsItem.image}  // Usar la imagen asignada
-                    alt={newsItem.title} 
-                    className="w-full h-auto object-cover" 
+                  <img
+                    src={newsItem.image} // Usar la imagen asignada
+                    alt={newsItem.title}
+                    className="w-full h-auto object-cover"
                   />
                 </div>
                 <div className="p-4 flex flex-col justify-center flex-grow">
@@ -120,7 +124,12 @@ const News = () => {
                   <p className="mt-2 line-clamp-2 sm:line-clamp-3">
                     {newsItem.description}
                   </p>
-                  <a href={'https://magic.wizards.com'+newsItem.link} target="_blank" rel="noopener noreferrer" className="text-[#bcc1c5] hover:opacity-70">
+                  <a
+                    href={"https://magic.wizards.com" + newsItem.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#bcc1c5] hover:opacity-70"
+                  >
                     Ver más...
                   </a>
                 </div>
