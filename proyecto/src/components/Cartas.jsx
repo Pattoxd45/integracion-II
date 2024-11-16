@@ -1,37 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import { IoIosAdd } from 'react-icons/io'; // Importamos el icono de añadir
+import { IoIosAdd } from 'react-icons/io';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom'; // Importar para detectar el estado de navegación
-import { getDecks, addCardsToDeck } from './db'; // Importar la función para obtener barajas y agregar cartas
-import Favorites from './Favorites'; // Importamos el componente de favoritos
-import FilterSection from './FilterSection'; // Importa el nuevo componente
+import { useLocation } from 'react-router-dom';
+import { getDecks, addCardsToDeck } from './db';
+import Favorites from './Favorites';
+import FilterSection from './FilterSection';
+import KeywordAbilities from './KeywordAbilities'; // Importa el componente
 
 const Cartas = () => {
   const [cards, setCards] = useState([]);
-  const [userId] = useState([]); 
+  const [userId] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState({
     order: 'name',
     dir: 'auto',
     colors: [],
-    cdm: '',  
+    cdm: '',
     power: '',
     toughness: '',
     type: '',
-    edition: '', 
-    subtype: '', 
+    edition: '',
+    subtype: '',
   });
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
-  const [favorites, setFavorites] = useState([]); // Estado de favoritos
-  const [selectedCard, setSelectedCard] = useState(null); // Estado para popup de carta seleccionada
-  const [selectedCards, setSelectedCards] = useState([]); // Estado para las cartas seleccionadas
-  const [decks, setDecks] = useState([]); // Almacenar las barajas
-  const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de barajas
-  const location = useLocation(); // Hook para obtener el estado de navegación
-  const addingCards = location.state?.addingCards || false; // Detectar si estamos añadiendo cartas
+  const [favorites, setFavorites] = useState([]);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [selectedCards, setSelectedCards] = useState([]);
+  const [decks, setDecks] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const location = useLocation();
+  const addingCards = location.state?.addingCards || false;
   const [showFilters, setShowFilters] = useState(false);
 
   const toggleFilters = () => {
@@ -245,7 +246,7 @@ const Cartas = () => {
         subtypes={subtypes} 
       />
 
-      {loading ? (
+    {loading ? (
         <p className="text-white">Cargando cartas...</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -281,7 +282,7 @@ const Cartas = () => {
                     {isFavorite(card.id) ? '♥' : '♡'}
                     </button>
 
-                {addingCards && (
+      {addingCards && (
                   <div
                     className={`absolute right-3 top-3 w-5 h-5 rounded-full border-2 ${
                       selectedCards.includes(card.id)
