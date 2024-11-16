@@ -94,13 +94,13 @@ const Cartas = () => {
   const fetchCards = () => {
     setLoading(true);
     const colorsQuery = filter.colors.length ? `+color:${filter.colors.join(',')}` : '';
-    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';  
+    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';
     const powerQuery = filter.power ? `+pow=${filter.power}` : '';
     const toughnessQuery = filter.toughness ? `+tou=${filter.toughness}` : '';
     const typeQuery = filter.type ? `+type:${filter.type}` : '';
     const editionQuery = filter.edition ? `+set:${filter.edition}` : '';
     const subtypeQuery = filter.subtype ? `+type:${filter.subtype}` : '';
-
+  
     fetch(
       `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${filter.order}&dir=${filter.dir}`
     )
@@ -115,6 +115,7 @@ const Cartas = () => {
         setCards([]);
       });
   };
+  
 
   const handleSearch = (event) => setSearchQuery(event.target.value);
   const handleFilterChange = (field) => (event) => {
@@ -128,6 +129,7 @@ const Cartas = () => {
       colors: checked ? [...prev.colors, value] : prev.colors.filter((color) => color !== value),
     }));
   };
+  
 
   // Manejar la selección de cartas (checkbox o círculo)
   const handleSelectCard = (cardId) => {

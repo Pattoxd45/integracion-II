@@ -1,6 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const FilterSection = ({ showFilters, toggleFilters, filter, handleFilterChange, handleColorsChange, sets, subtypes }) => {
+  const [symbols, setSymbols] = useState({});
+
+  // Fetch the color symbols from Scryfall API
+  useEffect(() => {
+    const fetchSymbols = async () => {
+      try {
+        const response = await fetch('https://api.scryfall.com/symbology');
+        const data = await response.json();
+        const colorSymbols = {};
+
+        // Filter only the color symbols (single color)
+        data.data.forEach(symbol => {
+          if (symbol.colors && symbol.colors.length === 1) {
+            colorSymbols[symbol.colors[0]] = symbol.svg_uri;
+          }
+        });
+
+        setSymbols(colorSymbols);
+      } catch (error) {
+        console.error("Error fetching symbols:", error);
+      }
+    };
+
+    fetchSymbols();
+  }, []);
+
   return (
     <div>
       <button 
@@ -14,7 +40,7 @@ const FilterSection = ({ showFilters, toggleFilters, filter, handleFilterChange,
         <div>
           <div className="mb-4 flex flex-wrap">
             <label className="text-white mr-4">Colores:</label>
-            {['White', 'Blue', 'Black', 'Red', 'Green'].map((color) => (
+            {['W', 'U', 'B', 'R', 'G'].map((color) => (
               <label key={color} className="text-white mr-4 flex items-center">
                 <input
                   type="checkbox"
@@ -22,7 +48,9 @@ const FilterSection = ({ showFilters, toggleFilters, filter, handleFilterChange,
                   onChange={handleColorsChange}
                   className="mr-1"
                 />
-                {color}
+                {symbols[color] && (
+                  <img src={symbols[color]} alt={color} className="w-6 h-6 mr-2" />
+                )}
               </label>
             ))}
           </div>
