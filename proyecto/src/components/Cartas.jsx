@@ -1,403 +1,346 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { FaSearch } from "react-icons/fa";
-import { IoIosAdd } from "react-icons/io";
-import Favorites from "./Favorites";
-import FilterSection from "./FilterSection";
-import { useUser } from "./UserContext";
+import React, { useState, useEffect } from 'react';
+import { FaSearch } from 'react-icons/fa';
+import { IoIosAdd } from 'react-icons/io'; // Importamos el icono de añadir
+import axios from 'axios';
+import { useLocation } from 'react-router-dom'; // Importar para detectar el estado de navegación
+import { getDecks, addCardsToDeck } from './db'; // Importar la función para obtener barajas y agregar cartas
+import Favorites from './Favorites'; // Importamos el componente de favoritos
+import FilterSection from './FilterSection'; // Importa el nuevo componente
 
 const Cartas = () => {
-  const { userId } = useUser();
   const [cards, setCards] = useState([]);
+  const [userId] = useState([]); 
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState({
-    order: "name",
-    dir: "auto",
+    order: 'name',
+    dir: 'auto',
     colors: [],
-    cdm: "",
-    power: "",
-    toughness: "",
-    type: "",
-    edition: "",
-    subtype: "",
+    cdm: '',  
+    power: '',
+    toughness: '',
+    type: '',
+    edition: '', 
+    subtype: '', 
   });
   const [sets, setSets] = useState([]);
   const [subtypes, setSubtypes] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [favorites, setFavorites] = useState([]); // Estado de favoritos
+  const [selectedCard, setSelectedCard] = useState(null); // Estado para popup de carta seleccionada
+  const [selectedCards, setSelectedCards] = useState([]); // Estado para las cartas seleccionadas
+  const [decks, setDecks] = useState([]); // Almacenar las barajas
+  const [showModal, setShowModal] = useState(false); // Estado para mostrar el modal de barajas
+  const location = useLocation(); // Hook para obtener el estado de navegación
+  const addingCards = location.state?.addingCards || false; // Detectar si estamos añadiendo cartas
   const [showFilters, setShowFilters] = useState(false);
-  const [decks, setDecks] = useState([]);
-  const [selectedDeck, setSelectedDeck] = useState(null);
-  const [cardToAdd, setCardToAdd] = useState(null);
-  const [showCardExistsModal, setShowCardExistsModal] = useState(false);
-  const modalRef = useRef(null);
 
-  const toggleFilters = () => setShowFilters(!showFilters);
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };  
 
-  useEffect(() => {
-    fetchFavorites();
-    fetchDecks();
-    fetch("https://api.scryfall.com/sets")
-      .then((res) => res.json())
-      .then((data) => setSets(data.data || []));
-    fetch("https://api.scryfall.com/catalog/card-types")
-      .then((res) => res.json())
-      .then((data) => setSubtypes(data.data || []));
-  }, [userId]);
-
+  // Obtener cartas favoritas del backend
   const fetchFavorites = async () => {
     try {
-      const response = await fetch(
-        `https://magicarduct.online:3000/api/cartasfavoritas/${userId}`,
-      );
-      if (!response.ok) throw new Error("Error en la solicitud");
-      const data = await response.json();
-      setFavorites(Array.isArray(data) ? data : []);
+      const response = await axios.get(`/api/cartasfavoritas/${userId}`);
+      setFavorites(response.data);
     } catch (error) {
-      console.error("Error al obtener favoritos:", error);
-      setFavorites([]);
+      console.error('Error al obtener cartas favoritas:', error);
     }
   };
 
-  const fetchDecks = async () => {
-    if (!userId) return;
+  // Agregar carta a favoritos
+  const addFavorite = async (card) => {
     try {
-      const response = await fetch(
-        `https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`,
-      );
-      if (!response.ok) throw new Error("Error al obtener las barajas");
-      const data = await response.json();
-      setDecks(data);
+      await axios.post('/api/cartasfavoritas', {
+        IDusuario: userId,
+        IDcarta: card.id,
+      });
+      fetchFavorites(); // Actualizar lista de favoritos
     } catch (error) {
-      console.error("Error al obtener barajas:", error);
+      console.error('Error al agregar carta favorita:', error);
     }
   };
 
-  const fetchCards = useCallback(() => {
-    setLoading(true);
-    const colorsQuery = filter.colors.length
-      ? `+color:${filter.colors.join(",")}`
-      : "";
-    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : "";
-    const powerQuery = filter.power ? `+pow=${filter.power}` : "";
-    const toughnessQuery = filter.toughness ? `+tou=${filter.toughness}` : "";
-    const typeQuery = filter.type ? `+type:${filter.type}` : "";
-    const editionQuery = filter.edition ? `+set:${filter.edition}` : "";
-    const subtypeQuery = filter.subtype ? `+type:${filter.subtype}` : "";
+  // Eliminar carta de favoritos
+  const removeFavorite = async (cardId) => {
+    try {
+      await axios.delete('/api/cartasfavoritas', {
+        data: { idusuario: userId, idcarta: cardId },
+      });
+      fetchFavorites(); // Actualizar lista de favoritos
+    } catch (error) {
+      console.error('Error al eliminar carta favorita:', error);
+    }
+  };
 
+  // Verificar si una carta es favorita
+  const isFavorite = (cardId) => favorites.some((fav) => fav.IDcarta === cardId);
+
+  useEffect(() => {
+    fetchFavorites(); // Cargar cartas favoritas del usuario
+    fetch('https://api.scryfall.com/sets')
+      .then(response => response.json())
+      .then(data => setSets(data.data || []));
+
+    fetch('https://api.scryfall.com/catalog/card-types')
+      .then(response => response.json())
+      .then(data => setSubtypes(data.data || []));
+  }, []);
+
+  useEffect(() => {
+    fetchCards();
+  }, [searchQuery, filter]);
+
+  const fetchCards = () => {
+    setLoading(true);
+    const colorsQuery = filter.colors.length ? `+color:${filter.colors.join(',')}` : '';
+    const cdmQuery = filter.cdm ? `+cmc=${filter.cdm}` : '';
+    const powerQuery = filter.power ? `+pow=${filter.power}` : '';
+    const toughnessQuery = filter.toughness ? `+tou=${filter.toughness}` : '';
+    const typeQuery = filter.type ? `+type:${filter.type}` : '';
+    const editionQuery = filter.edition ? `+set:${filter.edition}` : '';
+    const subtypeQuery = filter.subtype ? `+type:${filter.subtype}` : '';
+  
     fetch(
-      `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${filter.order}&dir=${filter.dir}`,
+      `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${filter.order}&dir=${filter.dir}`
     )
-      .then((res) => res.json())
+      .then((response) => response.json())
       .then((data) => {
         setCards(data.data || []);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching cards:", error);
+        console.error('Error fetching cards:', error);
         setLoading(false);
         setCards([]);
       });
-  }, [searchQuery, filter]);
-
-  useEffect(() => {
-    fetchCards();
-  }, [searchQuery, filter, fetchCards]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setShowModal(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  };
+  
 
   const handleSearch = (event) => setSearchQuery(event.target.value);
-  const handleFilterChange = (field) => (event) =>
+  const handleFilterChange = (field) => (event) => {
     setFilter((prev) => ({ ...prev, [field]: event.target.value }));
+  };
+
   const handleColorsChange = (event) => {
     const { value, checked } = event.target;
     setFilter((prev) => ({
       ...prev,
-      colors: checked
-        ? [...prev.colors, value]
-        : prev.colors.filter((color) => color !== value),
+      colors: checked ? [...prev.colors, value] : prev.colors.filter((color) => color !== value),
     }));
   };
+  
 
-  const toggleDeckModal = (card) => {
-    if (cardToAdd === card) {
-      setShowModal(!showModal);
+  // Manejar la selección de cartas (checkbox o círculo)
+  const handleSelectCard = (cardId) => {
+    if (selectedCards.includes(cardId)) {
+      setSelectedCards(selectedCards.filter(id => id !== cardId));
     } else {
-      setCardToAdd(card);
-      setShowModal(true);
+      setSelectedCards([...selectedCards, cardId]);
     }
   };
 
-  const handleDeckSelect = async (deck) => {
-    setSelectedDeck(deck);
-    try {
-      const response = await fetch(
-        `https://magicarduct.online:3000/api/mazocartas/${deck.idbarajas}`,
-      );
-      const deckCards = await response.json();
-      const cardExistsInDeck = deckCards.some(
-        (deckCard) => deckCard.IDcarta === cardToAdd.id,
-      );
-
-      if (cardExistsInDeck) {
-        setShowCardExistsModal(true);
-        setSelectedDeck(null); // Limpiar la selección del mazo
+  // Manejar la selección de favoritos
+  const toggleFavorite = (card) => {
+    setFavorites((prevFavorites) => {
+      if (prevFavorites.some((favorite) => favorite.id === card.id)) {
+        return prevFavorites.filter((favorite) => favorite.id !== card.id);
       } else {
-        setShowModal(false); // Ocultar el modal de selección
+        return [...prevFavorites, card];
       }
-    } catch (error) {
-      console.error(
-        "Error al verificar si la carta existe en la baraja:",
-        error,
-      );
-    }
+    });
   };
 
-  const handleAddCardsToDeck = async () => {
-    if (!selectedDeck || !cardToAdd) return;
-    try {
-      await fetch("https://magicarduct.online:3000/api/agregarcartas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          IDmazo: selectedDeck.idbarajas,
-          IDcarta: cardToAdd.id,
-          cantidad: 1,
-        }),
-      });
-      setShowModal(false);
-    } catch (error) {
-      console.error("Error al añadir la carta al mazo:", error);
-    }
+  // Manejar el click de la carta (abrir popup)
+  const handleCardClick = (card) => {
+    setSelectedCard(card);
   };
 
-  const addFavorite = async (card) => {
-    try {
-      await fetch(`https://magicarduct.online:3000/api/cartasfavoritas`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ IDusuario: userId, IDcarta: card.id }),
-      });
-      fetchFavorites();
-    } catch (error) {
-      console.error("Error al agregar favorito:", error);
-    }
+  const closeModalCard = () => {
+    setSelectedCard(null);
   };
 
-  const removeFavorite = async (cardId) => {
-    try {
-      await fetch(
-        `https://magicarduct.online:3000/api/cartasfavoritas/${userId}/${cardId}`,
-        {
-          method: "DELETE",
-        },
-      );
-      fetchFavorites();
-    } catch (error) {
-      console.error("Error al eliminar favorito:", error);
-    }
+  const handleNextCard = () => {
+    const currentIndex = cards.findIndex(card => card.id === selectedCard.id);
+    const nextIndex = (currentIndex + 1) % cards.length;
+    setSelectedCard(cards[nextIndex]);
   };
 
-  const isFavorite = (cardId) =>
-    favorites.some((fav) => fav.IDcarta === cardId);
-  const toggleFavorite = (card) =>
-    isFavorite(card.IDcarta) ? removeFavorite(card.IDcarta) : addFavorite(card);
+  const handlePreviousCard = () => {
+    const currentIndex = cards.findIndex(card => card.id === selectedCard.id);
+    const prevIndex = (currentIndex - 1 + cards.length) % cards.length;
+    setSelectedCard(cards[prevIndex]);
+  };
+
+  // Abrir el modal y obtener las barajas de IndexedDB
+  const openModal = async () => {
+    const savedDecks = await getDecks(); // Obtener barajas de IndexedDB
+    setDecks(savedDecks || []);
+    setShowModal(true); // Mostrar el modal
+  };
+
+  // Cerrar el modal
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // Manejar la selección de una baraja para agregar cartas
+  const handleSelectDeck = async (deckId) => {
+    const selectedCardNames = selectedCards.map(cardId => {
+      const card = cards.find(card => card.id === cardId);
+      return {
+        id: card.id,
+        name: card.name,
+        image: card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`,
+        mana: card.mana_cost || "Desconocido",
+        type: card.type_line || "Desconocido",
+        power: card.power || null,
+        toughness: card.toughness || null,
+      };
+    });
+
+    // Agregar las cartas seleccionadas a la baraja
+    await addCardsToDeck(deckId, selectedCardNames);
+    setSelectedCards([]); // Limpiar las cartas seleccionadas
+    closeModal(); // Cerrar el modal
+  };
 
   return (
-    <div className="p-6 min-h-screen">
+    <div className="p-6 bg-gray-900 min-h-screen">
+      <h1 className="text-white text-4xl mb-8 text-center">Magic the Gathering Cards</h1>
+
       <Favorites favorites={favorites} toggleFavorite={toggleFavorite} />
+
       <div className="mb-4 flex flex-col md:flex-row md:items-center md:space-x-4">
-        <div className="relative w-full md:w-1/3 m-2">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={handleSearch}
-            placeholder="Buscar cartas..."
-            className="p-2 rounded border border-gray-500 w-full pr-10"
-          />
-          <FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        </div>
+  <div className="relative w-full md:w-1/3 m-2">
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={handleSearch}
+      placeholder="Buscar cartas..."
+      className="p-2 rounded border border-gray-500 w-full pr-10"
+    />
+    <FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+  </div>
 
-        <select
-          onChange={handleFilterChange("order")}
-          className="border border-gray-300 rounded-md p-2 w-full md:w-auto"
-        >
-          <option value="name">Ordenar por Nombre</option>
-          <option value="set">Ordenar por Set</option>
-          <option value="released">Ordenar por Fecha de Lanzamiento</option>
-          <option value="cdm">Ordenar por CDM</option>
-        </select>
-        <select
-          onChange={handleFilterChange("dir")}
-          className="border border-gray-300 rounded-md p-2 w-full md:w-auto"
-        >
-          <option value="auto">Dirección Automática</option>
-          <option value="asc">Ascendente</option>
-          <option value="desc">Descendente</option>
-        </select>
-      </div>
+  <select onChange={handleFilterChange('order')} className="border border-gray-300 rounded-md p-2 mb-4 md:mb-0 w-full md:w-auto">
+    <option value="name">Ordenar por Nombre</option>
+    <option value="set">Ordenar por Set</option>
+    <option value="released">Ordenar por Fecha de Lanzamiento</option>
+    <option value="cdm">Ordenar por CDM</option>
+  </select>
 
-      <FilterSection
-        showFilters={showFilters}
-        toggleFilters={toggleFilters}
-        filter={filter}
-        handleFilterChange={handleFilterChange}
-        handleColorsChange={handleColorsChange}
-        sets={sets}
-        subtypes={subtypes}
+  <select onChange={handleFilterChange('dir')} className="border border-gray-300 rounded-md p-2 mb-4 md:mb-0 w-full md:w-auto">
+    <option value="auto">Dirección Automática</option>
+    <option value="asc">Ascendente</option>
+    <option value="desc">Descendente</option>
+  </select>
+</div>
+
+      <FilterSection 
+        showFilters={showFilters} 
+        toggleFilters={toggleFilters} 
+        filter={filter} 
+        handleFilterChange={handleFilterChange} 
+        handleColorsChange={handleColorsChange} 
+        sets={sets} 
+        subtypes={subtypes} 
       />
 
       {loading ? (
-        <p className="text-[#e2e7eb]">Cargando cartas...</p>
+        <p className="text-white">Cargando cartas...</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-          {cards.map((card) => (
-            <div
-              key={card.id}
-              className="relative bg-[#12171E] p-4 rounded-lg shadow-lg"
-            >
-              <img
-                src={
-                  card.image_uris?.border_crop ||
-                  `${process.env.PUBLIC_URL}/Cartas2.png`
-                }
-                alt={card.name}
-                className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
-                onClick={() => setSelectedCard(card)}
-              />
-              <div className="mt-4">
-                <h2 className="text-[#e2e7eb] text-lg font-bold">
-                  {card.name}
-                </h2>
-                <p className="text-gray-400">{card.type_line}</p>
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleDeckModal(card);
-                }}
-                className="absolute bottom-2 right-2 p-1 bg-[#2a5880] text-[#e2e7eb] rounded-md shadow-lg hover:bg-[#244c6e] transition"
+          {Array.isArray(cards) && cards.length > 0 ? (
+            cards.map((card) => (
+              <div
+                key={card.id}
+                className="relative bg-gray-800 p-4 rounded-lg shadow-lg cursor-pointer"
+                onClick={() => handleCardClick(card)}
               >
-                <IoIosAdd size={24} />
-              </button>
-              {showModal && cardToAdd === card && (
-                <div
-                  ref={modalRef}
-                  className="absolute bottom-12 right-2 bg-[#1b1f23] text-[#e2e7eb] p-2 rounded-md shadow-lg border-[1px] border-[#9ebbd6]"
-                >
-                  <ul>
-                    {decks.map((deck) => (
-                      <li
-                        key={deck.idbarajas}
-                        onClick={() => handleDeckSelect(deck)}
-                        className={`hover:bg-[#2a5880] p-2 rounded-md cursor-pointer ${
-                          selectedDeck?.idbarajas === deck.idbarajas
-                            ? "bg-[#2a5880]"
-                            : ""
-                        }`}
-                      >
-                        {deck.nombre}
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    onClick={handleAddCardsToDeck}
-                    className="mt-2 bg-[#2a5880] text-[#e2e7eb] px-4 py-1 rounded hover:bg-[#3587cf] transition w-full"
-                  >
-                    Añadir
-                  </button>
+                <img
+                  src={card.image_uris?.border_crop || `${process.env.PUBLIC_URL}/Cartas2.png`}
+                  alt={card.name}
+                  className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
+                />
+
+                <div className="mt-4">
+                  <h2 className="text-white text-lg font-bold">{card.name}</h2>
+                  <p className="text-gray-400">{card.type_line}</p>
+                  {card.power && <p className="text-gray-400">Poder: {card.power}</p>}
+                  {card.toughness && <p className="text-gray-400">Resistencia: {card.toughness}</p>}
                 </div>
-              )}
-              <button
+
+                <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleFavorite(card);
+                  isFavorite(card.id) ? removeFavorite(card.id) : addFavorite(card);
                 }}
-                className={`absolute top-2 left-2 text-2xl ${isFavorite(card.id) ? "text-red-600" : "text-[#e2e7eb]"}`}
-              >
-                {isFavorite(card.id) ? "♥" : "♡"}
-              </button>
-            </div>
-          ))}
+                className={`absolute top-2 left-2 text-2xl ${
+                  isFavorite(card.id) ? 'text-red-600' : 'text-white'
+                  }`}
+                  >
+                    {isFavorite(card.id) ? '♥' : '♡'}
+                    </button>
+
+                {addingCards && (
+                  <div
+                    className={`absolute right-3 top-3 w-5 h-5 rounded-full border-2 ${
+                      selectedCards.includes(card.id)
+                        ? "bg-orange-500 border-white"
+                        : "border-white"
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectCard(card.id);
+                    }}
+                  ></div>
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="text-white">No se encontraron cartas.</p>
+          )}
         </div>
       )}
 
-      {selectedCard && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
-          <div className="bg-[#0b0f14] p-6 rounded-lg w-full max-w-4xl">
-            <div className="w-full p-4 flex">
-              <div className="w-1/2 p-4">
-                <img
-                  src={
-                    selectedCard.image_uris?.normal ||
-                    `${process.env.PUBLIC_URL}/Cartas2.png`
-                  }
-                  alt={selectedCard.name}
-                  className="rounded-lg"
-                />
-              </div>
-              <div className="w-1/2 p-4">
-                <h2 className="text-[#e2e7eb] text-2xl mb-4">
-                  {selectedCard.name}
-                </h2>
-                <p className="text-[#e2e7eb]">
-                  <strong>Tipo:</strong> {selectedCard.type_line}
-                </p>
-                <p className="text-[#e2e7eb]">
-                  <strong>Costo de Maná:</strong>{" "}
-                  {selectedCard.mana_cost || "N/A"}
-                </p>
-                <p className="text-[#e2e7eb]">
-                  <strong>Texto:</strong> {selectedCard.oracle_text || "N/A"}
-                </p>
-                <p className="text-[#e2e7eb]">
-                  <strong>Rareza:</strong> {selectedCard.rarity}
-                </p>
-                <p className="text-[#e2e7eb]">
-                  <strong>Edición:</strong> {selectedCard.set_name}
-                </p>
-              </div>
-            </div>
-            <div className="flex justify-between mt-8">
-              <button
-                onClick={() =>
-                  setSelectedCard(
-                    cards[
-                      (cards.indexOf(selectedCard) - 1 + cards.length) %
-                        cards.length
-                    ],
-                  )
-                }
-                className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e] w-full mr-2"
-              >
-                Anterior
-              </button>
-              <button
-                onClick={() =>
-                  setSelectedCard(
-                    cards[(cards.indexOf(selectedCard) + 1) % cards.length],
-                  )
-                }
-                className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e] w-full ml-2"
-              >
-                Siguiente
-              </button>
-            </div>
+      {selectedCards.length > 0 && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-[1200px]">
+          <div className="flex justify-end">
             <button
-              onClick={() => setSelectedCard(null)}
-              className="mt-4 bg-[#9ebbd6] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#859eb4] w-full"
+              className="bg-[#E83411] text-white rounded-[10px] p-[10px] hover:bg-[#b52e0e] transition-colors flex items-center justify-center"
+              style={{ width: "50px", height: "50px" }}
+              onClick={openModal}
+            >
+              <IoIosAdd className="text-white text-[24px]" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
+          <div className="bg-white p-5 rounded-lg w-[400px]">
+            <h2 className="text-xl font-bold mb-4">Seleccionar Baraja</h2>
+            {decks.length > 0 ? (
+              <ul className="mb-4">
+                {decks.map((deck) => (
+                  <li key={deck.id} className="mb-2">
+                    <button
+                      className="w-full bg-[#E83411] text-white p-2 rounded-md"
+                      onClick={() => handleSelectDeck(deck.id)}
+                    >
+                      {deck.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-700">No hay barajas disponibles.</p>
+            )}
+            <button
+              className="bg-gray-400 px-4 py-2 rounded-md hover:bg-gray-500"
+              onClick={closeModal}
             >
               Cerrar
             </button>
@@ -405,15 +348,45 @@ const Cartas = () => {
         </div>
       )}
 
-      {showCardExistsModal && (
+      {selectedCard && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
-          <div className="bg-[#0b0f14] p-6 rounded-lg max-w-md w-full text-center">
-            <h2 className="text-[#e2e7eb] text-2xl mb-4">
-              La carta ya existe en el mazo seleccionado
-            </h2>
+          <div className="flex bg-gray-900 p-6 rounded-lg w-full max-w-4xl flex-col">
+            <div className="w-full p-4 flex">
+              <div className="w-1/2 p-4">
+                <img
+                  src={selectedCard.image_uris?.normal || `${process.env.PUBLIC_URL}/Cartas2.png`}
+                  alt={selectedCard.name}
+                  className="rounded-lg"
+                />
+              </div>
+              <div className="w-1/2 p-4">
+                <h2 className="text-white text-2xl mb-4">{selectedCard.name}</h2>
+                <p className="text-white"><strong>Tipo:</strong> {selectedCard.type_line}</p>
+                <p className="text-white"><strong>Costo de Maná:</strong> {selectedCard.mana_cost || 'N/A'}</p>
+                <p className="text-white"><strong>Texto:</strong> {selectedCard.oracle_text || 'N/A'}</p>
+                <p className="text-white"><strong>Rareza:</strong> {selectedCard.rarity}</p>
+                <p className="text-white"><strong>Edición:</strong> {selectedCard.set_name}</p>
+              </div>
+            </div>
+
+            <div className="flex justify-between mt-8">
+              <button
+                onClick={handlePreviousCard}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors w-full mr-2"
+              >
+                Anterior
+              </button>
+              <button
+                onClick={handleNextCard}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-500 transition-colors w-full ml-2"
+              >
+                Siguiente
+              </button>
+            </div>
+
             <button
-              onClick={() => setShowCardExistsModal(false)}
-              className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e] w-full"
+              onClick={closeModalCard}
+              className="mt-8 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition-colors w-full"
             >
               Cerrar
             </button>
