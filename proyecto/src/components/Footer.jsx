@@ -1,5 +1,10 @@
 import React from "react";
-import { FaGithub, FaInstagram, FaFacebook, FaUniversity } from "react-icons/fa"; // Importamos los iconos
+import {
+  FaGithub,
+  FaInstagram,
+  FaFacebook,
+  FaUniversity,
+} from "react-icons/fa"; // Importamos los iconos
 
 const Footer = () => {
   return (
@@ -13,23 +18,59 @@ const Footer = () => {
             className="w-[150px] h-auto"
           />
           <p className="py-4">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, error
-            consequuntur temporibus impedit et accusantium?
+            Magic: The Gathering es un juego de cartas coleccionables diseñado
+            en 1993 por Richard Garfield, profesor de matemáticas, y
+            comercializado por la empresa
+            <a
+              href="https://company.wizards.com/en"
+              className="hover:opacity-80 text-[#9ebbd6] transition"
+            >
+              {" "}
+              Wizards of the Coast.
+            </a>
           </p>
 
           {/* Iconos de GitHub, Instagram, Facebook y Universidad */}
           <div className="flex space-x-3">
-            <a href="https://github.com/Pattoxd45/integracion-II" target="_blank" rel="noopener noreferrer">
-              <FaGithub size={20} className="text-[#ddd] hover:text-[#e85438]" />
+            <a
+              href="https://github.com/Pattoxd45/integracion-II"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaGithub
+                size={20}
+                className="text-[#ddd] hover:text-[#e85438]"
+              />
             </a>
-            <a href="https://www.instagram.com/wizards_magic/" target="_blank" rel="noopener noreferrer">
-              <FaInstagram size={20} className="text-[#ddd] hover:text-[#e85438]" />
+            <a
+              href="https://www.instagram.com/wizards_magic/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaInstagram
+                size={20}
+                className="text-[#ddd] hover:text-[#e85438]"
+              />
             </a>
-            <a href="https://www.facebook.com/MagicTheGathering/" target="_blank" rel="noopener noreferrer">
-              <FaFacebook size={20} className="text-[#ddd] hover:text-[#e85438]" />
+            <a
+              href="https://www.facebook.com/MagicTheGathering/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaFacebook
+                size={20}
+                className="text-[#ddd] hover:text-[#e85438]"
+              />
             </a>
-            <a href="https://www.uct.cl/" target="_blank" rel="noopener noreferrer">
-              <FaUniversity size={20} className="text-[#ddd] hover:text-[#e85438]" />
+            <a
+              href="https://www.uct.cl/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaUniversity
+                size={20}
+                className="text-[#ddd] hover:text-[#e85438]"
+              />
             </a>
           </div>
         </div>
@@ -41,16 +82,20 @@ const Footer = () => {
             <h6 className="font-[14px]">Recursos</h6>
             <ul>
               <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Reglas Oficiales de MTG
-              </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer" >
-              <a href="/tiendas">Tiendas oficiales</a>
-              </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Aplicaciones de MTG
+                <a href="https://magic.wizards.com/es/rules">
+                  Reglas Oficiales de MTG
+                </a>
               </li>
               <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Deck Builder
+                <a href="/tiendas">Tiendas oficiales</a>
+              </li>
+              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
+                <a href="https://magic.wizards.com/es/products/companion-app">
+                  App oficial MTG
+                </a>
+              </li>
+              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
+                <a href="/decks">Deck Builder</a>
               </li>
             </ul>
           </div>
@@ -60,35 +105,28 @@ const Footer = () => {
             <h6 className="font-[14px]">Comunidad</h6>
             <ul>
               <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Torneos y Eventos
+                <a href="/noticias">Torneos y Eventos</a>
               </li>
               <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Foros y Grupos
+                <a href="https://magic-the-gathering.foroactivo.com/">
+                  Foros y Grupos
+                </a>
               </li>
               <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Articulos
+                <a href="https://magic.wizards.com/es/products">Articulos</a>
               </li>
               <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Co-Streamers
+                <a href="/noticias">Co-Streamers</a>
               </li>
             </ul>
           </div>
 
           {/* Sección 3: Soporte */}
           <div>
-            <h6 className="font-[14px]">Soporte</h6>
+            <h6 className="font-[14px]">Extras</h6>
             <ul>
               <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                FAQ
-              </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Contacto
-              </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Política de Privacidad
-              </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                Términos y Condiciones
+                <a href="/about">Acerca de Magic</a>
               </li>
             </ul>
           </div>

@@ -63,19 +63,29 @@ const InsideDecksProperties = ({ cards }) => {
     C: "#bcbcbc", // Colorless
   };
 
-  // Colores personalizados para los tipos/subtipos
+  // Colores personalizados para los tipos/subtipos y rarezas
   const typeColorMap = [
-    "#9BD3AE", // Green
-    "#AAE0FA", // Blue
-    "#FFFBD5", // White
-    "#F9AA8F", // Red
-    "#CBC2BF", // Black
-    "#bcbcbc", // Gray
-    "#87CEFA", // Light Blue
-    "#FFD700", // Gold
-    "#8A2BE2", // Purple
-    "#FF69B4", // Pink
+    "#9BD3AE",
+    "#AAE0FA",
+    "#FFFBD5",
+    "#F9AA8F",
+    "#CBC2BF",
+    "#bcbcbc",
+    "#87CEFA",
+    "#FFD700",
+    "#8A2BE2",
+    "#FF69B4",
   ];
+
+  const rarityColorMap = {
+    common: "#9BD3AE", // Green
+    uncommon: "#AAE0FA", // Blue
+    rare: "#F9AA8F", // Red
+    mythic: "#FFD700", // Gold
+    special: "#8A2BE2", // Purple
+    bonus: "#CBC2BF", // Gray
+    masterpiece: "#FF69B4", // Pink
+  };
 
   // Inicializar datos de gráficos
   const manaValuesByColor = {
@@ -97,6 +107,7 @@ const InsideDecksProperties = ({ cards }) => {
   };
 
   const cardTypesCount = {};
+  const rarityCount = {};
 
   // Procesar las cartas
   detailedCards.forEach((card) => {
@@ -120,6 +131,14 @@ const InsideDecksProperties = ({ cards }) => {
       cardTypesCount[cardType]++;
     } else {
       cardTypesCount[cardType] = 1;
+    }
+
+    // Procesar rarezas
+    const rarity = card.rarity || "unknown";
+    if (rarityCount[rarity]) {
+      rarityCount[rarity]++;
+    } else {
+      rarityCount[rarity] = 1;
     }
   });
 
@@ -145,11 +164,6 @@ const InsideDecksProperties = ({ cards }) => {
     ],
   };
 
-  // Datos para Card Types Distribution
-  const totalTypes = Object.values(cardTypesCount).reduce(
-    (sum, count) => sum + count,
-    0,
-  );
   const pieDataCardTypes = {
     labels: Object.keys(cardTypesCount),
     datasets: [
@@ -157,6 +171,20 @@ const InsideDecksProperties = ({ cards }) => {
         data: Object.values(cardTypesCount),
         backgroundColor: Object.keys(cardTypesCount).map(
           (_, index) => typeColorMap[index % typeColorMap.length],
+        ),
+        borderColor: "#12181E",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const pieDataRarities = {
+    labels: Object.keys(rarityCount),
+    datasets: [
+      {
+        data: Object.values(rarityCount),
+        backgroundColor: Object.keys(rarityCount).map(
+          (rarity) => rarityColorMap[rarity] || "#888888", // Default color for unknown rarities
         ),
         borderColor: "#12181E",
         borderWidth: 2,
@@ -287,6 +315,40 @@ const InsideDecksProperties = ({ cards }) => {
     maintainAspectRatio: false,
   };
 
+  const pieOptions3 = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        labels: {
+          color: "#FFFFFF",
+        },
+      },
+      title: {
+        display: true,
+        text: "Rareza de Cartas",
+        color: "#FFFFFF",
+        font: {
+          size: 14,
+        },
+        padding: {
+          top: 5,
+          bottom: 5,
+        },
+      },
+    },
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 20,
+        right: 20,
+      },
+    },
+    maintainAspectRatio: false,
+  };
+
   return (
     <div className="overflow-y-auto h-[76vh] space-y-4 rounded-md">
       <div className="grid grid-cols-2 gap-[8px] w-full">
@@ -304,6 +366,11 @@ const InsideDecksProperties = ({ cards }) => {
         {/* Gráfico de pastel para tipos de cartas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
           <Pie data={pieDataCardTypes} options={pieOptions2} />
+        </div>
+
+        {/* Gráfico de pastel para rarezas */}
+        <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
+          <Pie data={pieDataRarities} options={pieOptions3} />
         </div>
       </div>
     </div>
