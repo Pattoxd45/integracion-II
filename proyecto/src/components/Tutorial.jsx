@@ -168,6 +168,9 @@ const TutorialCard = () => {
     fetchRandomCard(); // Opcional: puedes mantener la carta actual o generar una nueva
   };
 
+  
+  
+
   return(
     <div className="max-w-[1200px] mx-auto px-4 space-y-6 mb-6 text-[#e2e7eb] flex flex-col items-center">
       <h1 className="text-3xl font-bold mb-2 text-center">Tutorial</h1>
@@ -187,16 +190,19 @@ const TutorialCard = () => {
         </div>
       )}
       {step === 1 && (
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-6">Reglas Básicas</h2>
-          <p className="mb-4">Antes de explorar este tutorial, es importante entender algunas reglas básicas del juego:</p>
-          <ul className="mb-4 text-left">
-            <li>- Cada jugador comienza con un mazo de cartas.</li>
-            <li>- El objetivo es reducir la vida del oponente a cero.</li>
-            <li>- Las cartas tienen diferentes tipos y habilidades que pueden afectar el juego.</li>
-          </ul>
-        </div>
-      )}
+  <div className="text-center">
+    <h2 className="text-2xl font-semibold mb-6">Reglas Básicas</h2>
+    <p className="mb-4">
+      Antes de explorar este tutorial, es importante entender algunas reglas básicas del juego:
+    </p>
+    <ul className="mb-4 text-left">
+      <li>- Cada jugador comienza con un mazo de cartas.</li>
+      <li>- El objetivo es reducir la vida del oponente a cero.</li>
+      <li>- Las cartas tienen diferentes tipos y habilidades que pueden afectar el juego.</li>
+    </ul>
+  </div>
+)}
+
       {step === 2 && (
   <>
     <h2 className="text-2xl font-semibold mb-6 text-center">Partes del Tablero</h2>
