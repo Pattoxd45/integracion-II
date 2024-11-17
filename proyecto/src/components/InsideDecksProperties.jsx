@@ -1,205 +1,309 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Bar, Pie } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend } from 'chart.js'; // npm install react-chartjs-2 chart.js
-import ChartDataLabels from 'chartjs-plugin-datalabels'; // npm install chartjs-plugin-datalabels
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
-// Registrar los componentes de Chart.js y el plugin de etiquetas
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend, ChartDataLabels);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartDataLabels,
+);
 
-const InsideDecksProperties = () => {
-  // Datos y configuraciones del gráfico de barras
-  const barData = {
-    labels: ["0", "1", "2", "3", "4", "5", "6", "7+"], // Etiquetas en el eje X
+const InsideDecksProperties = ({ cards }) => {
+  const [detailedCards, setDetailedCards] = useState([]);
+
+  // Obtener datos detallados de cada carta desde Scryfall
+  useEffect(() => {
+    const fetchCardDetails = async () => {
+      const fetchedCards = [];
+      for (const card of cards) {
+        try {
+          const response = await fetch(
+            `https://api.scryfall.com/cards/${card.id}`,
+          );
+          if (response.ok) {
+            const cardData = await response.json();
+            fetchedCards.push(cardData);
+          } else {
+            console.error(
+              `Error al obtener detalles de la carta con ID: ${card.id}`,
+            );
+          }
+        } catch (error) {
+          console.error("Error en la petición a Scryfall:", error);
+        }
+      }
+      setDetailedCards(fetchedCards);
+    };
+
+    fetchCardDetails();
+  }, [cards]);
+
+  // Mapa de colores para tipos de maná
+  const colorMap = {
+    B: "#CBC2BF", // Black
+    U: "#AAE0FA", // Blue
+    W: "#FFFBD5", // White
+    R: "#F9AA8F", // Red
+    G: "#9BD3AE", // Green
+    C: "#bcbcbc", // Colorless
+  };
+
+  // Colores personalizados para los tipos/subtipos
+  const typeColorMap = [
+    "#9BD3AE", // Green
+    "#AAE0FA", // Blue
+    "#FFFBD5", // White
+    "#F9AA8F", // Red
+    "#CBC2BF", // Black
+    "#bcbcbc", // Gray
+    "#87CEFA", // Light Blue
+    "#FFD700", // Gold
+    "#8A2BE2", // Purple
+    "#FF69B4", // Pink
+  ];
+
+  // Inicializar datos de gráficos
+  const manaValuesByColor = {
+    B: Array(8).fill(0),
+    U: Array(8).fill(0),
+    W: Array(8).fill(0),
+    R: Array(8).fill(0),
+    G: Array(8).fill(0),
+    C: Array(8).fill(0),
+  };
+
+  const totalManaCosts = {
+    B: 0,
+    U: 0,
+    W: 0,
+    R: 0,
+    G: 0,
+    C: 0,
+  };
+
+  const cardTypesCount = {};
+
+  // Procesar las cartas
+  detailedCards.forEach((card) => {
+    const cmc = Math.min(card.cmc || 0, 7); // Agrupar 7+
+    const colors = card.colors.length > 0 ? card.colors : ["C"]; // Usar "C" si no tiene colores
+
+    // Procesar valores de maná
+    colors.forEach((color) => {
+      if (manaValuesByColor[color]) {
+        manaValuesByColor[color][cmc]++;
+        totalManaCosts[color]++;
+      }
+    });
+
+    // Extraer tipo y subtipo desde `type_line`
+    const typeLine = card.type_line || "Other";
+    const [type, ...subtypes] = typeLine.split("—").map((s) => s.trim());
+    const cardType = subtypes.length > 0 ? subtypes.join(" ") : type;
+
+    if (cardTypesCount[cardType]) {
+      cardTypesCount[cardType]++;
+    } else {
+      cardTypesCount[cardType] = 1;
+    }
+  });
+
+  // Datos para Mana Costs by Color
+  const filteredManaCosts = Object.entries(totalManaCosts).filter(
+    ([_, value]) => value > 0,
+  );
+  const totalMana = filteredManaCosts.reduce(
+    (sum, [_, value]) => sum + value,
+    0,
+  );
+  const pieDataManaCosts = {
+    labels: filteredManaCosts.map(([color]) => color),
     datasets: [
       {
-        label: "Valores",
-        data: [null, 5, 9, 3, 7, null, null, null], 
-        backgroundColor: ["#FFFBD5", "#AAE0FA", "#CBC2BF", "#F9AA8F", "#9BD3AE"], // Colores personalizados
-        barThickness: 40,
-        categoryPercentage: 0.6,
-        barPercentage: 1.0,
+        data: filteredManaCosts.map(([_, value]) =>
+          Math.round((value / totalMana) * 100),
+        ),
+        backgroundColor: filteredManaCosts.map(([color]) => colorMap[color]),
+        borderColor: "#12181E",
+        borderWidth: 2,
       },
     ],
+  };
+
+  // Datos para Card Types Distribution
+  const totalTypes = Object.values(cardTypesCount).reduce(
+    (sum, count) => sum + count,
+    0,
+  );
+  const pieDataCardTypes = {
+    labels: Object.keys(cardTypesCount),
+    datasets: [
+      {
+        data: Object.values(cardTypesCount),
+        backgroundColor: Object.keys(cardTypesCount).map(
+          (_, index) => typeColorMap[index % typeColorMap.length],
+        ),
+        borderColor: "#12181E",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  // Datos para Mana Value Distribution
+  const barData = {
+    labels: ["0", "1", "2", "3", "4", "5", "6", "7+"],
+    datasets: Object.entries(manaValuesByColor).map(([color, values]) => ({
+      label: color,
+      data: values,
+      backgroundColor: colorMap[color],
+      barThickness: 40,
+    })),
   };
 
   const barOptions = {
     responsive: true,
     plugins: {
       legend: {
-        display: false,
-      },
-      title: {
         display: true,
-        text: "Mana Value",
-        color: "#FFFFFF",
-        font: {
-          size: 18,
+        labels: {
+          color: "#FFFFFF",
         },
-        padding: {
-          top: 10,
-          bottom: 10,
-        },
-      },
-      tooltip: {
-        enabled: false,
       },
       datalabels: {
         color: "#FFFFFF",
         anchor: "end",
-        align: "end",
-        offset: -5,
-        font: {
-          size: 14,
-        },
-        display: function(context) {
-          return context.dataset.data[context.dataIndex] !== null;
-        },
+        align: "start",
+        offset: 10,
+        font: { size: 12 },
+        display: (context) => context.dataset.data[context.dataIndex] > 0,
+        formatter: (value) => value,
       },
     },
     scales: {
       x: {
+        stacked: true,
         ticks: {
           color: "#FFFFFF",
+          padding: 10,
         },
-        grid: {
-          display: false,
-        },
-        border: {
-          display: true,
-          color: "rgba(255,255,255,0.1)",
-          width: 1,
-        },
+        grid: { display: false },
       },
       y: {
-        display: false, // Ocultar eje Y
-        grid: {
+        stacked: true,
+        ticks: {
           display: false,
         },
+        grid: { display: false },
+      },
+    },
+    layout: {
+      padding: {
+        top: 20,
+        bottom: 10,
       },
     },
   };
 
-  // Datos y configuraciones del gráfico de pie para "Mana Costs"
-  const pieDataCosts = {
-    labels: ["Green", "Blue", "White"],
-    datasets: [
-      {
-        label: "Distribución de Colores",
-        data: [45, 30, 25], // Valores aleatorios para las secciones
-        backgroundColor: ["#9BD3AE", "#AAE0FA", "#FFFBD5"], // Colores: verde, azul y blanco
-        borderColor: "#12181E", // Color del borde (igual que el fondo)
-        borderWidth: 2,
-      },
-    ],
-  };
-
-  const pieOptions = {
+  const pieOptions1 = {
     responsive: true,
     plugins: {
       legend: {
         display: true,
-        position: 'bottom', // Posicionar la leyenda debajo del gráfico
+        position: "top",
         labels: {
-          color: "#FFFFFF", // Color del texto de la leyenda
+          color: "#FFFFFF",
         },
       },
-      tooltip: {
-        enabled: false, // Deshabilitar el tooltip
+      title: {
+        display: true,
+        text: "Costos de Mana",
+        color: "#FFFFFF",
+        font: {
+          size: 14,
+        },
+        padding: {
+          top: 5,
+          bottom: 5,
+        },
       },
     },
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 20,
+        right: 20,
+      },
+    },
+    maintainAspectRatio: false,
   };
 
-  // Datos y configuraciones del gráfico de pie para "Mana Production"
-  const pieDataProduction = {
-    labels: ["Green", "Blue", "White", "Colorless"],
-    datasets: [
-      {
-        label: "Mana Production",
-        data: [40, 25, 20, 15], // Valores aleatorios para las secciones
-        backgroundColor: ["#9BD3AE", "#AAE0FA", "#FFFBD5", "#bcbcbc"], // Colores: verde, azul, blanco, incoloro
-        borderColor: "#12181E",
-        borderWidth: 2,
+  const pieOptions2 = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        labels: {
+          color: "#FFFFFF",
+        },
       },
-    ],
-  };
-
-  // Datos y configuraciones del gráfico de pie para "Card Types"
-  const pieDataTypes = {
-    labels: ["Creatures", "Enchantments", "Sorceries", "Planeswalkers", "Lands", "Instants", "Artifacts"],
-    datasets: [
-      {
-        label: "Tipos de Cartas",
-        data: [40, 10, 10, 5, 20, 10, 5], // Valores aleatorios para las secciones
-        backgroundColor: [
-          "#F9AA8F",  // Red para Creatures
-          "#FFFBD5",  // White para Enchantments
-          "#9BD3AE",  // Green para Sorceries
-          "#e0e0e0",  // White (darker) para Planeswalkers
-          "#444444",  // #444 para Lands
-          "#AAE0FA",  // Blue para Instants
-          "#bcbcbc"   // Colorless para Artifacts
-        ],
-        borderColor: "#12181E",
-        borderWidth: 2,
+      title: {
+        display: true,
+        text: "Tipo/Subtipo de Cartas",
+        color: "#FFFFFF",
+        font: {
+          size: 14,
+        },
+        padding: {
+          top: 5,
+          bottom: 5,
+        },
       },
-    ],
+    },
+    layout: {
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 20,
+        right: 20,
+      },
+    },
+    maintainAspectRatio: false,
   };
 
   return (
     <div className="overflow-y-auto h-[76vh] space-y-4 rounded-md">
-      {/* Contenedor de cubos con tamaño fijo */}
       <div className="grid grid-cols-2 gap-[8px] w-full">
-        {/* Cubo 1 con gráfico de barras */}
+        {/* Gráfico de barras apiladas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
+          <h2 className="text-white text-xl mb-4">Valor de Mana</h2>
           <Bar data={barData} options={barOptions} />
-
-          {/* Círculos de colores con nombres */}
-          <div className="mt-4 flex justify-between w-full px-10">
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: "#FFFBD5" }}></div>
-              <span className="text-white">White</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: "#AAE0FA" }}></div>
-              <span className="text-white">Blue</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: "#CBC2BF" }}></div>
-              <span className="text-white">Black</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: "#F9AA8F" }}></div>
-              <span className="text-white">Red</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: "#9BD3AE" }}></div>
-              <span className="text-white">Green</span>
-            </div>
-          </div>
         </div>
 
-        {/* Cubo 2 con gráfico de pie para Mana Costs */}
+        {/* Gráfico de pastel de costos totales */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
-          <h2 className="text-white text-xl mb-4">Mana Costs</h2>
-          <div className="w-3/4"> {/* Ajustar tamaño del gráfico */}
-            <Pie data={pieDataCosts} options={pieOptions} />
-          </div>
+          <Pie data={pieDataManaCosts} options={pieOptions1} />
         </div>
 
-        {/* Cubo 3 con gráfico de pie para Mana Production */}
+        {/* Gráfico de pastel para tipos de cartas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
-          <h2 className="text-white text-xl mb-4">Mana Production</h2>
-          <div className="w-3/4"> {/* Ajustar tamaño del gráfico */}
-            <Pie data={pieDataProduction} options={pieOptions} />
-          </div>
-        </div>
-
-        {/* Cubo 4 con gráfico de pie para Card Types */}
-        <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
-          <h2 className="text-white text-xl mb-4">Card Types</h2>
-          <div className="w-3/4"> {/* Ajustar tamaño del gráfico */}
-            <Pie data={pieDataTypes} options={pieOptions} />
-          </div>
+          <Pie data={pieDataCardTypes} options={pieOptions2} />
         </div>
       </div>
     </div>

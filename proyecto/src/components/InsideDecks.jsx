@@ -24,7 +24,9 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
   const fetchDeckCards = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`https://magicarduct.online:3000/api/mazocartas/${deckId}`);
+      const response = await fetch(
+        `https://magicarduct.online:3000/api/mazocartas/${deckId}`,
+      );
       if (!response.ok) {
         throw new Error("Error al obtener las cartas del mazo");
       }
@@ -33,19 +35,22 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
 
       for (const card of deckCards) {
         const cardId = card.IDcarta;
-        const cardResponse = await fetch(`https://api.scryfall.com/cards/${cardId}`);
+        const cardResponse = await fetch(
+          `https://api.scryfall.com/cards/${cardId}`,
+        );
         if (cardResponse.ok) {
           const cardData = await cardResponse.json();
           deckCardsData.push({
             id: cardData.id,
             name: cardData.name,
-            imageUrl: cardData.image_uris?.png || "https://via.placeholder.com/150",
+            imageUrl:
+              cardData.image_uris?.png || "https://via.placeholder.com/150",
             mana_cost: cardData.mana_cost,
             oracle_text: cardData.oracle_text,
             cmc: cardData.cmc,
             type_line: cardData.type_line,
             colors: cardData.colors,
-            lang: "en"
+            lang: "en",
           });
         } else {
           console.error(`Error al obtener la carta con ID ${cardId}`);
@@ -71,7 +76,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     const filtered = cards.filter((card) =>
-      card.name.toLowerCase().includes(e.target.value.toLowerCase())
+      card.name.toLowerCase().includes(e.target.value.toLowerCase()),
     );
     setFilteredCards(filtered);
   };
@@ -115,18 +120,24 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
     setSelectedCards((prevSelected) =>
       prevSelected.includes(cardId)
         ? prevSelected.filter((id) => id !== cardId)
-        : [...prevSelected, cardId]
+        : [...prevSelected, cardId],
     );
   };
 
   const deleteSelectedCards = async () => {
     for (const cardId of selectedCards) {
       try {
-        await fetch(`https://magicarduct.online:3000/api/eliminarmazocarta/${deckId}/${cardId}`, {
-          method: "DELETE"
-        });
+        await fetch(
+          `https://magicarduct.online:3000/api/eliminarmazocarta/${deckId}/${cardId}`,
+          {
+            method: "DELETE",
+          },
+        );
       } catch (error) {
-        console.error(`Error al eliminar la carta con ID ${cardId} del mazo:`, error);
+        console.error(
+          `Error al eliminar la carta con ID ${cardId} del mazo:`,
+          error,
+        );
       }
     }
     fetchDeckCards();
@@ -146,15 +157,17 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
           <AiOutlineClose size={24} />
         </button>
 
-        <div className={`relative transition-all duration-500 ${selectedCard ? "w-[28%] mr-6" : "w-full"}`}>
-          <h2 className="text-[#e1e6ea] text-2xl font-bold mb-4">
-            {deckName}
-          </h2>
+        <div
+          className={`relative transition-all duration-500 ${selectedCard ? "w-[28%] mr-6" : "w-full"}`}
+        >
+          <h2 className="text-[#e1e6ea] text-2xl font-bold mb-4">{deckName}</h2>
 
           <div className="flex justify-between space-x-2 mb-4">
             <button
               className={`w-full h-[46px] rounded-md text-lg font-semibold text-center ${
-                activeView === "Cartas" ? "bg-[#2a5880] text-[#e1e6ea]" : "bg-[#9ebbd6] text-[#e1e6ea]"
+                activeView === "Cartas"
+                  ? "bg-[#2a5880] text-[#e1e6ea]"
+                  : "bg-[#9ebbd6] text-[#e1e6ea]"
               }`}
               onClick={() => setActiveView("Cartas")}
             >
@@ -162,7 +175,9 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
             </button>
             <button
               className={`w-full h-[46px] rounded-md text-lg font-semibold text-center ${
-                activeView === "Propiedades" ? "bg-[#2a5880] text-[#e1e6ea]" : "bg-[#9ebbd6] text-[#e1e6ea]"
+                activeView === "Propiedades"
+                  ? "bg-[#2a5880] text-[#e1e6ea]"
+                  : "bg-[#9ebbd6] text-[#e1e6ea]"
               }`}
               onClick={() => setActiveView("Propiedades")}
             >
@@ -213,11 +228,17 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                             src={card.imageUrl}
                             alt={card.name}
                             className="object-cover rounded-none"
-                            style={{ width: "165px", height: "100%", objectPosition: "top" }}
+                            style={{
+                              width: "165px",
+                              height: "100%",
+                              objectPosition: "top",
+                            }}
                           />
                           <h4
                             className={`text-[#e1e6ea] text-lg ml-4 ${selectedCard ? "truncate" : ""}`}
-                            style={{ maxWidth: selectedCard ? "120px" : "auto" }}
+                            style={{
+                              maxWidth: selectedCard ? "120px" : "auto",
+                            }}
                           >
                             {card.name}
                           </h4>
@@ -235,7 +256,9 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                         </div>
                       ))
                     ) : (
-                      <p className="text-[#e1e6ea]">No se han encontrado cartas en este mazo.</p>
+                      <p className="text-[#e1e6ea]">
+                        No se han encontrado cartas en este mazo.
+                      </p>
                     )}
                     <div className="h-4" />
                   </div>
@@ -243,7 +266,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
               </div>
             </>
           ) : (
-            <InsideDecksProperties />
+            <InsideDecksProperties cards={cards} />
           )}
         </div>
 
@@ -263,12 +286,24 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
               />
               <div className="ml-4 flex flex-col">
                 <h2 className="text-2xl font-bold mb-2">{selectedCard.name}</h2>
-                <p className="text-sm mb-2"><strong>Language:</strong> {selectedCard.lang}</p>
-                <p className="text-sm mb-2"><strong>Mana Cost:</strong> {selectedCard.mana_cost}</p>
-                <p className="text-sm mb-2"><strong>Oracle Text:</strong> {selectedCard.oracle_text}</p>
-                <p className="text-sm mb-2"><strong>CMC:</strong> {selectedCard.cmc}</p>
-                <p className="text-sm mb-2"><strong>Type Line:</strong> {selectedCard.type_line}</p>
-                <p className="text-sm mb-2"><strong>Colors:</strong> {selectedCard.colors.join(", ")}</p>
+                <p className="text-sm mb-2">
+                  <strong>Language:</strong> {selectedCard.lang}
+                </p>
+                <p className="text-sm mb-2">
+                  <strong>Mana Cost:</strong> {selectedCard.mana_cost}
+                </p>
+                <p className="text-sm mb-2">
+                  <strong>Oracle Text:</strong> {selectedCard.oracle_text}
+                </p>
+                <p className="text-sm mb-2">
+                  <strong>CMC:</strong> {selectedCard.cmc}
+                </p>
+                <p className="text-sm mb-2">
+                  <strong>Type Line:</strong> {selectedCard.type_line}
+                </p>
+                <p className="text-sm mb-2">
+                  <strong>Colors:</strong> {selectedCard.colors.join(", ")}
+                </p>
               </div>
             </div>
           </div>
@@ -293,7 +328,6 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
       </div>
 
       <style jsx>{`
-        /* Estilo del scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
         }
