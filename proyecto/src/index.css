@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css?family=Varta:700|Varta:400');
+
+body {
+  background-color: #0b0f14;
+  font-family: 'Varta', sans-serif;
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Varta', sans-serif;
+  font-weight: 700;
+}
+
+html {
+  font-size: 100%; /* 16px */
+}
+
+h1 {
+  font-size: 1.802rem; /* 28.8px */
+}
+
+h2 {
+  font-size: 1.602rem; /* 25.6px */
+}
+
+h3 {
+  font-size: 1.424rem; /* 22.72px */
+}
+
+h4 {
+  font-size: 1.266rem; /* 20.32px */
+}
+
+h5 {
+  font-size: 1.125rem; /* 18.08px */
+}
+
+small {
+  font-size: 0.889rem; /* 14.24px */
+}
+
+/* Estilo para el scrollbar */
+*::-webkit-scrollbar {
+  width: 8px; /* Ancho de la barra de desplazamiento */
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent; /* Fondo transparente */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2); /* Color del rectángulo */
+  border-radius: 2px; /* Redondeado */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3); /* Color del rectángulo al pasar el mouse */
+}
+
+
+.card {
+  width: 220px;
+  height: 320px;
+}
+
+@media (max-width: 940px) {
+  .card {
+    width: 180px;
+    height: 280px;
+  }
+}
+
+@media (max-width: 766px) {
+  .card {
+    width: 220px;
+    height: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    width: 300px;
+    height: 420px;
+  }
+}
