@@ -15,7 +15,7 @@ import About from "./components/About";
 import Tiendas from './components/Tiendas';
 import Tutorial from "./components/Tutorial";
 
-import { UserProvider } from "./components/UserContext";
+import { UserProvider, useUser } from "./components/UserContext";
 
 function App() {
   return (
@@ -27,7 +27,7 @@ function App() {
             <Route path="/" element={
               <>
                 <Hero />
-                <Cards />
+                <LoggedInCards />
                 <News />
                 <Tutorial />
               </>
@@ -55,5 +55,16 @@ function App() {
     </div>
   );
 }
+
+// Componente que maneja la lógica de la visualización de Cards
+const LoggedInCards = () => {
+  const { userId } = useUser();
+
+  if (!userId) {
+    return null; // Si no hay userId, no mostramos <Cards />
+  }
+
+  return <Cards />;
+};
 
 export default App;

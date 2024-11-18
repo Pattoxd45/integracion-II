@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useUser } from './UserContext';
 
 const Favorites = ({ favorites, toggleFavorite }) => {
+  const { userId } = useUser();
   const [favoriteCards, setFavoriteCards] = useState([]);
 
   useEffect(() => {
@@ -24,6 +26,17 @@ const Favorites = ({ favorites, toggleFavorite }) => {
     fetchFavoriteNames();
   }, [favorites]);
 
+  const removeFavorite = async (cardId) => {
+    try {
+      await fetch(`https://magicarduct.online:3000/api/cartasfavoritas/${userId}/${cardId}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      console.error('Error al eliminar favorito:', error);
+    }
+    window.location.reload();
+  };
+
   return (
     <div className="mb-8">
       <h2 className="text-white text-2xl mb-4">Favoritos</h2>
@@ -39,7 +52,7 @@ const Favorites = ({ favorites, toggleFavorite }) => {
               <span className="text-white">{card.name}</span>
               <button
                 className="text-red-500"
-                onClick={() => toggleFavorite(card)}
+                onClick={() => removeFavorite(card.id)}
               >
                 Quitar
               </button>
