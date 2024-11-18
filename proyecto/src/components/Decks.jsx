@@ -313,18 +313,6 @@ const Decks = () => {
           </div>
         </div>
       )}
-      
-      {/* Botón de opciones siempre visible, cuadrado y con bordes, alineado al right */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-[1200px]">
-        <div className="flex justify-end">
-          <button
-            className="bg-[#2a5880] text-[#e2e7eb] rounded-[10px] p-[10px] hover:opacity-70 transition flex items-center justify-center"
-            style={{ width: "50px", height: "50px" }} // Tamaño del botón
-          >
-            <IoIosOptions className="text-[#e2e7eb] text-[24px]" />
-          </button>
-        </div>
-      </div>
 
       {/* Modal */}
       {isModalOpen && (

@@ -20,12 +20,36 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
   const [activeView, setActiveView] = useState("Cartas");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [symbols, setSymbols] = useState({});
+
+  // Fetch color symbols from Scryfall
+  useEffect(() => {
+    const fetchSymbols = async () => {
+      try {
+        const response = await fetch("https://api.scryfall.com/symbology");
+        const data = await response.json();
+        const colorSymbols = {};
+
+        data.data.forEach((symbol) => {
+          if (symbol.colors && symbol.colors.length === 1) {
+            colorSymbols[symbol.colors[0]] = symbol.svg_uri;
+          }
+        });
+
+        setSymbols(colorSymbols);
+      } catch (error) {
+        console.error("Error fetching symbols:", error);
+      }
+    };
+
+    fetchSymbols();
+  }, []);
 
   const fetchDeckCards = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://magicarduct.online:3000/api/mazocartas/${deckId}`,
+        `https://magicarduct.online:3000/api/mazocartas/${deckId}`
       );
       if (!response.ok) {
         throw new Error("Error al obtener las cartas del mazo");
@@ -36,7 +60,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
       for (const card of deckCards) {
         const cardId = card.IDcarta;
         const cardResponse = await fetch(
-          `https://api.scryfall.com/cards/${cardId}`,
+          `https://api.scryfall.com/cards/${cardId}`
         );
         if (cardResponse.ok) {
           const cardData = await cardResponse.json();
@@ -76,7 +100,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     const filtered = cards.filter((card) =>
-      card.name.toLowerCase().includes(e.target.value.toLowerCase()),
+      card.name.toLowerCase().includes(e.target.value.toLowerCase())
     );
     setFilteredCards(filtered);
   };
@@ -120,7 +144,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
     setSelectedCards((prevSelected) =>
       prevSelected.includes(cardId)
         ? prevSelected.filter((id) => id !== cardId)
-        : [...prevSelected, cardId],
+        : [...prevSelected, cardId]
     );
   };
 
@@ -131,17 +155,22 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
           `https://magicarduct.online:3000/api/eliminarmazocarta/${deckId}/${cardId}`,
           {
             method: "DELETE",
-          },
+          }
         );
       } catch (error) {
         console.error(
           `Error al eliminar la carta con ID ${cardId} del mazo:`,
-          error,
+          error
         );
       }
     }
     fetchDeckCards();
     setSelectedCards([]);
+  };
+
+  // Function to truncate text
+  const truncateText = (text, length) => {
+    return text.length > length ? text.slice(0, length) + "..." : text;
   };
 
   return (
@@ -158,7 +187,9 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
         </button>
 
         <div
-          className={`relative transition-all duration-500 ${selectedCard ? "w-[28%] mr-6" : "w-full"}`}
+          className={`relative transition-all duration-500 ${
+            selectedCard ? "w-[28%] mr-6" : "w-full"
+          }`}
         >
           <h2 className="text-[#e1e6ea] text-2xl font-bold mb-4">{deckName}</h2>
 
@@ -179,10 +210,14 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                   ? "bg-[#2a5880] text-[#e1e6ea]"
                   : "bg-[#9ebbd6] text-[#e1e6ea]"
               }`}
-              onClick={() => setActiveView("Propiedades")}
+              onClick={() => {
+                closeCardDetails();
+                setActiveView("Propiedades");
+              }}
             >
               Propiedades
             </button>
+
           </div>
 
           {activeView === "Cartas" ? (
@@ -203,7 +238,10 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                 </button>
                 <button
                   className="w-[46px] h-[46px] bg-[#2a5880] text-[#e1e6ea] font-semibold rounded-md text-center hover:opacity-80 transition flex items-center justify-center"
-                  onClick={toggleEditMode}
+                  onClick={() => {
+                    toggleEditMode();
+                    closeCardDetails();
+                  }}
                 >
                   {editMode ? <MdEditOff size={20} /> : <MdEdit size={20} />}
                 </button>
@@ -234,14 +272,23 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                               objectPosition: "top",
                             }}
                           />
-                          <h4
-                            className={`text-[#e1e6ea] text-lg ml-4 ${selectedCard ? "truncate" : ""}`}
-                            style={{
-                              maxWidth: selectedCard ? "120px" : "auto",
-                            }}
-                          >
-                            {card.name}
-                          </h4>
+                          <div className="ml-4">
+                            <h4 className="text-[#e1e6ea] text-lg truncate">
+                              {selectedCard
+                                ? truncateText(card.name, 15)
+                                : card.name}
+                            </h4>
+                            <div className="flex mt-1">
+                              {card.colors.map((color) => (
+                                <img
+                                  key={color}
+                                  src={symbols[color]}
+                                  alt={color}
+                                  className="w-6 h-6 mr-1"
+                                />
+                              ))}
+                            </div>
+                          </div>
                           {editMode && (
                             <input
                               type="checkbox"
@@ -260,7 +307,6 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                         No se han encontrado cartas en este mazo.
                       </p>
                     )}
-                    <div className="h-4" />
                   </div>
                 )}
               </div>
@@ -301,8 +347,20 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                 <p className="text-sm mb-2">
                   <strong>Type Line:</strong> {selectedCard.type_line}
                 </p>
-                <p className="text-sm mb-2">
-                  <strong>Colors:</strong> {selectedCard.colors.join(", ")}
+                <p className="text-sm mb-2 flex items-center">
+                  <strong>Colors:</strong>{" "}
+                  {selectedCard.colors.length > 0 ? (
+                    selectedCard.colors.map((color) => (
+                      <img
+                        key={color}
+                        src={symbols[color]}
+                        alt={color}
+                        className="w-6 h-6 ml-1"
+                      />
+                    ))
+                  ) : (
+                    <span>N/A</span>
+                  )}
                 </p>
               </div>
             </div>
