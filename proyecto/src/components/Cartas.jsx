@@ -35,18 +35,8 @@ const Cartas = () => {
 
   const toggleFilters = () => setShowFilters(!showFilters);
 
-  useEffect(() => {
-    fetchFavorites();
-    fetchDecks();
-    fetch("https://api.scryfall.com/sets")
-      .then((res) => res.json())
-      .then((data) => setSets(data.data || []));
-    fetch("https://api.scryfall.com/catalog/card-types")
-      .then((res) => res.json())
-      .then((data) => setSubtypes(data.data || []));
-  }, [userId]);
-
-  const fetchFavorites = async () => {
+  // Fetch favoritos
+  const fetchFavorites = useCallback(async () => {
     try {
       const response = await fetch(
         `https://magicarduct.online:3000/api/cartasfavoritas/${userId}`,
@@ -58,9 +48,10 @@ const Cartas = () => {
       console.error("Error al obtener favoritos:", error);
       setFavorites([]);
     }
-  };
+  }, [userId]);
 
-  const fetchDecks = async () => {
+  // Fetch barajas del usuario
+  const fetchDecks = useCallback(async () => {
     if (!userId) return;
     try {
       const response = await fetch(
@@ -72,8 +63,9 @@ const Cartas = () => {
     } catch (error) {
       console.error("Error al obtener barajas:", error);
     }
-  };
+  }, [userId]);
 
+  // Fetch cartas
   const fetchCards = useCallback(() => {
     setLoading(true);
     const colorsQuery = filter.colors.length
@@ -87,7 +79,9 @@ const Cartas = () => {
     const subtypeQuery = filter.subtype ? `+type:${filter.subtype}` : "";
 
     fetch(
-      `https://api.scryfall.com/cards/search?q=${encodeURIComponent(searchQuery)}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${filter.order}&dir=${filter.dir}`,
+      `https://api.scryfall.com/cards/search?q=${encodeURIComponent(
+        searchQuery,
+      )}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${filter.order}&dir=${filter.dir}`,
     )
       .then((res) => res.json())
       .then((data) => {
@@ -100,6 +94,18 @@ const Cartas = () => {
         setCards([]);
       });
   }, [searchQuery, filter]);
+
+  // Fetch sets y subtipos al cargar
+  useEffect(() => {
+    fetchFavorites();
+    fetchDecks();
+    fetch("https://api.scryfall.com/sets")
+      .then((res) => res.json())
+      .then((data) => setSets(data.data || []));
+    fetch("https://api.scryfall.com/catalog/card-types")
+      .then((res) => res.json())
+      .then((data) => setSubtypes(data.data || []));
+  }, [fetchFavorites, fetchDecks]);
 
   useEffect(() => {
     fetchCards();

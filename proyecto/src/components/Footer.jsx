@@ -1,12 +1,10 @@
 import React from "react";
-import {
-  FaGithub,
-  FaInstagram,
-  FaFacebook,
-  FaUniversity,
-} from "react-icons/fa"; // Importamos los iconos
+import { FaGithub, FaInstagram, FaFacebook, FaUniversity } from "react-icons/fa"; 
+import { useUser } from "./UserContext"; // Importa el contexto de usuario
 
 const Footer = () => {
+  const { userId } = useUser(); // Obtén el estado del usuario desde el contexto
+
   return (
     <div className="mx-auto py-6 text-white bg-[#0b0f14] w-[100%] border-t-[1px] border-[rgba(255,255,255,0.1)]">
       <div className="max-w-[1240px] px-4 mx-auto grid lg:grid-cols-3 gap-8">
@@ -39,7 +37,7 @@ const Footer = () => {
             >
               <FaGithub
                 size={20}
-                className="text-[#ddd] hover:text-[#e85438]"
+                className="text-[#e2e7eb] hover:text-[#9ebbd6]"
               />
             </a>
             <a
@@ -49,7 +47,7 @@ const Footer = () => {
             >
               <FaInstagram
                 size={20}
-                className="text-[#ddd] hover:text-[#e85438]"
+                className="text-[#e2e7eb] hover:text-[#9ebbd6]"
               />
             </a>
             <a
@@ -59,7 +57,7 @@ const Footer = () => {
             >
               <FaFacebook
                 size={20}
-                className="text-[#ddd] hover:text-[#e85438]"
+                className="text-[#e2e7eb] hover:text-[#9ebbd6]"
               />
             </a>
             <a
@@ -69,7 +67,7 @@ const Footer = () => {
             >
               <FaUniversity
                 size={20}
-                className="text-[#ddd] hover:text-[#e85438]"
+                className="text-[#e2e7eb] hover:text-[#9ebbd6]"
               />
             </a>
           </div>
@@ -81,22 +79,25 @@ const Footer = () => {
           <div>
             <h6 className="font-[14px]">Recursos</h6>
             <ul>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
+              <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
                 <a href="https://magic.wizards.com/es/rules">
                   Reglas Oficiales de MTG
                 </a>
               </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
+              <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
                 <a href="/tiendas">Tiendas oficiales</a>
               </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
+              <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
                 <a href="https://magic.wizards.com/es/products/companion-app">
                   App oficial MTG
                 </a>
               </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                <a href="/decks">Deck Builder</a>
-              </li>
+              {/* Mostrar Deck Builder solo si el usuario está logeado */}
+              {userId && (
+                <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
+                  <a href="/decks">Deck Builder</a>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -104,18 +105,18 @@ const Footer = () => {
           <div>
             <h6 className="font-[14px]">Comunidad</h6>
             <ul>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
+              <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
                 <a href="/noticias">Torneos y Eventos</a>
               </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
+              <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
                 <a href="https://magic-the-gathering.foroactivo.com/">
                   Foros y Grupos
                 </a>
               </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
-                <a href="https://magic.wizards.com/es/products">Articulos</a>
+              <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
+                <a href="https://magic.wizards.com/es/products">Artículos</a>
               </li>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
+              <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
                 <a href="/noticias">Co-Streamers</a>
               </li>
             </ul>
@@ -125,7 +126,7 @@ const Footer = () => {
           <div>
             <h6 className="font-[14px]">Extras</h6>
             <ul>
-              <li className="py-2 text-sm hover:text-[#e85438] cursor-pointer">
+              <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
                 <a href="/about">Acerca de Magic</a>
               </li>
             </ul>
