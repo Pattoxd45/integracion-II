@@ -34,66 +34,16 @@ const Creadores = () => {
   };
 
   const creators = [
-    {
-      name: "Tolarian Community College",
-      imgSrc: imagen1,
-      link: "https://www.youtube.com/@TolarianCommunityCollege",
-      description: "Cartas y estrategias",
-    },
-    {
-      name: "The Command Zone",
-      imgSrc: imagen2,
-      link: "https://www.youtube.com/@commandcast",
-      description: "Análisis y estrategias para Commander.",
-    },
-    {
-      name: "Unsleeved Media",
-      imgSrc: imagen3,
-      link: "https://www.youtube.com/@mtgheadquarters",
-      description: "Estrategias y formatos variados de MTG.",
-    },
-    {
-      name: "Kraken Packs",
-      imgSrc: imagen4,
-      link: "https://www.youtube.com/@KrakenPacksOFFICIAL",
-      description: "Unboxing y coleccionismo de MTG.",
-    },
-    {
-      name: "MTGGoldfish",
-      imgSrc: imagen5,
-      link: "https://www.youtube.com/@MTGGoldfish",
-      description: "Análisis de cartas y estrategias de metajuego.",
-    },
-    {
-      name: "ChannelFireball",
-      imgSrc: imagen6,
-      link: "https://www.youtube.com/@ChannelFireball",
-      description: "Educación competitiva sobre cartas y tácticas.",
-    },
-    {
-      name: "Good Morning Magic",
-      imgSrc: imagen7,
-      link: "https://www.youtube.com/@GoodMorningMagic",
-      description: "Programa diario de noticias y análisis de MTG.",
-    },
-    {
-      name: "Limited Resources",
-      imgSrc: imagen8,
-      link: "https://www.youtube.com/@LimitedResourcesPodcast",
-      description: "Estrategias específicas para formatos limitados.",
-    },
-    {
-      name: "MTGNerdGirl",
-      imgSrc: imagen9,
-      link: "https://www.youtube.com/@MTGNerdGirl",
-      description: "Aborda juegos competitivos y casuales.",
-    },
-    {
-      name: "Luis Scott-Vargas",
-      imgSrc: imagen10,
-      link: "https://www.youtube.com/@LSVargas",
-      description: "Comparte experiencias y estrategias de MTG",
-    },
+    { name: "Tolarian Community College", imgSrc: imagen1, link: "https://www.youtube.com/@TolarianCommunityCollege", description: "Cartas y estrategias" },
+    { name: "The Command Zone", imgSrc: imagen2, link: "https://www.youtube.com/@commandcast", description: "Análisis y estrategias para Commander." },
+    { name: "Unsleeved Media", imgSrc: imagen3, link: "https://www.youtube.com/@mtgheadquarters", description: "Estrategias y formatos variados de MTG." },
+    { name: "Kraken Packs", imgSrc: imagen4, link: "https://www.youtube.com/@KrakenPacksOFFICIAL", description: "Unboxing y coleccionismo de MTG." },
+    { name: "MTGGoldfish", imgSrc: imagen5, link: "https://www.youtube.com/@MTGGoldfish", description: "Análisis de cartas y estrategias de metajuego." },
+    { name: "ChannelFireball", imgSrc: imagen6, link: "https://www.youtube.com/@ChannelFireball", description: "Educación competitiva sobre cartas y tácticas." },
+    { name: "Good Morning Magic", imgSrc: imagen7, link: "https://www.youtube.com/@GoodMorningMagic", description: "Programa diario de noticias y análisis de MTG." },
+    { name: "Limited Resources", imgSrc: imagen8, link: "https://www.youtube.com/@LimitedResourcesPodcast", description: "Estrategias específicas para formatos limitados." },
+    { name: "MTGNerdGirl", imgSrc: imagen9, link: "https://www.youtube.com/@MTGNerdGirl", description: "Aborda juegos competitivos y casuales." },
+    { name: "Luis Scott-Vargas", imgSrc: imagen10, link: "https://www.youtube.com/@LSVargas", description: "Comparte experiencias y estrategias de MTG" },
   ];
 
   useEffect(() => {
@@ -109,11 +59,9 @@ const Creadores = () => {
     <div className="max-w-[1200px] mx-auto my-6 flex items-center">
       <div className="p-10 rounded-lg text-white w-full">
         {loading ? (
-          <div className="flex justify-center items-center h-full">
-            <div className="w-8 h-8 border-4 border-[#e2e7eb] border-t-transparent rounded-full animate-spin">
-              {" "}
-            </div>
-          </div>
+        <div className="flex justify-center items-center h-full">
+          <div className="w-8 h-8 border-4 border-[#e2e7eb] border-t-transparent rounded-full animate-spin"> </div>
+        </div>
         ) : creators.length === 0 ? (
           <div className="bg-gradient-to-b from-[#12171E] via-[#222b38] to-[#222e3f] text-[#e2e7eb] text-center p-4 rounded-lg">
             No hay eventos disponibles.
@@ -122,11 +70,7 @@ const Creadores = () => {
           <Slider {...settings}>
             {creators.map((creator, index) => (
               <div key={index} className="flex justify-center">
-                <a
-                  href={creator.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={creator.link} target="_blank" rel="noopener noreferrer">
                   <div className="card w-full max-w-[220px] bg-[#000] flex flex-col rounded-lg border-4 border-[#2a5880] shadow-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(45,89,128,1)]">
                     <div className="relative w-full aspect-[4/3]">
                       <img
@@ -136,12 +80,8 @@ const Creadores = () => {
                       />
                     </div>
                     <div className="flex-1 flex flex-col justify-center text-center p-2">
-                      <div className="font-bold text-[#FF7F50]">
-                        {creator.name}
-                      </div>
-                      <div className="text-[#FFDAB9]">
-                        {creator.description}
-                      </div>
+                      <div className="font-bold text-[#FF7F50]">{creator.name}</div>
+                      <div className="text-[#FFDAB9]">{creator.description}</div>
                     </div>
                   </div>
                 </a>

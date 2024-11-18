@@ -1,65 +1,158 @@
 import React, { useState, useEffect } from "react";
-import { PropagateLoader } from "react-spinners"; // Importamos el loader
+import { PropagateLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 const Cards = () => {
-  const [randomCards, setRandomCards] = useState([]);
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const [viewedCards, setViewedCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingImages, setLoadingImages] = useState(true);
+  const [visibleCards, setVisibleCards] = useState(4); // Estado para la cantidad de cartas visibles
+  const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
-    // Función para obtener cartas aleatorias de Scryfall
-    const fetchRandomCards = async () => {
+    const fetchViewedCards = async () => {
+      if (!userId) {
+        console.error("No user ID found in localStorage");
+        setLoading(false);
+        return;
+      }
+
       try {
-        let randomCardsArray = [];
-        while (randomCardsArray.length < 4) {
-          const response = await fetch("https://api.scryfall.com/cards/random");
-          const data = await response.json();
+        const response = await fetch(`https://magicarduct.online:3000/api/ultimascartasvistas/${userId}`);
+        const data = await response.json();
 
-          // Verificar si la carta ya está en el array
-          const cardAlreadyExists = randomCardsArray.some(
-            (card) => card.id === data.id,
-          );
-
-          if (!cardAlreadyExists) {
-            randomCardsArray.push(data); // Solo agregamos la carta si no está duplicada
-          }
+        if (response.ok && data.length > 0) {
+          setViewedCards(data);
+          fetchCardImages(data);
+        } else {
+          console.log("No se encontraron cartas vistas para este usuario");
         }
-
-        setRandomCards(randomCardsArray);
-        setLoading(false); // Desactivar el loader cuando las cartas se cargan
       } catch (error) {
-        console.error("Error al obtener cartas aleatorias:", error);
-        setLoading(false); // Desactivar el loader incluso en caso de error
+        console.error("Error al obtener cartas vistas:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchRandomCards();
+    const fetchCardImages = async (cards) => {
+      const updatedCards = await Promise.all(
+        cards.map(async (card) => {
+          try {
+            const response = await fetch(`https://api.scryfall.com/cards/${card.IDcarta}`);
+            const data = await response.json();
+            return { ...card, imageUrl: data.image_uris?.normal };
+          } catch (error) {
+            console.error("Error al obtener la imagen de la carta:", error);
+            return { ...card, imageUrl: null };
+          }
+        })
+      );
+      setViewedCards(updatedCards);
+      setLoadingImages(false);
+    };
+
+    fetchViewedCards();
+  }, [userId]);
+
+  const handleCardClick = (cardId) => {
+    localStorage.setItem("selectedCardId", cardId);
+    navigate("/cartas");
+  };
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleNext = () => {
+    if (currentIndex < viewedCards.length - visibleCards) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  // Determinar la cantidad de cartas visibles en función del tamaño de la pantalla
+  useEffect(() => {
+    const updateVisibleCards = () => {
+      const width = window.innerWidth;
+      if (width < 640) { // Pantallas pequeñas (sm)
+        setVisibleCards(2); // Mostrar 2 cartas en pantallas pequeñas
+      } else if (width < 1024) { // Pantallas medianas (md)
+        setVisibleCards(3); // Mostrar 3 cartas en pantallas medianas
+      } else { // Pantallas grandes (lg y xl)
+        setVisibleCards(4); // Mostrar 4 cartas en pantallas grandes
+      }
+    };
+
+    // Llamar a la función al cargar y cuando se redimensiona la ventana
+    updateVisibleCards();
+    window.addEventListener("resize", updateVisibleCards);
+    
+    return () => window.removeEventListener("resize", updateVisibleCards);
   }, []);
 
   return (
     <div className="max-w-[1200px] mx-auto my-6">
       <div className="p-6 rounded-lg text-[#e1e6ea]">
-        {loading ? (
+        {loading || loadingImages ? (
           <div className="flex justify-center items-center h-[320px]">
-            {" "}
-            {/* Loader centrado */}
             <PropagateLoader color="#e1e6ea" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 justify-items-center">
-            {randomCards.map((card, index) => (
-              <div key={index} className="flex flex-col">
-                {/* Div que contiene la carta con tamaño fijo */}
-                <div className="card w-[220px] h-[320px] bg-[#12181E] rounded-lg shadow-xl">
-                  <img
-                    src={card.image_uris?.normal || card.image_uris?.small}
-                    alt={card.name}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
+          <div>
+            {/* Carrusel de cartas */}
+            <div
+              className="grid gap-4"
+              style={{
+                gridTemplateColumns: `repeat(${visibleCards}, 1fr)`, // Esto ajusta el número de columnas
+                gridAutoRows: 'minmax(200px, auto)', // Controla la altura mínima de las cartas
+              }}
+            >
+              {viewedCards.slice(currentIndex, currentIndex + visibleCards).map((card) => (
+                <div
+                  key={card.IDcarta}
+                  className="flex flex-col cursor-pointer transition-transform transform duration-500 ease-in-out"
+                  onClick={() => handleCardClick(card.IDcarta)}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div className="card bg-[#12181E] rounded-lg shadow-xl">
+                    {card.imageUrl ? (
+                      <img
+                        src={card.imageUrl}
+                        alt={card.name}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    ) : (
+                      <p className="text-white text-center">Imagen no disponible</p>
+                    )}
+                  </div>
+                  <p className="mt-2 text-white font-bold">{card.name}</p>
                 </div>
-                {/* Nombre de la carta fuera del div de la carta */}
-                <p className="mt-2 text-white font-bold">{card.name}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Botones de navegación */}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={handlePrev}
+                className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e]"
+              >
+                Anterior
+              </button>
+              <button
+                onClick={handleNext}
+                className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e]"
+              >
+                Siguiente
+              </button>
+            </div>
           </div>
         )}
       </div>

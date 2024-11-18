@@ -5,17 +5,17 @@ import Hero from "./components/Hero";
 import Cards from "./components/Cards";
 import News from "./components/News";
 import Footer from "./components/Footer";
-import Cartas from "./components/Cartas";
+import Cartas from "./components/Cartas";  
 import Creadores from "./components/Creadores";
 import Noticias from "./components/Noticias";
 import Events from "./components/Events";
 import Profile from "./components/Profile";
 import Decks from "./components/Decks";
 import About from "./components/About";
-import Tiendas from "./components/Tiendas";
+import Tiendas from './components/Tiendas';
 import Tutorial from "./components/Tutorial";
 
-import { UserProvider } from "./components/UserContext";
+import { UserProvider, useUser } from "./components/UserContext";
 
 function App() {
   return (
@@ -29,7 +29,7 @@ function App() {
               element={
                 <>
                   <Hero />
-                  <Cards />
+                  <LoggedInCards />
                   <News />
                   <Tutorial />
                 </>
@@ -69,5 +69,16 @@ function App() {
     </div>
   );
 }
+
+// Componente que maneja la lógica de la visualización de Cards
+const LoggedInCards = () => {
+  const { userId } = useUser();
+
+  if (!userId) {
+    return null; // Si no hay userId, no mostramos <Cards />
+  }
+
+  return <Cards />;
+};
 
 export default App;
