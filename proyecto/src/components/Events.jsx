@@ -57,7 +57,7 @@ const Events = () => {
       {!loading && ( // Mostrar contenido solo cuando loading sea false
         <>
           {events.length === 0 ? (
-            <div className="bg-gradient-to-b from-[#8A3B1C] via-[#E83411] to-[#E83411] text-white text-center p-4 rounded-lg"> {/* Degradado hacia el centro */}
+            <div className="bg-gradient-to-b from-[#12171E] via-[#222b38] to-[#222e3f] text-[#e2e7eb] text-center p-4 rounded-lg">
               No hay eventos disponibles.
             </div>
           ) : (
