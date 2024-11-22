@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const Favorites = ({ favorites, toggleFavorite }) => {
   const [favoriteCards, setFavoriteCards] = useState([]);
@@ -8,15 +8,20 @@ const Favorites = ({ favorites, toggleFavorite }) => {
       const cards = await Promise.all(
         favorites.map(async (favorite) => {
           try {
-            const response = await fetch(`https://api.scryfall.com/cards/${favorite.IDcarta}`);
-            if (!response.ok) throw new Error('Error al obtener la carta');
+            const response = await fetch(
+              `https://api.scryfall.com/cards/${favorite.IDcarta}`,
+            );
+            if (!response.ok) throw new Error("Error al obtener la carta");
             const cardData = await response.json();
             return { id: favorite.IDcarta, name: cardData.name };
           } catch (error) {
-            console.error(`Error al obtener la carta favorita ${favorite.IDcarta}:`, error);
-            return { id: favorite.IDcarta, name: 'Desconocida' }; // En caso de error, mostrar 'Desconocida'
+            console.error(
+              `Error al obtener la carta favorita ${favorite.IDcarta}:`,
+              error,
+            );
+            return { id: favorite.IDcarta, name: "Desconocida" }; // En caso de error, mostrar 'Desconocida'
           }
-        })
+        }),
       );
       setFavoriteCards(cards);
     };

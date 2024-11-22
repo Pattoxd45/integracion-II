@@ -1,21 +1,26 @@
 import React from "react";
-import { FaGithub, FaInstagram, FaFacebook, FaUniversity } from "react-icons/fa"; 
-import { useUser } from "./UserContext"; // Importa el contexto de usuario
+import {
+  FaGithub,
+  FaInstagram,
+  FaFacebook,
+  FaUniversity,
+} from "react-icons/fa";
+import { useUser } from "./UserContext";
 
 const Footer = () => {
-  const { userId } = useUser(); // Obtén el estado del usuario desde el contexto
+  const { userId } = useUser();
 
   return (
     <div className="mx-auto py-6 text-white bg-[#0b0f14] w-[100%] border-t-[1px] border-[rgba(255,255,255,0.1)]">
-      <div className="max-w-[1240px] px-4 mx-auto grid lg:grid-cols-3 gap-8">
-        {/* Logo y descripción */}
-        <div>
+      <div className="max-w-[1240px] px-4 mx-auto grid gap-8 md:grid-cols-3">
+        {/* Logo y descripción centrados a partir de w600 */}
+        <div className="flex flex-col items-center md:items-start">
           <img
             src="https://images.ctfassets.net/s5n2t79q9icq/3dB5uyWzUH95O1ZPBNNUX5/6cff7c65a809285755ea24b164b6ac65/magic-logo.png"
             alt="MTG Logo"
-            className="w-[150px] h-auto"
+            className="w-[150px] h-auto mx-auto md:mx-0"
           />
-          <p className="py-4">
+          <p className="py-4 text-center md:text-left">
             Magic: The Gathering es un juego de cartas coleccionables diseñado
             en 1993 por Richard Garfield, profesor de matemáticas, y
             comercializado por la empresa
@@ -28,8 +33,8 @@ const Footer = () => {
             </a>
           </p>
 
-          {/* Iconos de GitHub, Instagram, Facebook y Universidad */}
-          <div className="flex space-x-3">
+          {/* Iconos centrados */}
+          <div className="flex justify-center md:justify-start space-x-3">
             <a
               href="https://github.com/Pattoxd45/integracion-II"
               target="_blank"
@@ -74,7 +79,7 @@ const Footer = () => {
         </div>
 
         {/* Secciones del footer */}
-        <div className="lg:col-span-2 flex justify-around">
+        <div className="md:col-span-2 flex justify-around">
           {/* Sección 1: Recursos */}
           <div>
             <h6 className="font-[14px]">Recursos</h6>
@@ -92,7 +97,6 @@ const Footer = () => {
                   App oficial MTG
                 </a>
               </li>
-              {/* Mostrar Deck Builder solo si el usuario está logeado */}
               {userId && (
                 <li className="py-2 text-sm hover:text-[#9ebbd6] cursor-pointer">
                   <a href="/decks">Deck Builder</a>

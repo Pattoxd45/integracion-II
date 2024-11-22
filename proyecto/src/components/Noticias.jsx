@@ -5,7 +5,9 @@ const importAll = (r) => {
   return r.keys().map(r);
 };
 
-const images = importAll(require.context('../images/imgNews', false, /\.(png|jpe?g|svg|webp)$/));
+const images = importAll(
+  require.context("../images/imgNews", false, /\.(png|jpe?g|svg|webp)$/),
+);
 
 // Componente de marcador de posición con un círculo giratorio (spinner) naranja
 const Spinner = () => (
@@ -25,9 +27,11 @@ const Noticias = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch('https://magicarduct.online:3001/api/noticias2'); // Cambiar a http si estás en local
+        const response = await fetch(
+          "https://magicarduct.online:3001/api/noticias2",
+        ); // Cambiar a http si estás en local
         if (!response.ok) {
-          throw new Error('Error en la conexión');
+          throw new Error("Error en la conexión");
         }
 
         const data = await response.json();
@@ -69,7 +73,10 @@ const Noticias = () => {
   };
 
   // Obtener las noticias de la página actual
-  const currentNews = news.slice((currentPage - 1) * newsPerPage, currentPage * newsPerPage);
+  const currentNews = news.slice(
+    (currentPage - 1) * newsPerPage,
+    currentPage * newsPerPage,
+  );
 
   // Seleccionar una imagen aleatoria si no hay imagen disponible
   const getRandomImage = () => {
@@ -106,18 +113,16 @@ const Noticias = () => {
               </div>
               {/* Texto que también se adapta según el tamaño de pantalla */}
               <div className="p-4 flex flex-col justify-center md:w-2/3 w-full">
-                <h2 className="text-sm sm:text-md md:text-lg lg:text-xl font-bold">{item.title}</h2>
+                <h2 className="text-sm sm:text-md md:text-lg lg:text-xl font-bold">
+                  {item.title}
+                </h2>
                 {item.description && (
                   <p className="mt-2 text-xs sm:text-sm md:text-base line-clamp-3">
                     {item.description}
                   </p>
                 )}
                 <p className="text-[#e2e7eb] cursor-pointer hover:opacity-70 mt-2">
-                  <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={item.link} target="_blank" rel="noopener noreferrer">
                     Ver más...
                   </a>
                 </p>

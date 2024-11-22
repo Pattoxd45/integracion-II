@@ -23,7 +23,7 @@ const Cards = () => {
 
       try {
         const response = await fetch(
-          `https://magicarduct.online:3000/api/ultimascartasvistas/${userId}`
+          `https://magicarduct.online:3000/api/ultimascartasvistas/${userId}`,
         );
         const data = await response.json();
 
@@ -45,7 +45,7 @@ const Cards = () => {
         cards.map(async (card) => {
           try {
             const response = await fetch(
-              `https://api.scryfall.com/cards/${card.IDcarta}`
+              `https://api.scryfall.com/cards/${card.IDcarta}`,
             );
             const data = await response.json();
             return { ...card, imageUrl: data.image_uris?.normal };
@@ -53,7 +53,7 @@ const Cards = () => {
             console.error("Error al obtener la imagen de la carta:", error);
             return { ...card, imageUrl: null };
           }
-        })
+        }),
       );
       setViewedCards(updatedCards);
       setLoadingImages(false);
@@ -82,12 +82,15 @@ const Cards = () => {
   useEffect(() => {
     const updateVisibleCards = () => {
       const width = window.innerWidth;
+
       if (width < 640) {
-        setVisibleCards(2);
+        setVisibleCards(1); // Una carta centrada para pantallas muy pequeñas
+      } else if (width < 800) {
+        setVisibleCards(2); // Dos cartas centradas para pantallas pequeñas
       } else if (width < 1024) {
-        setVisibleCards(3);
+        setVisibleCards(3); // Tres cartas en pantallas medianas
       } else {
-        setVisibleCards(4);
+        setVisibleCards(4); // Cuatro cartas en pantallas grandes
       }
     };
 
@@ -121,6 +124,7 @@ const Cards = () => {
               style={{
                 gridTemplateColumns: `repeat(${visibleCards}, 1fr)`,
                 gridAutoRows: "minmax(200px, auto)",
+                justifyContent: "center", // Centra las cartas
               }}
             >
               {viewedCards

@@ -39,7 +39,7 @@ const Cartas = () => {
   const fetchFavorites = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://magicarduct.online:3000/api/cartasfavoritas/${userId}`
+        `https://magicarduct.online:3000/api/cartasfavoritas/${userId}`,
       );
       if (!response.ok) throw new Error("Error en la solicitud");
       const data = await response.json();
@@ -55,7 +55,7 @@ const Cartas = () => {
     if (!userId) return;
     try {
       const response = await fetch(
-        `https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`
+        `https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`,
       );
       if (!response.ok) throw new Error("Error al obtener las barajas");
       const data = await response.json();
@@ -80,10 +80,10 @@ const Cartas = () => {
 
     fetch(
       `https://api.scryfall.com/cards/search?q=${encodeURIComponent(
-        searchQuery
+        searchQuery,
       )}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${
         filter.order
-      }&dir=${filter.dir}`
+      }&dir=${filter.dir}`,
     )
       .then((res) => res.json())
       .then((data) => {
@@ -152,11 +152,11 @@ const Cartas = () => {
     setSelectedDeck(deck);
     try {
       const response = await fetch(
-        `https://magicarduct.online:3000/api/mazocartas/${deck.idbarajas}`
+        `https://magicarduct.online:3000/api/mazocartas/${deck.idbarajas}`,
       );
       const deckCards = await response.json();
       const cardExistsInDeck = deckCards.some(
-        (deckCard) => deckCard.IDcarta === cardToAdd.id
+        (deckCard) => deckCard.IDcarta === cardToAdd.id,
       );
 
       if (cardExistsInDeck) {
@@ -168,7 +168,7 @@ const Cartas = () => {
     } catch (error) {
       console.error(
         "Error al verificar si la carta existe en la baraja:",
-        error
+        error,
       );
     }
   };
@@ -222,7 +222,7 @@ const Cartas = () => {
         `https://magicarduct.online:3000/api/cartasfavoritas/${userId}/${cardId}`,
         {
           method: "DELETE",
-        }
+        },
       );
       fetchFavorites();
     } catch (error) {
@@ -579,7 +579,7 @@ const Cartas = () => {
                       cards[
                         (cards.indexOf(selectedCard) - 1 + cards.length) %
                           cards.length
-                      ]
+                      ],
                     )
                   }
                   className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e] w-full mr-2"
@@ -589,7 +589,7 @@ const Cartas = () => {
                 <button
                   onClick={() =>
                     setSelectedCard(
-                      cards[(cards.indexOf(selectedCard) + 1) % cards.length]
+                      cards[(cards.indexOf(selectedCard) + 1) % cards.length],
                     )
                   }
                   className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e] w-full ml-2"
