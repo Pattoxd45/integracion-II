@@ -28,8 +28,8 @@ const Cards = () => {
         const data = await response.json();
 
         if (response.ok && data.length > 0) {
-          setViewedCards(data);
-          fetchCardImages(data);
+          const uniqueCards = filterUniqueCards(data); // Filtrar cartas únicas
+          fetchCardImages(uniqueCards);
         } else {
           console.log("No se encontraron cartas vistas para este usuario");
         }
@@ -57,6 +57,18 @@ const Cards = () => {
       );
       setViewedCards(updatedCards);
       setLoadingImages(false);
+    };
+
+    // Función para filtrar cartas únicas por IDcarta
+    const filterUniqueCards = (cards) => {
+      const seenIds = new Set();
+      return cards.filter((card) => {
+        if (seenIds.has(card.IDcarta)) {
+          return false;
+        }
+        seenIds.add(card.IDcarta);
+        return true;
+      });
     };
 
     fetchViewedCards();
@@ -123,7 +135,6 @@ const Cards = () => {
               className="grid gap-6 mx-auto"
               style={{
                 gridTemplateColumns: `repeat(${visibleCards}, 1fr)`,
-                gridAutoRows: "minmax(200px, auto)",
                 justifyContent: "center", // Centra las cartas
               }}
             >

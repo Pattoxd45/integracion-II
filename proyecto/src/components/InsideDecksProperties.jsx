@@ -351,26 +351,46 @@ const InsideDecksProperties = ({ cards }) => {
 
   return (
     <div className="overflow-y-auto h-[76vh] space-y-4 rounded-md">
-      <div className="grid grid-cols-2 gap-[8px] w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-[8px] w-full">
         {/* Gráfico de barras apiladas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
           <h2 className="text-white text-xl mb-4">Valor de Mana</h2>
-          <Bar data={barData} options={barOptions} />
+          <div className="w-full h-full">
+            <Bar
+              data={barData}
+              options={{ ...barOptions, maintainAspectRatio: false }}
+            />
+          </div>
         </div>
 
         {/* Gráfico de pastel de costos totales */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
-          <Pie data={pieDataManaCosts} options={pieOptions1} />
+          <div className="w-full h-full">
+            <Pie
+              data={pieDataManaCosts}
+              options={{ ...pieOptions1, maintainAspectRatio: false }}
+            />
+          </div>
         </div>
 
         {/* Gráfico de pastel para tipos de cartas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
-          <Pie data={pieDataCardTypes} options={pieOptions2} />
+          <div className="w-full h-full">
+            <Pie
+              data={pieDataCardTypes}
+              options={{ ...pieOptions2, maintainAspectRatio: false }}
+            />
+          </div>
         </div>
 
         {/* Gráfico de pastel para rarezas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
-          <Pie data={pieDataRarities} options={pieOptions3} />
+          <div className="w-full h-full">
+            <Pie
+              data={pieDataRarities}
+              options={{ ...pieOptions3, maintainAspectRatio: false }}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import { BsThreeDots } from "react-icons/bs"; // Ícono de tres puntos
+import { IoIosOptions } from "react-icons/io"; // Ícono de opciones
 import imagen8 from "../images/imgNews/imagen8.webp"; // Imagen
 import { useUser } from "./UserContext"; // Contexto para obtener el userId
 import InsideDecks from "./InsideDecks"; // Importar InsideDecks para mostrarlo en el modal
@@ -251,10 +252,11 @@ const Decks = () => {
         <p>Cargando barajas...</p>
       ) : (
         <div
-          className="grid gap-[25px]"
-          style={{
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          }}
+          className={`grid gap-[25px] ${
+            decks.length > 0
+              ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+              : ""
+          }`}
         >
           {/* Mostrar las barajas del usuario */}
           {decks.length > 0 ? (
@@ -265,7 +267,7 @@ const Decks = () => {
                   className="flex flex-col items-center relative"
                 >
                   <div
-                    className="w-[220px] h-[320px] bg-[#12181E] border-[2px] border-[rgba(255,255,255,0.1)] rounded-md cursor-pointer overflow-hidden"
+                    className="w-[180px] sm:w-[220px] h-[280px] sm:h-[320px] bg-[#12181E] border-[2px] border-[rgba(255,255,255,0.1)] rounded-md cursor-pointer overflow-hidden"
                     onClick={() =>
                       openInsideDecksModal(deck.nombre, deck.idbarajas)
                     }
@@ -278,8 +280,8 @@ const Decks = () => {
                     />
                   </div>
                   {/* Nombre de la baraja a la izquierda y menú a la derecha */}
-                  <div className="flex justify-between w-full px-2 mt-2 items-center">
-                    <span className="text-[#e2e7eb] truncate max-w-[80%]">
+                  <div className="flex justify-between w-full px-2 mt-2">
+                    <span className="text-[#e2e7eb] text-left">
                       {deck.nombre}
                     </span>
                     <button
@@ -289,7 +291,6 @@ const Decks = () => {
                       <BsThreeDots size={20} />
                     </button>
                   </div>
-
                   {/* Menú de opciones */}
                   {activeDeck === deck.idbarajas && (
                     <div className="absolute bottom-8 right-0 bg-[#1b1f23] text-[#e2e7eb] p-2 rounded-md shadow-lg border-[1px] border-[#9ebbd6]">
@@ -320,10 +321,9 @@ const Decks = () => {
 
               {/* Baraja de creación se muestra a la derecha de las barajas existentes */}
               <div
-                className="w-[220px] h-[320px] bg-[#12181E] border-[4px] border-[#9ebbd6] rounded-md cursor-pointer flex justify-center items-center transition-colors duration-300 hover:bg-[#2a5880]"
+                className="w-[180px] sm:w-[220px] h-[280px] sm:h-[320px] bg-[#12181E] border-[4px] border-[#9ebbd6] rounded-md cursor-pointer flex justify-center items-center transition-colors duration-300 hover:bg-[#2a5880]"
                 onClick={openModal}
               >
-                {/* Ícono en el centro de la baraja */}
                 <IoMdAddCircle className="text-[#e1e6ea] text-[80px]" />
               </div>
             </>
