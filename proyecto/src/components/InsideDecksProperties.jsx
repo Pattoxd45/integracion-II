@@ -20,7 +20,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ChartDataLabels,
+  ChartDataLabels
 );
 
 const InsideDecksProperties = ({ cards }) => {
@@ -33,14 +33,14 @@ const InsideDecksProperties = ({ cards }) => {
       for (const card of cards) {
         try {
           const response = await fetch(
-            `https://api.scryfall.com/cards/${card.id}`,
+            `https://api.scryfall.com/cards/${card.id}`
           );
           if (response.ok) {
             const cardData = await response.json();
             fetchedCards.push(cardData);
           } else {
             console.error(
-              `Error al obtener detalles de la carta con ID: ${card.id}`,
+              `Error al obtener detalles de la carta con ID: ${card.id}`
             );
           }
         } catch (error) {
@@ -111,8 +111,8 @@ const InsideDecksProperties = ({ cards }) => {
 
   // Procesar las cartas
   detailedCards.forEach((card) => {
-    const cmc = Math.min(card.cmc || 0, 7); // Agrupar 7+
-    const colors = card.colors.length > 0 ? card.colors : ["C"]; // Usar "C" si no tiene colores
+    const colors = card.colors && card.colors.length > 0 ? card.colors : ["C"]; // Usar "C" si no tiene colores
+    const cmc = card.cmc !== undefined ? Math.min(card.cmc, 7) : 0; // Si no tiene cmc, usar 0
 
     // Procesar valores de maná
     colors.forEach((color) => {
@@ -144,20 +144,22 @@ const InsideDecksProperties = ({ cards }) => {
 
   // Datos para Mana Costs by Color
   const filteredManaCosts = Object.entries(totalManaCosts).filter(
-    ([_, value]) => value > 0,
+    ([_, value]) => value > 0
   );
   const totalMana = filteredManaCosts.reduce(
-    (sum, [_, value]) => sum + value,
-    0,
+    (sum, [_, value]) => sum + (value || 0),
+    0
   );
   const pieDataManaCosts = {
     labels: filteredManaCosts.map(([color]) => color),
     datasets: [
       {
-        data: filteredManaCosts.map(([_, value]) =>
-          Math.round((value / totalMana) * 100),
+        data: filteredManaCosts.map(
+          ([_, value]) => Math.round((value / totalMana) * 100) || 0 // Manejar divisiones por 0
         ),
-        backgroundColor: filteredManaCosts.map(([color]) => colorMap[color]),
+        backgroundColor: filteredManaCosts.map(
+          ([color]) => colorMap[color] || "#888888"
+        ), // Color predeterminado
         borderColor: "#12181E",
         borderWidth: 2,
       },
@@ -170,7 +172,7 @@ const InsideDecksProperties = ({ cards }) => {
       {
         data: Object.values(cardTypesCount),
         backgroundColor: Object.keys(cardTypesCount).map(
-          (_, index) => typeColorMap[index % typeColorMap.length],
+          (_, index) => typeColorMap[index % typeColorMap.length]
         ),
         borderColor: "#12181E",
         borderWidth: 2,
@@ -184,7 +186,7 @@ const InsideDecksProperties = ({ cards }) => {
       {
         data: Object.values(rarityCount),
         backgroundColor: Object.keys(rarityCount).map(
-          (rarity) => rarityColorMap[rarity] || "#888888", // Default color for unknown rarities
+          (rarity) => rarityColorMap[rarity] || "#888888" // Default color for unknown rarities
         ),
         borderColor: "#12181E",
         borderWidth: 2,
@@ -356,40 +358,61 @@ const InsideDecksProperties = ({ cards }) => {
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
           <h2 className="text-white text-xl mb-4">Valor de Mana</h2>
           <div className="w-full h-full">
-            <Bar
-              data={barData}
-              options={{ ...barOptions, maintainAspectRatio: false }}
-            />
+            {barData.datasets.every((dataset) =>
+              dataset.data.every((value) => value === 0)
+            ) ? (
+              <p className="text-white">No hay datos disponibles.</p>
+            ) : (
+              <Bar
+                data={barData}
+                options={{ ...barOptions, maintainAspectRatio: false }}
+              />
+            )}
           </div>
         </div>
 
         {/* Gráfico de pastel de costos totales */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
+          <h2 className="text-white text-xl mb-4">Costos de Mana</h2>
           <div className="w-full h-full">
-            <Pie
-              data={pieDataManaCosts}
-              options={{ ...pieOptions1, maintainAspectRatio: false }}
-            />
+            {pieDataManaCosts.datasets[0].data.every((value) => value === 0) ? (
+              <p className="text-white">No hay datos disponibles.</p>
+            ) : (
+              <Pie
+                data={pieDataManaCosts}
+                options={{ ...pieOptions1, maintainAspectRatio: false }}
+              />
+            )}
           </div>
         </div>
 
         {/* Gráfico de pastel para tipos de cartas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
+          <h2 className="text-white text-xl mb-4">Tipo/Subtipo de Cartas</h2>
           <div className="w-full h-full">
-            <Pie
-              data={pieDataCardTypes}
-              options={{ ...pieOptions2, maintainAspectRatio: false }}
-            />
+            {pieDataCardTypes.datasets[0].data.every((value) => value === 0) ? (
+              <p className="text-white">No hay datos disponibles.</p>
+            ) : (
+              <Pie
+                data={pieDataCardTypes}
+                options={{ ...pieOptions2, maintainAspectRatio: false }}
+              />
+            )}
           </div>
         </div>
 
         {/* Gráfico de pastel para rarezas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
+          <h2 className="text-white text-xl mb-4">Rareza de Cartas</h2>
           <div className="w-full h-full">
-            <Pie
-              data={pieDataRarities}
-              options={{ ...pieOptions3, maintainAspectRatio: false }}
-            />
+            {pieDataRarities.datasets[0].data.every((value) => value === 0) ? (
+              <p className="text-white">No hay datos disponibles.</p>
+            ) : (
+              <Pie
+                data={pieDataRarities}
+                options={{ ...pieOptions3, maintainAspectRatio: false }}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -79,7 +79,17 @@ const Decks = () => {
       setModalMessage("El nombre de la baraja no puede estar vacío.");
       return;
     }
-
+  
+    // Verificar si ya existe una baraja con el mismo nombre
+    const isDuplicate = decks.some(
+      (deck) => deck.nombre.toLowerCase() === newDeckName.trim().toLowerCase()
+    );
+  
+    if (isDuplicate) {
+      setModalMessage("Ya existe una baraja con este nombre.");
+      return;
+    }
+  
     setIsSubmitting(true);
     try {
       const response = await fetch(
@@ -95,9 +105,9 @@ const Decks = () => {
             descripcion: "Nueva baraja creada por el usuario", // Descripción predeterminada
             idusuario: userId, // Asocia la baraja al usuario actual
           }),
-        },
+        }
       );
-
+  
       if (response.ok) {
         const result = await response.json();
         setModalMessage("¡Baraja creada exitosamente!");
@@ -114,7 +124,7 @@ const Decks = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  };  
 
   // Función para abrir el menú de opciones
   const toggleOptions = (deckId) => {

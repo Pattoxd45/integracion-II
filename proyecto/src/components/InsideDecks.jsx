@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { MdEdit, MdEditOff } from "react-icons/md";
 import { BiArrowBack } from "react-icons/bi";
@@ -55,11 +55,11 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
     fetchSymbols();
   }, []);
 
-  const fetchDeckCards = async () => {
+  const fetchDeckCards = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://magicarduct.online:3000/api/mazocartas/${deckId}`,
+        `https://magicarduct.online:3000/api/mazocartas/${deckId}`
       );
       if (!response.ok) {
         throw new Error("Error al obtener las cartas del mazo");
@@ -70,7 +70,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
       for (const card of deckCards) {
         const cardId = card.IDcarta;
         const cardResponse = await fetch(
-          `https://api.scryfall.com/cards/${cardId}`,
+          `https://api.scryfall.com/cards/${cardId}`
         );
         if (cardResponse.ok) {
           const cardData = await cardResponse.json();
@@ -78,7 +78,8 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
             id: cardData.id,
             name: cardData.name,
             imageUrl:
-              cardData.image_uris?.png || "https://via.placeholder.com/150",
+              cardData.image_uris?.png ||
+              `${process.env.PUBLIC_URL}/Cartas2.png`,
             mana_cost: cardData.mana_cost,
             oracle_text: cardData.oracle_text,
             cmc: cardData.cmc,
@@ -97,11 +98,11 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
       console.error("Error en la petición:", error);
       setIsLoading(false);
     }
-  };
+  }, [deckId]); // Aquí `deckId` es la única dependencia
 
   useEffect(() => {
     fetchDeckCards();
-  }, [deckId]);
+  }, [fetchDeckCards]); // Ahora `fetchDeckCards` está correctamente como dependencia
 
   useEffect(() => {
     setFilteredCards(cards);
@@ -110,7 +111,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     const filtered = cards.filter((card) =>
-      card.name.toLowerCase().includes(e.target.value.toLowerCase()),
+      card.name.toLowerCase().includes(e.target.value.toLowerCase())
     );
     setFilteredCards(filtered);
   };
@@ -123,17 +124,23 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
     setSelectedCard(null);
   };
 
-  const handleOutsideClick = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
-      closeModal();
-    }
-  };
+  const handleOutsideClick = useCallback(
+    (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        closeModal();
+      }
+    },
+    [closeModal] // `closeModal` debería venir del componente padre
+  );
 
-  const handleEscapeKey = (e) => {
-    if (e.key === "Escape") {
-      closeModal();
-    }
-  };
+  const handleEscapeKey = useCallback(
+    (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    },
+    [closeModal]
+  );
 
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
@@ -143,7 +150,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
       document.removeEventListener("mousedown", handleOutsideClick);
       document.removeEventListener("keydown", handleEscapeKey);
     };
-  }, []);
+  }, [handleOutsideClick, handleEscapeKey]);
 
   const toggleEditMode = () => {
     setEditMode((prevMode) => !prevMode);
@@ -154,7 +161,7 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
     setSelectedCards((prevSelected) =>
       prevSelected.includes(cardId)
         ? prevSelected.filter((id) => id !== cardId)
-        : [...prevSelected, cardId],
+        : [...prevSelected, cardId]
     );
   };
 
@@ -165,12 +172,12 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
           `https://magicarduct.online:3000/api/eliminarmazocarta/${deckId}/${cardId}`,
           {
             method: "DELETE",
-          },
+          }
         );
       } catch (error) {
         console.error(
           `Error al eliminar la carta con ID ${cardId} del mazo:`,
-          error,
+          error
         );
       }
     }
@@ -344,14 +351,15 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                               {truncateText(card.name, 15)}
                             </h4>
                             <div className="flex mt-1">
-                              {card.colors.map((color) => (
-                                <img
-                                  key={color}
-                                  src={symbols[color]}
-                                  alt={color}
-                                  className="w-6 h-6 mr-1"
-                                />
-                              ))}
+                              {Array.isArray(card.colors) &&
+                                card.colors.map((color) => (
+                                  <img
+                                    key={color}
+                                    src={symbols[color]}
+                                    alt={color}
+                                    className="w-6 h-6 mr-1"
+                                  />
+                                ))}
                             </div>
                           </div>
                           {editMode && (
@@ -406,11 +414,17 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                   <p className="text-md italic">{selectedCard.type_line}</p>
                 </div>
                 <div className="text-left mb-4">
-                  {selectedCard.oracle_text.split("\n").map((line, index) => (
-                    <p key={index} className="mb-2">
-                      {replaceManaSymbols(line, symbols)}
+                  {selectedCard.oracle_text ? (
+                    selectedCard.oracle_text.split("\n").map((line, index) => (
+                      <p key={index} className="mb-2">
+                        {replaceManaSymbols(line, symbols)}
+                      </p>
+                    ))
+                  ) : (
+                    <p className="text-[#e1e6ea] italic">
+                      No hay texto disponible.
                     </p>
-                  ))}
+                  )}
                 </div>
                 {selectedCard.power && selectedCard.toughness && (
                   <div className="text-center">
@@ -449,11 +463,17 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
                   <p className="text-lg italic">{selectedCard.type_line}</p>
                 </div>
                 <div className="mb-4">
-                  {selectedCard.oracle_text.split("\n").map((line, index) => (
-                    <p key={index} className="mb-2">
-                      {replaceManaSymbols(line, symbols)}
+                  {selectedCard.oracle_text ? (
+                    selectedCard.oracle_text.split("\n").map((line, index) => (
+                      <p key={index} className="mb-2">
+                        {replaceManaSymbols(line, symbols)}
+                      </p>
+                    ))
+                  ) : (
+                    <p className="text-[#e1e6ea] italic">
+                      No hay texto disponible.
                     </p>
-                  ))}
+                  )}
                 </div>
                 {selectedCard.power && selectedCard.toughness && (
                   <div className="mt-auto">

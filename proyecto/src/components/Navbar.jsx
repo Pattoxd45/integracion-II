@@ -5,7 +5,7 @@ import { FaUserCheck } from "react-icons/fa"; // Icono para sesión iniciada
 import { Link } from "react-router-dom";
 import RegisterModal from "./RegisterModal";
 import LoginModal from "./LoginModal";
-import { useUser } from './UserContext';
+import { useUser } from "./UserContext";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
@@ -22,7 +22,7 @@ const Navbar = () => {
   const closeRegisterModal = () => setShowRegister(false);
   const openLoginModal = () => setShowLogin(true);
   const closeLoginModal = () => setShowLogin(false);
-  
+
   const handleLogout = () => {
     setUser(null); // Limpia el contexto del usuario
     // Redirige a la página principal
@@ -158,10 +158,11 @@ const Navbar = () => {
       )}
 
       {/* Modals */}
-      {showRegister && <RegisterModal closeRegisterModal={closeRegisterModal} />}
+      {showRegister && (
+        <RegisterModal closeRegisterModal={closeRegisterModal} />
+      )}
       {showLogin && <LoginModal closeLoginModal={closeLoginModal} />}
     </div>
-
   );
 };
 

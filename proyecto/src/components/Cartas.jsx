@@ -31,6 +31,8 @@ const Cartas = () => {
   const [selectedDeck, setSelectedDeck] = useState(null);
   const [cardToAdd, setCardToAdd] = useState(null);
   const [showCardExistsModal, setShowCardExistsModal] = useState(false);
+  const [showAddedToDeckModal, setShowAddedToDeckModal] = useState(false);
+  const [addedDeckName, setAddedDeckName] = useState("");
   const modalRef = useRef(null);
 
   const toggleFilters = () => setShowFilters(!showFilters);
@@ -39,7 +41,7 @@ const Cartas = () => {
   const fetchFavorites = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://magicarduct.online:3000/api/cartasfavoritas/${userId}`,
+        `https://magicarduct.online:3000/api/cartasfavoritas/${userId}`
       );
       if (!response.ok) throw new Error("Error en la solicitud");
       const data = await response.json();
@@ -55,7 +57,7 @@ const Cartas = () => {
     if (!userId) return;
     try {
       const response = await fetch(
-        `https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`,
+        `https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`
       );
       if (!response.ok) throw new Error("Error al obtener las barajas");
       const data = await response.json();
@@ -80,10 +82,10 @@ const Cartas = () => {
 
     fetch(
       `https://api.scryfall.com/cards/search?q=${encodeURIComponent(
-        searchQuery,
+        searchQuery
       )}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${
         filter.order
-      }&dir=${filter.dir}`,
+      }&dir=${filter.dir}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -113,19 +115,6 @@ const Cartas = () => {
     fetchCards();
   }, [searchQuery, filter, fetchCards]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setShowModal(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   const handleSearch = (event) => setSearchQuery(event.target.value);
   const handleFilterChange = (field) => (event) =>
     setFilter((prev) => ({ ...prev, [field]: event.target.value }));
@@ -152,11 +141,11 @@ const Cartas = () => {
     setSelectedDeck(deck);
     try {
       const response = await fetch(
-        `https://magicarduct.online:3000/api/mazocartas/${deck.idbarajas}`,
+        `https://magicarduct.online:3000/api/mazocartas/${deck.idbarajas}`
       );
       const deckCards = await response.json();
       const cardExistsInDeck = deckCards.some(
-        (deckCard) => deckCard.IDcarta === cardToAdd.id,
+        (deckCard) => deckCard.IDcarta === cardToAdd.id
       );
 
       if (cardExistsInDeck) {
@@ -168,7 +157,7 @@ const Cartas = () => {
     } catch (error) {
       console.error(
         "Error al verificar si la carta existe en la baraja:",
-        error,
+        error
       );
     }
   };
@@ -185,6 +174,9 @@ const Cartas = () => {
           cantidad: 1,
         }),
       });
+      setShowAddedToDeckModal(true);
+      setAddedDeckName(selectedDeck.nombre); // Establece el nombre del mazo
+      setTimeout(() => setShowAddedToDeckModal(false), 3000); // Ocultar después de 3 segundos
       setShowModal(false);
     } catch (error) {
       console.error("Error al añadir la carta al mazo:", error);
@@ -222,7 +214,7 @@ const Cartas = () => {
         `https://magicarduct.online:3000/api/cartasfavoritas/${userId}/${cardId}`,
         {
           method: "DELETE",
-        },
+        }
       );
       fetchFavorites();
     } catch (error) {
@@ -321,23 +313,23 @@ const Cartas = () => {
                     e.stopPropagation();
                     toggleDeckModal(card);
                   }}
-                  className="absolute bottom-2 right-2 p-1 bg-[#2a5880] text-[#e2e7eb] rounded-md shadow-lg hover:bg-[#244c6e] transition"
+                  className="absolute bottom-2 right-2 p-1 bg-[#142434] text-[#e2e7eb] rounded-md shadow-lg hover:opacity-60 transition"
                 >
                   <IoIosAdd size={24} />
                 </button>
                 {showModal && cardToAdd === card && (
                   <div
                     ref={modalRef}
-                    className="absolute bottom-12 right-2 bg-[#1b1f23] text-[#e2e7eb] p-2 rounded-md shadow-lg border-[1px] border-[#9ebbd6]"
+                    className="absolute bottom-12 right-2 bg-[#12181E] text-[#e2e7eb] p-2 rounded-md shadow-lg border-[1px] border-[rgba(255,255,255,0.1)]"
                   >
                     <ul>
                       {decks.map((deck) => (
                         <li
                           key={deck.idbarajas}
                           onClick={() => handleDeckSelect(deck)}
-                          className={`hover:bg-[#2a5880] p-2 rounded-md cursor-pointer ${
+                          className={`hover:bg-[#142434] hover:bg-opacity-60 p-2 rounded-md cursor-pointer ${
                             selectedDeck?.idbarajas === deck.idbarajas
-                              ? "bg-[#2a5880]"
+                              ? "bg-[#142434]"
                               : ""
                           }`}
                         >
@@ -347,7 +339,7 @@ const Cartas = () => {
                     </ul>
                     <button
                       onClick={handleAddCardsToDeck}
-                      className="mt-2 bg-[#2a5880] text-[#e2e7eb] px-4 py-1 rounded hover:bg-[#3587cf] transition w-full"
+                      className="mt-2 bg-[#142434] text-[#e2e7eb] px-4 py-1 rounded hover:bg-opacity-60 transition w-full"
                     >
                       Añadir
                     </button>
@@ -455,6 +447,12 @@ const Cartas = () => {
                 Cerrar
               </button>
             </div>
+          </div>
+        )}
+
+        {showAddedToDeckModal && (
+          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-[#29313B] text-[#e2e7eb] px-4 py-2 rounded-md shadow-md z-50 font-bold">
+            Se agregó a "{addedDeckName}"
           </div>
         )}
       </div>
@@ -579,7 +577,7 @@ const Cartas = () => {
                       cards[
                         (cards.indexOf(selectedCard) - 1 + cards.length) %
                           cards.length
-                      ],
+                      ]
                     )
                   }
                   className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e] w-full mr-2"
@@ -589,7 +587,7 @@ const Cartas = () => {
                 <button
                   onClick={() =>
                     setSelectedCard(
-                      cards[(cards.indexOf(selectedCard) + 1) % cards.length],
+                      cards[(cards.indexOf(selectedCard) + 1) % cards.length]
                     )
                   }
                   className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e] w-full ml-2"
@@ -620,6 +618,12 @@ const Cartas = () => {
                 Cerrar
               </button>
             </div>
+          </div>
+        )}
+
+        {showAddedToDeckModal && (
+          <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-[#29313B] text-[#e2e7eb] px-4 py-2 rounded-md shadow-md z-50">
+            Se agregó a "{addedDeckName}"
           </div>
         )}
       </div>
