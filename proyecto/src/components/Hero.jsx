@@ -11,7 +11,9 @@ const importAll = (r) => {
   return images;
 };
 
-const images = importAll(require.context('../images/imgNews', false, /\.(png|jpe?g|svg|webp)$/));
+const images = importAll(
+  require.context("../images/imgNews", false, /\.(png|jpe?g|svg|webp)$/),
+);
 
 const Hero = () => {
   const [news, setNews] = useState(null);
@@ -20,7 +22,8 @@ const Hero = () => {
   // Función para seleccionar una imagen aleatoria de las imágenes importadas
   const assignRandomImage = useCallback((newsItem) => {
     const imageArray = Object.values(images);
-    const randomImage = imageArray[Math.floor(Math.random() * imageArray.length)];
+    const randomImage =
+      imageArray[Math.floor(Math.random() * imageArray.length)];
     return { ...newsItem, image: randomImage };
   }, []);
 
@@ -28,7 +31,9 @@ const Hero = () => {
   useEffect(() => {
     const fetchRandomNews = async () => {
       try {
-        const response = await axios.get("https://magicarduct.online:3001/api/news2");
+        const response = await axios.get(
+          "https://magicarduct.online:3001/api/news2",
+        );
         const newsArray = response.data;
 
         if (newsArray.length > 0) {
@@ -55,9 +60,9 @@ const Hero = () => {
       ) : (
         <>
           {/* Imagen de fondo obtenida de la noticia aleatoria */}
-          <img 
-            src={news?.image} 
-            alt="Imagen del Hero" 
+          <img
+            src={news?.image}
+            alt="Imagen del Hero"
             className="w-full h-full object-cover rounded-lg"
           />
 
@@ -66,13 +71,13 @@ const Hero = () => {
             <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 p-4 rounded-lg w-auto max-w-[75%]">
               <h2 className="text-2xl font-bold">{news.title}</h2>
               <p className="mt-2 text-[15px]">
-                {news.description.length > 150 
-                  ? `${news.description.substring(0, 150)}...` 
+                {news.description.length > 150
+                  ? `${news.description.substring(0, 150)}...`
                   : news.description}
-                <a 
-                  href={'https://magic.wizards.com' + news.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href={"https://magic.wizards.com" + news.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-[#bcc1c5] hover:opacity-70 inline ml-2"
                 >
                   Ver más...

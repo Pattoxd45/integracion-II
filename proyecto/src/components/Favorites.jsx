@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useUser } from './UserContext';
+import React, { useEffect, useState } from "react";
 
 const Favorites = ({ favorites, toggleFavorite }) => {
-  const { userId } = useUser();
   const [favoriteCards, setFavoriteCards] = useState([]);
 
   useEffect(() => {
@@ -10,32 +8,26 @@ const Favorites = ({ favorites, toggleFavorite }) => {
       const cards = await Promise.all(
         favorites.map(async (favorite) => {
           try {
-            const response = await fetch(`https://api.scryfall.com/cards/${favorite.IDcarta}`);
-            if (!response.ok) throw new Error('Error al obtener la carta');
+            const response = await fetch(
+              `https://api.scryfall.com/cards/${favorite.IDcarta}`,
+            );
+            if (!response.ok) throw new Error("Error al obtener la carta");
             const cardData = await response.json();
             return { id: favorite.IDcarta, name: cardData.name };
           } catch (error) {
-            console.error(`Error al obtener la carta favorita ${favorite.IDcarta}:`, error);
-            return { id: favorite.IDcarta, name: 'Desconocida' }; // En caso de error, mostrar 'Desconocida'
+            console.error(
+              `Error al obtener la carta favorita ${favorite.IDcarta}:`,
+              error,
+            );
+            return { id: favorite.IDcarta, name: "Desconocida" }; // En caso de error, mostrar 'Desconocida'
           }
-        })
+        }),
       );
       setFavoriteCards(cards);
     };
 
     fetchFavoriteNames();
   }, [favorites]);
-
-  const removeFavorite = async (cardId) => {
-    try {
-      await fetch(`https://magicarduct.online:3000/api/cartasfavoritas/${userId}/${cardId}`, {
-        method: 'DELETE',
-      });
-    } catch (error) {
-      console.error('Error al eliminar favorito:', error);
-    }
-    window.location.reload();
-  };
 
   return (
     <div className="mb-8">
@@ -52,7 +44,7 @@ const Favorites = ({ favorites, toggleFavorite }) => {
               <span className="text-white">{card.name}</span>
               <button
                 className="text-red-500"
-                onClick={() => removeFavorite(card.id)}
+                onClick={() => toggleFavorite(card)}
               >
                 Quitar
               </button>

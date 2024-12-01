@@ -5,7 +5,7 @@
     "imgUrl": "onlygames.jpg",
     "direccion": "Dr. Juan Noe 309, 1000000 Arica, Arica y Parinacota",
     "region": "Arica y Parinacota",
-    "instagramUrl": "https://www.instagram.com/onlygameschile/", 
+    "instagramUrl": "https://www.instagram.com/onlygameschile/",
     "facebookUrl": "https://web.facebook.com/ONLYGAMESchile/?_rdc=1&_rdr"
   },
   {
@@ -14,7 +14,7 @@
     "imgUrl": "miskstonicgames.png",
     "direccion": "Uribe 786, Antofagasta",
     "region": "Antofagasta",
-    "instagramUrl": "https://www.instagram.com/mskgames.chile/?hl=es", 
+    "instagramUrl": "https://www.instagram.com/mskgames.chile/?hl=es",
     "facebookUrl": "https://web.facebook.com/mskgameschile/?locale=es_LA&_rdc=1&_rdr"
   },
   {
@@ -23,14 +23,14 @@
     "imgUrl": "voodoo.jpg",
     "direccion": "Esmeralda 2495, 1271644 Antofagasta",
     "region": "Antofagasta",
-    "instagramUrl": "https://www.instagram.com/voodootcgstore/", 
-    "facebookUrl": "https://web.facebook.com/p/Voodoo-TCG-Store-100040548566720/?_rdc=1&_rdr", 
-    "websiteUrl": "https://voodoo.cl/" 
+    "instagramUrl": "https://www.instagram.com/voodootcgstore/",
+    "facebookUrl": "https://web.facebook.com/p/Voodoo-TCG-Store-100040548566720/?_rdc=1&_rdr",
+    "websiteUrl": "https://voodoo.cl/"
   },
   {
     "name": "Isengard Store",
     "description": "Tienda de tcg, grato lugar donde pasar el rato",
-    "imgUrl": "isengardstrore.png",
+    "imgUrl": "isengardstore.png",
     "direccion": "Manuel Rodríguez 561, 1530508 Copiapó, Atacama",
     "region": "Atacama",
     "facebookUrl": "https://web.facebook.com/isengardstore/?locale=es_LA&_rdc=1&_rdr"
@@ -41,9 +41,9 @@
     "imgUrl": "carduniverse.png",
     "direccion": "Bernardo O'Higgins 951, Copiapó, Atacama",
     "region": "Atacama",
-    "instagramUrl": "https://www.instagram.com/card_universee/?hl=es-la", 
+    "instagramUrl": "https://www.instagram.com/card_universee/?hl=es-la",
     "facebookUrl": "https://web.facebook.com/CardUniverse?_rdc=1&_rdr",
-    "websiteUrl": "https://carduniverse.cl/" 
+    "websiteUrl": "https://carduniverse.cl/"
   },
   {
     "name": "Apolo Store Tcg",
@@ -51,9 +51,9 @@
     "imgUrl": "apolostore.jpg",
     "direccion": "Juan Melgarejo 1537, Coquimbo",
     "region": "Coquimbo",
-    "instagramUrl": "https://www.instagram.com/apolostoretcg/?hl=es", 
-    "facebookUrl": "https://web.facebook.com/p/Apolo-Store-Tcg-100063972696377/?_rdc=1&_rdr", 
-    "websiteUrl": "https://apolostore.cl/categoria-producto/magic-the-gathering/" 
+    "instagramUrl": "https://www.instagram.com/apolostoretcg/?hl=es",
+    "facebookUrl": "https://web.facebook.com/p/Apolo-Store-Tcg-100063972696377/?_rdc=1&_rdr",
+    "websiteUrl": "https://apolostore.cl/categoria-producto/magic-the-gathering/"
   },
   {
     "name": "Moss Eisley",
@@ -61,7 +61,7 @@
     "imgUrl": "mossjuegos.jpg",
     "direccion": "Victoria 2486, galería Almendral local 9. Valparaíso",
     "region": "Valparaíso",
-    "instagramUrl": "https://www.instagram.com/mossjuegos/", 
+    "instagramUrl": "https://www.instagram.com/mossjuegos/",
     "facebookUrl": "https://web.facebook.com/Tiendamosseisley/?locale=es_LA&_rdc=1&_rdr"
   },
   {
@@ -70,8 +70,8 @@
     "imgUrl": "todofreak.png",
     "direccion": "Av. Valparaíso 363, 2571493 Viña del Mar, Valparaíso",
     "region": "Valparaíso",
-    "instagramUrl": "https://www.instagram.com/todofreakstore/reels/", 
-    "websiteUrl": "https://todofreak.cl/categoria-producto/magic-the-gathering/" 
+    "instagramUrl": "https://www.instagram.com/todofreakstore/reels/",
+    "websiteUrl": "https://todofreak.cl/categoria-producto/magic-the-gathering/"
   },
   {
     "name": "Command Center",
@@ -79,9 +79,9 @@
     "imgUrl": "commandcenter.jpg",
     "direccion": "Arlegui 437, 2571469 Viña del Mar, Valparaíso",
     "region": "Valparaíso",
-    "instagramUrl": "https://www.instagram.com/tienda_command_center/?hl=en", 
-    "facebookUrl": "https://web.facebook.com/tienda.c.vina/?_rdc=1&_rdr", 
-    "websiteUrl": "https://commandcenter.cl/" 
+    "instagramUrl": "https://www.instagram.com/tienda_command_center/?hl=en",
+    "facebookUrl": "https://web.facebook.com/tienda.c.vina/?_rdc=1&_rdr",
+    "websiteUrl": "https://commandcenter.cl/"
   },
   {
     "name": "Spells TCG & Tableros",
@@ -89,9 +89,9 @@
     "imgUrl": "spells.jpg",
     "direccion": "Portal Alamos - Av. Valparaíso 515, Local 102, 2571500 Viña del Mar, Valparaíso",
     "region": "Valparaíso",
-    "instagramUrl": "https://www.instagram.com/spells.cl/", 
-    "facebookUrl": "https://web.facebook.com/SpellsTCG?_rdc=1&_rdr", 
-    "websiteUrl": "https://spells.cl/" 
+    "instagramUrl": "https://www.instagram.com/spells.cl/",
+    "facebookUrl": "https://web.facebook.com/SpellsTCG?_rdc=1&_rdr",
+    "websiteUrl": "https://spells.cl/"
   },
   {
     "name": "Kurgan",
@@ -99,7 +99,7 @@
     "imgUrl": "kurgan.jpg",
     "direccion": "2 Poniente. 81, 2520305 Viña del Mar, Valparaíso",
     "region": "Valparaíso",
-    "instagramUrl": "https://www.instagram.com/kurganjuegos/", 
+    "instagramUrl": "https://www.instagram.com/kurganjuegos/",
     "facebookUrl": "https://web.facebook.com/TiendaKurgan/?locale=fy_NL&_rdc=1&_rdr"
   },
   {
@@ -108,7 +108,7 @@
     "imgUrl": "forjastone.jpg",
     "direccion": "Gorbea 2170, 8370230 Santiago",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/laforjadestone/?hl=es", 
+    "instagramUrl": "https://www.instagram.com/laforjadestone/?hl=es",
     "facebookUrl": "https://web.facebook.com/LaForjadeStone/"
   },
   {
@@ -117,9 +117,9 @@
     "imgUrl": "rivendel.jpg",
     "direccion": "San antonio 65 local 0101 Santiago, RM Chile",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/rivendelelconcilio/#", 
-    "facebookUrl": "https://web.facebook.com/rivendelelconcilio?_rdc=1&_rdr", 
-    "websiteUrl": "https://www.rivendelelconcilio.cl/" 
+    "instagramUrl": "https://www.instagram.com/rivendelelconcilio/#",
+    "facebookUrl": "https://web.facebook.com/rivendelelconcilio?_rdc=1&_rdr",
+    "websiteUrl": "https://www.rivendelelconcilio.cl/"
   },
   {
     "name": "El Reino de los Duelos TCG Store",
@@ -127,9 +127,9 @@
     "imgUrl": "reinodelosduelos.jpg",
     "direccion": "Huérfanos 786, Santiago",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/elreinodelosduelosstore/", 
-    "facebookUrl": "https://web.facebook.com/ElReinoDeLosDuelos/?locale=es_LA&_rdc=1&_rdr", 
-    "websiteUrl": "https://elreinodelosduelos.cl/" 
+    "instagramUrl": "https://www.instagram.com/elreinodelosduelosstore/",
+    "facebookUrl": "https://web.facebook.com/ElReinoDeLosDuelos/?locale=es_LA&_rdc=1&_rdr",
+    "websiteUrl": "https://elreinodelosduelos.cl/"
   },
   {
     "name": "Magic4ever",
@@ -137,9 +137,9 @@
     "imgUrl": "magic4ever.jpg",
     "direccion": "Av. Viel 1690, Santiago",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/magic4everchile/", 
-    "facebookUrl": "https://web.facebook.com/Magic4ever.cl?_rdc=1&_rdr", 
-    "websiteUrl": "https://www.m4e.cl/?srsltid=AfmBOooL5Do7P-3fBHsGqR8-07qEezgg9FHUTxQ8OerQfjR8wrCiX-E6" 
+    "instagramUrl": "https://www.instagram.com/magic4everchile/",
+    "facebookUrl": "https://web.facebook.com/Magic4ever.cl?_rdc=1&_rdr",
+    "websiteUrl": "https://www.m4e.cl/?srsltid=AfmBOooL5Do7P-3fBHsGqR8-07qEezgg9FHUTxQ8OerQfjR8wrCiX-E6"
   },
   {
     "name": "Valhalla Store",
@@ -147,9 +147,9 @@
     "imgUrl": "valhallastore.jpg",
     "direccion": "San Diego 2080, LOCAL 205, Santiago",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/tiendavalhallastore/?igshid=NmQ2ZmYxZjA%3D", 
-    "facebookUrl": "https://web.facebook.com/tiendavalhallastore/?ref=settings&_rdc=1&_rdr", 
-    "websiteUrl": "https://www.valhallast.cl/index.php?id_lang=2" 
+    "instagramUrl": "https://www.instagram.com/tiendavalhallastore/?igshid=NmQ2ZmYxZjA%3D",
+    "facebookUrl": "https://web.facebook.com/tiendavalhallastore/?ref=settings&_rdc=1&_rdr",
+    "websiteUrl": "https://www.valhallast.cl/index.php?id_lang=2"
   },
   {
     "name": "Magicsur Chile",
@@ -157,9 +157,9 @@
     "imgUrl": "magicsur.jpg",
     "direccion": "Seminario 507, 7501499 Providencia",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/magicsurchile/", 
-    "facebookUrl": "https://web.facebook.com/magicsur.chile?_rdc=1&_rdr", 
-    "websiteUrl": "https://www.magicsur.cl/?srsltid=AfmBOoqP_ng2BHJkx8CusSHJR3Cekre37VIOhI7DjmRuc9cR24Mv-4K7" 
+    "instagramUrl": "https://www.instagram.com/magicsurchile/",
+    "facebookUrl": "https://web.facebook.com/magicsur.chile?_rdc=1&_rdr",
+    "websiteUrl": "https://www.magicsur.cl/?srsltid=AfmBOoqP_ng2BHJkx8CusSHJR3Cekre37VIOhI7DjmRuc9cR24Mv-4K7"
   },
   {
     "name": "Mesa1",
@@ -167,9 +167,9 @@
     "imgUrl": "mesa1.png",
     "direccion": "Av. Perú 777, 8420290 Recoleta",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/mesa1chile/", 
-    "facebookUrl": "https://web.facebook.com/mesaunochile?_rdc=1&_rdr", 
-    "websiteUrl": "https://mesa1.cl/" 
+    "instagramUrl": "https://www.instagram.com/mesa1chile/",
+    "facebookUrl": "https://web.facebook.com/mesaunochile?_rdc=1&_rdr",
+    "websiteUrl": "https://mesa1.cl/"
   },
   {
     "name": "Tienda La Comarca",
@@ -177,9 +177,9 @@
     "imgUrl": "lacomarca.jpg",
     "direccion": "José Manuel Infante 100, Local 90, 7500641 Santiago, Providencia",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/lacomarca_hyg/", 
-    "facebookUrl": "https://web.facebook.com/tiendalacomarca.cl?_rdc=1&_rdr", 
-    "websiteUrl": "https://www.tiendalacomarca.cl/pages/sobre-nosotros" 
+    "instagramUrl": "https://www.instagram.com/lacomarca_hyg/",
+    "facebookUrl": "https://web.facebook.com/tiendalacomarca.cl?_rdc=1&_rdr",
+    "websiteUrl": "https://www.tiendalacomarca.cl/pages/sobre-nosotros"
   },
   {
     "name": "Area52",
@@ -187,9 +187,9 @@
     "imgUrl": "area52.jpg",
     "direccion": "Av. Sta. Isabel 962, 7501307 Providencia",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/area52.cl/", 
-    "facebookUrl": "https://web.facebook.com/area52.cl/?_rdc=1&_rdr", 
-    "websiteUrl": "https://area52.cl/collections/all" 
+    "instagramUrl": "https://www.instagram.com/area52.cl/",
+    "facebookUrl": "https://web.facebook.com/area52.cl/?_rdc=1&_rdr",
+    "websiteUrl": "https://area52.cl/collections/all"
   },
   {
     "name": "Piedrabruja",
@@ -197,9 +197,9 @@
     "imgUrl": "piedrabruja.jpg",
     "direccion": "Avenida Providencia 1100 Local 45, Santiago",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/piedrabruja_chile/", 
-    "facebookUrl": "https://web.facebook.com/piedrabrujachile?_rdc=1&_rdr", 
-    "websiteUrl": "https://piedrabruja.cl/?srsltid=AfmBOorzWrKqROraFbXCh5w3F6-pILfCmM9b54n7SAHkaDwENMxrvv6T" 
+    "instagramUrl": "https://www.instagram.com/piedrabruja_chile/",
+    "facebookUrl": "https://web.facebook.com/piedrabrujachile?_rdc=1&_rdr",
+    "websiteUrl": "https://piedrabruja.cl/?srsltid=AfmBOorzWrKqROraFbXCh5w3F6-pILfCmM9b54n7SAHkaDwENMxrvv6T"
   },
   {
     "name": "Blood Moon Games",
@@ -207,8 +207,8 @@
     "imgUrl": "bloodmoon.png",
     "direccion": "1336 Av. Providencia, Santiago",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/tiendabloodmoon/", 
-    "websiteUrl": "https://bloodmoongames.cl/" 
+    "instagramUrl": "https://www.instagram.com/tiendabloodmoon/",
+    "websiteUrl": "https://bloodmoongames.cl/"
   },
   {
     "name": "Wargaming",
@@ -216,9 +216,9 @@
     "imgUrl": "wargaming.jpg",
     "direccion": "Dr. Manuel Barros Borgoño 160, 7500593 Providencia",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/wargaming.cl/", 
-    "facebookUrl": "https://web.facebook.com/wargaming.cl/?_rdc=1&_rdr", 
-    "websiteUrl": "https://www.wargaming.cl/" 
+    "instagramUrl": "https://www.instagram.com/wargaming.cl/",
+    "facebookUrl": "https://web.facebook.com/wargaming.cl/?_rdc=1&_rdr",
+    "websiteUrl": "https://www.wargaming.cl/"
   },
   {
     "name": "Third Impact",
@@ -226,9 +226,9 @@
     "imgUrl": "thirdimpact.png",
     "direccion": "Entre torres de departamentos - Antonio Varas 1412, Local 2, 7501042 Providencia,",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/thirdimpact.cl/", 
-    "facebookUrl": "https://web.facebook.com/thirdimpact.cl/", 
-    "websiteUrl": "https://thirdimpact.cl/" 
+    "instagramUrl": "https://www.instagram.com/thirdimpact.cl/",
+    "facebookUrl": "https://web.facebook.com/thirdimpact.cl/",
+    "websiteUrl": "https://thirdimpact.cl/"
   },
   {
     "name": "Entre Juegos",
@@ -236,9 +236,9 @@
     "imgUrl": "entrejuegos.jpg",
     "direccion": "Nueva de Lyon 61, 7510054 Providencia",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/entrejuegos/?hl=es", 
-    "facebookUrl": "https://web.facebook.com/entrejuegoschile/?locale=es_LA&_rdc=1&_rdr", 
-    "websiteUrl": "https://www.entrejuegos.cl/" 
+    "instagramUrl": "https://www.instagram.com/entrejuegos/?hl=es",
+    "facebookUrl": "https://web.facebook.com/entrejuegoschile/?locale=es_LA&_rdc=1&_rdr",
+    "websiteUrl": "https://www.entrejuegos.cl/"
   },
   {
     "name": "ZendiCard",
@@ -246,9 +246,9 @@
     "imgUrl": "zendicard.jpg",
     "direccion": "León Prado 1091, 8930104 San Miguel",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/zendicard_chile/?igsh=MWNvc2Q2ZnB6dWVjcg%3D%3D", 
-    "facebookUrl": "https://web.facebook.com/people/ZendiCard-Tcg/pfbid02jU8yomJnhVbZSpcHVk5M1HXfTU796obYN7LEFXQpbo1EZr993gCtTiEZsz6xPMdMl/?mibextid=ZbWKwL", 
-    "websiteUrl": "https://zendicard.cl/contacto/" 
+    "instagramUrl": "https://www.instagram.com/zendicard_chile/?igsh=MWNvc2Q2ZnB6dWVjcg%3D%3D",
+    "facebookUrl": "https://web.facebook.com/people/ZendiCard-Tcg/pfbid02jU8yomJnhVbZSpcHVk5M1HXfTU796obYN7LEFXQpbo1EZr993gCtTiEZsz6xPMdMl/?mibextid=ZbWKwL",
+    "websiteUrl": "https://zendicard.cl/contacto/"
   },
   {
     "name": "The Mulligan tcg",
@@ -256,9 +256,9 @@
     "imgUrl": "themulligan.jpg",
     "direccion": " Av. Irarrázaval 3054, Local 410-B, 7770498 Ñuñoa",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/themulligan.tcg/", 
-    "facebookUrl": "https://web.facebook.com/themulligan.tcg/?_rdc=1&_rdr", 
-    "websiteUrl": "https://www.themulligan.cl/" 
+    "instagramUrl": "https://www.instagram.com/themulligan.tcg/",
+    "facebookUrl": "https://web.facebook.com/themulligan.tcg/?_rdc=1&_rdr",
+    "websiteUrl": "https://www.themulligan.cl/"
   },
   {
     "name": "Casa de Juegos",
@@ -266,19 +266,19 @@
     "imgUrl": "casadejuegos.jpg",
     "direccion": "2594 Av. Nueva Providencia Local 404, Providencia",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/casadejuegoscl/", 
-    "facebookUrl": "https://web.facebook.com/casadejuegoschile", 
-    "websiteUrl": "https://www.casadejuegos.cl/" 
+    "instagramUrl": "https://www.instagram.com/casadejuegoscl/",
+    "facebookUrl": "https://web.facebook.com/casadejuegoschile",
+    "websiteUrl": "https://www.casadejuegos.cl/"
   },
   {
     "name": "Oasis Games",
     "description": "Tienda de cartas coleccionables en Chile: * Magic The Gathering (WPN) * Pokémon TCG Compra, Vende y Juega en Oasis Games!",
-    "imgUrl": "oasis.jpg",
+    "imgUrl": "oasisgames.jpg",
     "direccion": "Los Militares 4611, Local 5, Santiago, Las Condes",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/oasisgameschile/", 
-    "facebookUrl": "https://web.facebook.com/OasisGamesChile/?_rdc=1&_rdr", 
-    "websiteUrl": "https://www.oasisgames.cl/" 
+    "instagramUrl": "https://www.instagram.com/oasisgameschile/",
+    "facebookUrl": "https://web.facebook.com/OasisGamesChile/?_rdc=1&_rdr",
+    "websiteUrl": "https://www.oasisgames.cl/"
   },
   {
     "name": "Movieplay FunStore",
@@ -286,9 +286,9 @@
     "imgUrl": "movieplay.jpg",
     "direccion": "Av. Ossa 1149, 7870003 La Reina",
     "region": "Metropolitana",
-    "instagramUrl": "https://www.instagram.com/movieplay_funstore/#", 
-    "facebookUrl": "https://web.facebook.com/movieplay.funstore/?_rdc=1&_rdr", 
-    "websiteUrl": "https://movieplay.cl/juegos-de-mesa/72443-mi-tierra-1616265696521.html?srsltid=AfmBOork6vNaZ45uovjx6EwJ_ur9Rg7f5gC9f3r4Y53asMzvWlBPhRYA" 
+    "instagramUrl": "https://www.instagram.com/movieplay_funstore/#",
+    "facebookUrl": "https://web.facebook.com/movieplay.funstore/?_rdc=1&_rdr",
+    "websiteUrl": "https://movieplay.cl/juegos-de-mesa/72443-mi-tierra-1616265696521.html?srsltid=AfmBOork6vNaZ45uovjx6EwJ_ur9Rg7f5gC9f3r4Y53asMzvWlBPhRYA"
   },
   {
     "name": "ImperiumTCG",
@@ -304,8 +304,8 @@
     "imgUrl": "bluecard.jpg",
     "direccion": "Lago Riñihue 01890, 4810895 Temuco",
     "region": "La Araucanía",
-    "instagramUrl": "https://www.instagram.com/bluecard_cl/", 
-    "facebookUrl": "https://web.facebook.com/people/Blue-Card-Store/61557012030248/", 
-    "websiteUrl": "https://www.bluecard.cl/search?search_text=magic&limit=12&order=relevance&way=DESC" 
+    "instagramUrl": "https://www.instagram.com/bluecard_cl/",
+    "facebookUrl": "https://web.facebook.com/people/Blue-Card-Store/61557012030248/",
+    "websiteUrl": "https://www.bluecard.cl/search?search_text=magic&limit=12&order=relevance&way=DESC"
   }
 ]

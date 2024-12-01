@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { PropagateLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const Cards = () => {
   const [viewedCards, setViewedCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingImages, setLoadingImages] = useState(true);
-  const [visibleCards, setVisibleCards] = useState(4); // Estado para la cantidad de cartas visibles
+  const [visibleCards, setVisibleCards] = useState(4);
   const navigate = useNavigate();
   const userId = localStorage.getItem("userId");
+
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const fetchViewedCards = async () => {
@@ -19,12 +22,14 @@ const Cards = () => {
       }
 
       try {
-        const response = await fetch(`https://magicarduct.online:3000/api/ultimascartasvistas/${userId}`);
+        const response = await fetch(
+          `https://magicarduct.online:3000/api/ultimascartasvistas/${userId}`,
+        );
         const data = await response.json();
 
         if (response.ok && data.length > 0) {
-          setViewedCards(data);
-          fetchCardImages(data);
+          const uniqueCards = filterUniqueCards(data); // Filtrar cartas únicas
+          fetchCardImages(uniqueCards);
         } else {
           console.log("No se encontraron cartas vistas para este usuario");
         }
@@ -39,17 +44,31 @@ const Cards = () => {
       const updatedCards = await Promise.all(
         cards.map(async (card) => {
           try {
-            const response = await fetch(`https://api.scryfall.com/cards/${card.IDcarta}`);
+            const response = await fetch(
+              `https://api.scryfall.com/cards/${card.IDcarta}`,
+            );
             const data = await response.json();
             return { ...card, imageUrl: data.image_uris?.normal };
           } catch (error) {
             console.error("Error al obtener la imagen de la carta:", error);
             return { ...card, imageUrl: null };
           }
-        })
+        }),
       );
       setViewedCards(updatedCards);
       setLoadingImages(false);
+    };
+
+    // Función para filtrar cartas únicas por IDcarta
+    const filterUniqueCards = (cards) => {
+      const seenIds = new Set();
+      return cards.filter((card) => {
+        if (seenIds.has(card.IDcarta)) {
+          return false;
+        }
+        seenIds.add(card.IDcarta);
+        return true;
+      });
     };
 
     fetchViewedCards();
@@ -59,8 +78,6 @@ const Cards = () => {
     localStorage.setItem("selectedCardId", cardId);
     navigate("/cartas");
   };
-
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleNext = () => {
     if (currentIndex < viewedCards.length - visibleCards) {
@@ -74,85 +91,89 @@ const Cards = () => {
     }
   };
 
-  // Determinar la cantidad de cartas visibles en función del tamaño de la pantalla
   useEffect(() => {
     const updateVisibleCards = () => {
       const width = window.innerWidth;
-      if (width < 640) { // Pantallas pequeñas (sm)
-        setVisibleCards(2); // Mostrar 2 cartas en pantallas pequeñas
-      } else if (width < 1024) { // Pantallas medianas (md)
-        setVisibleCards(3); // Mostrar 3 cartas en pantallas medianas
-      } else { // Pantallas grandes (lg y xl)
-        setVisibleCards(4); // Mostrar 4 cartas en pantallas grandes
+
+      if (width < 640) {
+        setVisibleCards(1); // Una carta centrada para pantallas muy pequeñas
+      } else if (width < 800) {
+        setVisibleCards(2); // Dos cartas centradas para pantallas pequeñas
+      } else if (width < 1024) {
+        setVisibleCards(3); // Tres cartas en pantallas medianas
+      } else {
+        setVisibleCards(4); // Cuatro cartas en pantallas grandes
       }
     };
 
-    // Llamar a la función al cargar y cuando se redimensiona la ventana
     updateVisibleCards();
     window.addEventListener("resize", updateVisibleCards);
-    
+
     return () => window.removeEventListener("resize", updateVisibleCards);
   }, []);
 
   return (
-    <div className="max-w-[1200px] mx-auto my-6">
-      <div className="p-6 rounded-lg text-[#e1e6ea]">
+    <div className="max-w-[1200px] mx-auto my-6 flex flex-col items-center">
+      <div className="relative w-full">
         {loading || loadingImages ? (
           <div className="flex justify-center items-center h-[320px]">
             <PropagateLoader color="#e1e6ea" />
           </div>
         ) : (
-          <div>
-            {/* Carrusel de cartas */}
+          <div className="relative flex items-center">
+            {/* Flecha izquierda */}
+            <button
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              className="absolute left-4 bg-[#2a5880] text-[#e2e7eb] p-2 rounded-full shadow-lg hover:bg-[#244c6e] transition disabled:opacity-50 disabled:cursor-not-allowed z-10"
+            >
+              <FaChevronLeft size={16} />
+            </button>
+
+            {/* Carrusel */}
             <div
-              className="grid gap-4"
+              className="grid gap-6 mx-auto"
               style={{
-                gridTemplateColumns: `repeat(${visibleCards}, 1fr)`, // Esto ajusta el número de columnas
-                gridAutoRows: 'minmax(200px, auto)', // Controla la altura mínima de las cartas
+                gridTemplateColumns: `repeat(${visibleCards}, 1fr)`,
+                justifyContent: "center", // Centra las cartas
               }}
             >
-              {viewedCards.slice(currentIndex, currentIndex + visibleCards).map((card) => (
-                <div
-                  key={card.IDcarta}
-                  className="flex flex-col cursor-pointer transition-transform transform duration-500 ease-in-out"
-                  onClick={() => handleCardClick(card.IDcarta)}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <div className="card bg-[#12181E] rounded-lg shadow-xl">
-                    {card.imageUrl ? (
-                      <img
-                        src={card.imageUrl}
-                        alt={card.name}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    ) : (
-                      <p className="text-white text-center">Imagen no disponible</p>
-                    )}
+              {viewedCards
+                .slice(currentIndex, currentIndex + visibleCards)
+                .map((card) => (
+                  <div
+                    key={card.IDcarta}
+                    className="flex flex-col cursor-pointer transition-transform transform duration-500 ease-in-out"
+                    onClick={() => handleCardClick(card.IDcarta)}
+                  >
+                    <div className="card bg-[#12181E] rounded-lg shadow-xl">
+                      {card.imageUrl ? (
+                        <img
+                          src={card.imageUrl}
+                          alt={card.name}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      ) : (
+                        <p className="text-white text-center">
+                          Imagen no disponible
+                        </p>
+                      )}
+                    </div>
+                    <p className="mt-2 text-white font-bold text-center">
+                      {card.name}
+                    </p>
                   </div>
-                  <p className="mt-2 text-white font-bold">{card.name}</p>
-                </div>
-              ))}
+                ))}
             </div>
 
-            {/* Botones de navegación */}
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={handlePrev}
-                className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e]"
-              >
-                Anterior
-              </button>
-              <button
-                onClick={handleNext}
-                className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded hover:bg-[#244c6e]"
-              >
-                Siguiente
-              </button>
-            </div>
+            {/* Flecha derecha */}
+            <button
+              onClick={handleNext}
+              disabled={currentIndex >= viewedCards.length - visibleCards}
+              className="absolute right-4 bg-[#2a5880] text-[#e2e7eb] p-2 rounded-full shadow-lg hover:bg-[#244c6e] transition disabled:opacity-50 disabled:cursor-not-allowed z-10"
+            >
+              <FaChevronRight size={16} />
+            </button>
           </div>
         )}
       </div>

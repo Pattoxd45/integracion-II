@@ -5,17 +5,19 @@ import DetTiendas from "./DetTiendas";
 const importAllImages = (r) => {
   const images = {};
   r.keys().forEach((item) => {
-    images[item.replace('./', '')] = r(item); // Guardar en un objeto
+    images[item.replace("./", "")] = r(item); // Guardar en un objeto
   });
   return images;
 };
 
 // Usar require.context para importar imágenes
-const images = importAllImages(require.context('../images/imgTiendas', false, /\.(png|jpe?g|svg|webp)$/));
+const images = importAllImages(
+  require.context("../images/imgTiendas", false, /\.(png|jpe?g|svg|webp)$/),
+);
 
 // Cargar datos de tiendas desde archivos JSON
-const physicalStoresData = require('../info/ListTFisicas.json');
-const onlineStoresData = require('../info/ListTonline.json');
+const physicalStoresData = require("../info/ListTFisicas.json");
+const onlineStoresData = require("../info/ListTonline.json");
 
 const Tiendas = () => {
   const [view, setView] = useState("all");
@@ -26,13 +28,17 @@ const Tiendas = () => {
   const physicalStores = physicalStoresData; // Datos de tiendas físicas
   const onlineStores = onlineStoresData; // Datos de tiendas online
 
-  const regions = [...new Set(physicalStores.map(store => store.region))];
+  const regions = [...new Set(physicalStores.map((store) => store.region))];
 
-  const displayedStores = view === "all"
-    ? [...physicalStores, ...onlineStores]
-    : view === "physical"
-    ? physicalStores.filter(store => selectedRegion === "all" || store.region === selectedRegion)
-    : onlineStores;
+  const displayedStores =
+    view === "all"
+      ? [...physicalStores, ...onlineStores]
+      : view === "physical"
+        ? physicalStores.filter(
+            (store) =>
+              selectedRegion === "all" || store.region === selectedRegion,
+          )
+        : onlineStores;
 
   const openModal = (store) => {
     setSelectedStore(store);
@@ -45,7 +51,9 @@ const Tiendas = () => {
   return (
     <div className="max-w-[1200px] mx-auto px-4 space-y-8">
       <div>
-        <h1 className="mt-6 text-xl font-bold text-[#e2e7eb]">Seleccionar Tiendas:</h1>
+        <h1 className="text-xl font-bold text-[#e2e7eb]">
+          Seleccionar Tiendas:
+        </h1>
         <button
           className={`mr-4 p-2 rounded ${view === "all" ? "bg-[#3b3b3b]" : "bg-[#12171E]"} text-[#e2e7eb]`}
           onClick={() => {
@@ -76,23 +84,27 @@ const Tiendas = () => {
       {view === "physical" && (
         <div className="my-4">
           <label className="text-[#e2e7eb] mr-2">Filtrar por región:</label>
-          <select 
+          <select
             className="p-2 rounded bg-[#2a2a2a] text-[#e2e7eb]"
             onChange={(e) => setSelectedRegion(e.target.value)}
           >
             <option value="all">Todas</option>
             {regions.map((region, index) => (
-              <option key={index} value={region}>{region}</option>
+              <option key={index} value={region}>
+                {region}
+              </option>
             ))}
           </select>
         </div>
       )}
 
       {/* Vista previa de tiendas */}
-      <div className={`grid ${displayedStores.length === 1 ? 'flex justify-center' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'} gap-4`}>
+      <div
+        className={`grid ${displayedStores.length === 1 ? "flex justify-center" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"} gap-4`}
+      >
         {displayedStores.map((store, index) => (
           <StoreCard key={index} store={store} onClick={openModal} />
-        ))} 
+        ))}
       </div>
 
       {/* Modal con detalles de la tienda */}
@@ -109,10 +121,10 @@ const StoreCard = ({ store, onClick }) => (
     onClick={() => onClick(store)} // Manejar clic en la tienda
     className="bg-[#12171E] rounded-lg overflow-hidden shadow-lg flex flex-col cursor-pointer max-h-[300px] max-w-[300px] transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg hover:shadow-[#2d5980]/50" // Clases de Tailwind para efectos
   >
-    <img 
+    <img
       src={images[store.imgUrl]} // Accediendo a la imagen usando el objeto de imágenes
-      alt={store.name} 
-      className="object-cover w-full h-[60%] max-h-[180px]" 
+      alt={store.name}
+      className="object-cover w-full h-[60%] max-h-[180px]"
     />
     <div className="p-4 flex-grow">
       <h2 className="text-lg font-bold text-[#e2e7eb]">{store.name}</h2>

@@ -1,22 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
-import { FaUserCheck } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { FaUserCheck } from "react-icons/fa"; // Icono para sesión iniciada
+import { Link } from "react-router-dom";
 import RegisterModal from "./RegisterModal";
 import LoginModal from "./LoginModal";
-import { useUser } from './UserContext';
+import { useUser } from "./UserContext";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [profileMenu, setProfileMenu] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [showFixedNavbar, setShowFixedNavbar] = useState(false);
-  const lastScrollY = useRef(window.scrollY);
-  const location = useLocation();
-
-  const { userId, setUser } = useUser();
+  const { userId, setUser } = useUser(); // Obtén el contexto del usuario
   const profileRef = useRef(null);
 
   const handleNav = () => setNav(!nav);
@@ -28,53 +24,26 @@ const Navbar = () => {
   const closeLoginModal = () => setShowLogin(false);
 
   const handleLogout = () => {
-    setUser(null);
-    window.location.href = "/";
+    setUser(null); // Limpia el contexto del usuario
+    // Redirige a la página principal
+    window.location.href = "/"; // Redirige a la página principal
   };
 
-  const closeProfileMenu = () => setProfileMenu(false);
-
-  // Cerrar menú de perfil al hacer clic fuera de él
+  // Cierra el menú de perfil cuando se hace clic fuera de él
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
-        closeProfileMenu();
+        setProfileMenu(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, []);
 
-  // Scroll al top al cambiar de ruta
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location]);
-
-  // Mostrar/ocultar el segundo navbar al hacer scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        if (window.scrollY < lastScrollY.current) {
-          setShowFixedNavbar(true);
-        } else {
-          setShowFixedNavbar(false);
-        }
-      } else {
-        setShowFixedNavbar(false);
-      }
-      lastScrollY.current = window.scrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  const renderNavbarContent = () => (
+  return (
     <div className="bg-[#0b0f14] border-b-[1px] border-[rgba(255,255,255,0.1)] z-50 relative">
       <div className="flex justify-between items-center h-19 px-4 text-[#e1e6ea] max-w-[1240px] mx-auto">
         {/* Logo */}
@@ -189,36 +158,11 @@ const Navbar = () => {
       )}
 
       {/* Modals */}
-      {showRegister && <RegisterModal closeRegisterModal={closeRegisterModal} />}
+      {showRegister && (
+        <RegisterModal closeRegisterModal={closeRegisterModal} />
+      )}
       {showLogin && <LoginModal closeLoginModal={closeLoginModal} />}
     </div>
-
-  );
-
-  return (
-    <>
-      {/* Navbar principal */}
-      <div className="bg-[#0b0f14] border-b-[1px] border-[rgba(255,255,255,0.1)]">
-        {renderNavbarContent()}
-      </div>
-
-      {/* Segundo navbar que aparece al hacer scroll hacia arriba */}
-      {showFixedNavbar && !nav && (
-        <div className={`fixed top-0 left-0 w-full bg-[#0b0f14] border-b-[1px] border-[rgba(255,255,255,0.1)] text-[#e1e6ea] z-50 shadow-md transition-transform duration-300 ${showFixedNavbar ? "slide-down" : "slide-up"}`}>
-          {renderNavbarContent()}
-        </div>
-      )}
-
-      <style jsx>{`
-        /* Animación para el segundo navbar */
-        .slide-down {
-          transform: translateY(0);
-        }
-        .slide-up {
-          transform: translateY(-100%);
-        }
-      `}</style>
-    </>
   );
 };
 
