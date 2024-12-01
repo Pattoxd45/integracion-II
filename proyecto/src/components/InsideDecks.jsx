@@ -183,6 +183,10 @@ const InsideDecks = ({ closeModal, deckName, deckId }) => {
     }
     fetchDeckCards();
     setSelectedCards([]);
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
   };
 
   // Function to truncate text

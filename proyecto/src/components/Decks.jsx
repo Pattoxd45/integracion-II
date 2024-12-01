@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import { BsThreeDots } from "react-icons/bs"; // Ícono de tres puntos
-import { IoIosOptions } from "react-icons/io"; // Ícono de opciones
-import imagen8 from "../images/imgNews/imagen8.webp"; // Imagen
 import { useUser } from "./UserContext"; // Contexto para obtener el userId
 import InsideDecks from "./InsideDecks"; // Importar InsideDecks para mostrarlo en el modal
 
@@ -15,13 +13,35 @@ const Decks = () => {
   const [selectedDeckName, setSelectedDeckName] = useState(""); // Estado para almacenar el nombre de la baraja seleccionada
   const [selectedDeckId, setSelectedDeckId] = useState(null);
   const [searchTerm, setSearchTerm] = useState(""); // Estado para el texto del buscador
-  const [view, setView] = useState("barajas");
   const [newDeckName, setNewDeckName] = useState(""); // Nombre de la nueva baraja
   const [modalMessage, setModalMessage] = useState(""); // Mensaje del modal
   const [isSubmitting, setIsSubmitting] = useState(false); // Controla el estado de envío
   const [activeDeck, setActiveDeck] = useState(null); // Para controlar el menú desplegable
   const [renameDeckId, setRenameDeckId] = useState(null); // Controla la baraja a renombrar
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false); // Controla si el modal de renombrar está abierto
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
+    useState(false); // Estado para el modal de confirmación
+  const [deckToDelete, setDeckToDelete] = useState(null); // ID de la baraja a eliminar
+
+  // Función para abrir el modal de confirmación
+  const openDeleteConfirmModal = (deckId) => {
+    setDeckToDelete(deckId); // Guarda el ID de la baraja a eliminar
+    setIsDeleteConfirmModalOpen(true); // Muestra el modal
+  };
+
+  // Función para cerrar el modal de confirmación
+  const closeDeleteConfirmModal = () => {
+    setDeckToDelete(null); // Limpia el ID de la baraja
+    setIsDeleteConfirmModalOpen(false); // Oculta el modal
+  };
+
+  // Función para manejar la confirmación de eliminación
+  const handleConfirmDelete = async () => {
+    if (deckToDelete) {
+      await handleDeleteDeck(deckToDelete); // Llama a la función de eliminación existente
+      closeDeleteConfirmModal(); // Cierra el modal después de eliminar
+    }
+  };
 
   // Función para obtener las barajas del usuario
   useEffect(() => {
@@ -33,23 +53,62 @@ const Decks = () => {
 
       try {
         const response = await fetch(
-          `https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`,
+          `https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`
         );
+
         if (response.ok) {
           const data = await response.json();
-          setDecks(data); // Almacenar las barajas en el estado
+
+          // Itera sobre cada baraja para obtener la imagen de la primera carta
+          const decksWithImages = await Promise.all(
+            data.map(async (deck) => {
+              const image = await fetchFirstCardImage(deck.idbarajas); // Obtiene la imagen de la primera carta
+              return { ...deck, image }; // Añade la propiedad `image` a la baraja
+            })
+          );
+
+          setDecks(decksWithImages); // Actualiza el estado con las barajas y sus imágenes
         } else {
           console.error("Error al obtener las barajas");
         }
       } catch (error) {
-        console.error("Error en la petición:", error); // Mostrar error en consola
+        console.error("Error en la petición:", error);
       } finally {
-        setIsLoading(false); // Terminar el estado de carga
+        setIsLoading(false); // Termina el estado de carga
       }
     };
 
     fetchDecks();
-  }, [userId]); // Se ejecuta cuando el userId está disponible
+  }, [userId]);
+
+  const fetchFirstCardImage = async (deckId) => {
+    try {
+      const response = await fetch(
+        `https://magicarduct.online:3000/api/mazocartas/${deckId}`
+      );
+
+      if (response.ok) {
+        const cards = await response.json();
+        if (cards.length > 0) {
+          const firstCardId = cards[0].IDcarta; // Asumiendo que la respuesta contiene IDcarta
+          const scryfallResponse = await fetch(
+            `https://api.scryfall.com/cards/${firstCardId}`
+          );
+
+          if (scryfallResponse.ok) {
+            const cardData = await scryfallResponse.json();
+            return (
+              cardData.image_uris?.png ||
+              `${process.env.PUBLIC_URL}/Cartas2.png`
+            );
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Error al obtener la carta para el mazo ${deckId}:`, error);
+    }
+    return `${process.env.PUBLIC_URL}/Cartas2.png`; // Retornar imagen por defecto si hay error o no hay cartas
+  };
 
   const lockScroll = () => {
     document.body.style.overflow = "hidden";
@@ -79,17 +138,17 @@ const Decks = () => {
       setModalMessage("El nombre de la baraja no puede estar vacío.");
       return;
     }
-  
+
     // Verificar si ya existe una baraja con el mismo nombre
     const isDuplicate = decks.some(
       (deck) => deck.nombre.toLowerCase() === newDeckName.trim().toLowerCase()
     );
-  
+
     if (isDuplicate) {
       setModalMessage("Ya existe una baraja con este nombre.");
       return;
     }
-  
+
     setIsSubmitting(true);
     try {
       const response = await fetch(
@@ -107,15 +166,19 @@ const Decks = () => {
           }),
         }
       );
-  
+
       if (response.ok) {
         const result = await response.json();
         setModalMessage("¡Baraja creada exitosamente!");
         setDecks((prevDecks) => [
           ...prevDecks,
-          { idbarajas: result.id, nombre: newDeckName },
+          {
+            idbarajas: result.id,
+            nombre: newDeckName,
+            image: `${process.env.PUBLIC_URL}/Cartas2.png`, // Imagen por defecto
+          },
         ]);
-        setTimeout(() => closeModal(), 2000); // Cerrar el modal después de 2 segundos
+        setTimeout(() => closeModal(), 750);
       } else {
         setModalMessage("Error al crear la baraja.");
       }
@@ -124,7 +187,7 @@ const Decks = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };  
+  };
 
   // Función para abrir el menú de opciones
   const toggleOptions = (deckId) => {
@@ -172,7 +235,7 @@ const Decks = () => {
             formato: "standard", // Puedes cambiar el formato si es necesario
             descripcion: "Baraja renombrada por el usuario",
           }),
-        },
+        }
       );
 
       if (response.ok) {
@@ -180,8 +243,8 @@ const Decks = () => {
           prevDecks.map((deck) =>
             deck.idbarajas === renameDeckId
               ? { ...deck, nombre: newDeckName }
-              : deck,
-          ),
+              : deck
+          )
         );
         setModalMessage("¡Baraja renombrada exitosamente!");
         setIsRenameModalOpen(false); // Cerrar modal de renombrar
@@ -201,12 +264,12 @@ const Decks = () => {
         `https://magicarduct.online:3000/api/eliminarmazo/${deckId}`,
         {
           method: "DELETE",
-        },
+        }
       );
 
       if (response.ok) {
         setDecks((prevDecks) =>
-          prevDecks.filter((deck) => deck.idbarajas !== deckId),
+          prevDecks.filter((deck) => deck.idbarajas !== deckId)
         );
         setActiveDeck(null); // Cerrar el menú de opciones
       } else {
@@ -215,10 +278,6 @@ const Decks = () => {
     } catch (error) {
       console.error("Error en la petición al eliminar:", error);
     }
-  };
-
-  const toggleView = (viewSelected) => {
-    setView(viewSelected);
   };
 
   return (
@@ -234,23 +293,7 @@ const Decks = () => {
         />
 
         {/* Botones de Barajas y Cartas */}
-        <div className="grid grid-cols-3 gap-2 lg:flex w-full lg:w-auto">
-          <button
-            onClick={() => toggleView("barajas")}
-            className={`h-[46px] w-full lg:w-[150px] rounded-md text-[#e2e7eb] font-semibold ${
-              view === "barajas" ? "bg-[#9ebbd6]" : "bg-[#2a5880]"
-            }`}
-          >
-            Barajas
-          </button>
-          <button
-            onClick={() => toggleView("cartas")}
-            className={`h-[46px] w-full lg:w-[150px] rounded-md text-[#e2e7eb] font-semibold ${
-              view === "cartas" ? "bg-[#9ebbd6]" : "bg-[#2a5880]"
-            }`}
-          >
-            Cartas
-          </button>
+        <div className="lg:flex w-full lg:w-auto">
           <button className="h-[46px] w-full lg:w-[150px] bg-[#2a5880] text-[#e2e7eb] font-semibold rounded-md text-center hover:bg-[#3587cf]">
             Buscar
           </button>
@@ -284,7 +327,7 @@ const Decks = () => {
                   >
                     {/* Imagen dentro de la baraja */}
                     <img
-                      src={imagen8}
+                      src={deck.image} // Usa la imagen cargada o la predeterminada
                       alt={deck.nombre}
                       className="w-full h-full object-cover"
                     />
@@ -303,10 +346,10 @@ const Decks = () => {
                   </div>
                   {/* Menú de opciones */}
                   {activeDeck === deck.idbarajas && (
-                    <div className="absolute bottom-8 right-0 bg-[#1b1f23] text-[#e2e7eb] p-2 rounded-md shadow-lg border-[1px] border-[#9ebbd6]">
+                    <div className="absolute bottom-8 right-0 bg-[#1b1f23] text-[#e2e7eb] p-2 rounded-md shadow-lg border-[1px] border-[rgba(255,255,255,0.1)]">
                       <ul>
                         <li
-                          className="hover:bg-[#2a5880] p-2 rounded-md cursor-pointer"
+                          className="hover:bg-[#292f35] p-2 rounded-md cursor-pointer"
                           onClick={() => {
                             setRenameDeckId(deck.idbarajas);
                             setIsRenameModalOpen(true);
@@ -314,12 +357,9 @@ const Decks = () => {
                         >
                           Renombrar
                         </li>
-                        <li className="hover:bg-[#2a5880] p-2 rounded-md cursor-pointer">
-                          Propiedades
-                        </li>
                         <li
-                          className="hover:bg-red-600 p-2 rounded-md cursor-pointer text-red-400"
-                          onClick={() => handleDeleteDeck(deck.idbarajas)}
+                          className="hover:bg-[#db4f4f] hover:text-[#af7878] p-2 rounded-md cursor-pointer text-[#e45a5a]"
+                          onClick={() => openDeleteConfirmModal(deck.idbarajas)}
                         >
                           Eliminar
                         </li>
@@ -366,14 +406,14 @@ const Decks = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-          <div className="bg-[#0b0f14] border-2 border-[#9ebbd6] rounded-md p-8 shadow-lg w-[400px]">
+          <div className="bg-[#0b0f14] border-[1px] border-[rgba(255,255,255,0.1)] rounded-md p-8 shadow-lg w-[400px]">
             <h2 className="text-2xl text-[#e2e7eb] mb-4">Crear Nueva Baraja</h2>
             <input
               type="text"
               value={newDeckName}
               onChange={(e) => setNewDeckName(e.target.value)}
               placeholder="Nombre de la baraja"
-              className="w-full mb-4 p-2 bg-[#12181E] border border-[#9ebbd6] rounded-md text-[#e2e7eb]"
+              className="w-full mb-4 p-2 bg-[#12181E] border border-[rgba(255,255,255,0.1)] rounded-md text-[#e2e7eb]"
             />
             <p className="text-[#e2e7eb] mb-4">{modalMessage}</p>
             <div className="flex justify-end space-x-4">
@@ -399,14 +439,14 @@ const Decks = () => {
       {/* Modal para renombrar */}
       {isRenameModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-          <div className="bg-[#0b0f14] border-2 border-[#9ebbd6] rounded-md p-8 shadow-lg w-[400px]">
+          <div className="bg-[#0b0f14] border-[1px] border-[rgba(255,255,255,0.1)] rounded-md p-8 shadow-lg w-[400px]">
             <h2 className="text-2xl text-[#e2e7eb] mb-4">Renombrar Baraja</h2>
             <input
               type="text"
               value={newDeckName}
               onChange={(e) => setNewDeckName(e.target.value)}
               placeholder="Nuevo nombre de la baraja"
-              className="w-full mb-4 p-2 bg-[#12181E] border border-[#9ebbd6] rounded-md text-[#e2e7eb]"
+              className="w-full mb-4 p-2 bg-[#12181E] border border-[rgba(255,255,255,0.1)] rounded-md text-[#e2e7eb]"
             />
             <p className="text-[#e2e7eb] mb-4">{modalMessage}</p>
             <div className="flex justify-end space-x-4">
@@ -421,6 +461,34 @@ const Decks = () => {
                 className="bg-[#2a5880] text-[#e2e7eb] px-4 py-2 rounded-md hover:bg-[#3587cf]"
               >
                 Renombrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isDeleteConfirmModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+          <div className="bg-[#0b0f14] border-[1px] border-[rgba(255,255,255,0.1)] rounded-md p-8 shadow-lg w-[400px]">
+            <h2 className="text-2xl text-[#e2e7eb] mb-4">
+              Confirmar Eliminación
+            </h2>
+            <p className="text-[#e2e7eb] mb-6">
+              ¿Estás seguro de que deseas eliminar esta baraja? Esta acción no
+              se puede deshacer.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeDeleteConfirmModal}
+                className="bg-gray-500 text-[#e2e7eb] px-4 py-2 rounded-md hover:bg-gray-700"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="bg-[#bb3838] text-[#e2e7eb] px-4 py-2 rounded-md hover:bg-[#dd5656]"
+              >
+                Confirmar
               </button>
             </div>
           </div>

@@ -249,6 +249,24 @@ function Profile() {
     }
   };
 
+  useEffect(() => {
+    if (isEditing || isChangingPassword) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden"; // Desactiva el scroll
+      document.body.style.paddingRight = `${scrollbarWidth}px`; // Compensa la desaparición de la barra de scroll
+    } else {
+      document.body.style.overflow = ""; // Restaura el scroll
+      document.body.style.paddingRight = ""; // Restaura el padding
+    }
+
+    // Limpia el efecto al desmontar el componente
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    };
+  }, [isEditing, isChangingPassword]);
+
   const handleEditProfile = () => {
     setEditData({
       name: profile.name,
@@ -393,17 +411,19 @@ function Profile() {
             </div>
           </div>
         )}
-  
+
         {/* Perfil */}
-        <div className="flex-shrink-0 w-full md:w-1/3 bg-[#12181E] p-6 rounded-lg shadow-lg border-[2px] border-[rgba(255,255,255,0.1)] flex flex-col items-center">
+        <div className="flex-shrink-0 w-full md:w-1/3 bg-[#12181E] p-6 rounded-lg shadow-lg border-[2px] border-[rgba(255,255,255,0.1)] flex flex-col items-center relative">
           <img
             src={profile.profileImage}
             alt="Imagen de perfil"
             className="w-24 h-24 rounded-full mb-4 border-2 border-[rgba(255,255,255,0.1)]"
           />
+          {/* Botón para editar imagen de perfil */}
           <button
             onClick={handleEditProfile}
             className="absolute top-4 right-4 text-[#e2e7eb] hover:text-[#babec2]"
+            title="Editar imagen de perfil"
           >
             <FaPen />
           </button>
@@ -419,7 +439,9 @@ function Profile() {
           </button>
           {isChangingPassword && (
             <div className="mt-4 p-4 border border-gray-300 rounded-lg w-full">
-              <h3 className="text-lg font-semibold text-[#e2e7eb]">Cambiar Contraseña</h3>
+              <h3 className="text-lg font-semibold text-[#e2e7eb]">
+                Cambiar Contraseña
+              </h3>
               {errorMessage && <p className="text-red-500">{errorMessage}</p>}
               <input
                 type="password"
@@ -452,7 +474,7 @@ function Profile() {
             </div>
           )}
         </div>
-  
+
         {/* Mazos y Cartas Favoritas */}
         <div className="flex-grow bg-[#12181E] p-6 rounded-lg shadow-lg border-[2px] border-[rgba(255,255,255,0.1)] flex flex-col space-y-8">
           {/* Mazos */}
@@ -476,7 +498,7 @@ function Profile() {
               )}
             </div>
           </div>
-  
+
           {/* Cartas Favoritas */}
           <div>
             <h3 className="text-xl font-semibold mb-4 text-[#3587cf]">
@@ -512,7 +534,7 @@ function Profile() {
         </div>
       </div>
     </div>
-  );  
+  );
 }
 
 export default Profile;
