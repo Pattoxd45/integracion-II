@@ -373,7 +373,6 @@ const InsideDecksProperties = ({ cards }) => {
 
         {/* Gráfico de pastel de costos totales */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
-          <h2 className="text-white text-xl mb-4">Costos de Mana</h2>
           <div className="w-full h-full">
             {pieDataManaCosts.datasets[0].data.every((value) => value === 0) ? (
               <p className="text-white">No hay datos disponibles.</p>
@@ -388,7 +387,6 @@ const InsideDecksProperties = ({ cards }) => {
 
         {/* Gráfico de pastel para tipos de cartas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
-          <h2 className="text-white text-xl mb-4">Tipo/Subtipo de Cartas</h2>
           <div className="w-full h-full">
             {pieDataCardTypes.datasets[0].data.every((value) => value === 0) ? (
               <p className="text-white">No hay datos disponibles.</p>
@@ -403,7 +401,6 @@ const InsideDecksProperties = ({ cards }) => {
 
         {/* Gráfico de pastel para rarezas */}
         <div className="w-full h-[450px] bg-[#12181E] rounded-md p-4 flex flex-col justify-center items-center">
-          <h2 className="text-white text-xl mb-4">Rareza de Cartas</h2>
           <div className="w-full h-full">
             {pieDataRarities.datasets[0].data.every((value) => value === 0) ? (
               <p className="text-white">No hay datos disponibles.</p>

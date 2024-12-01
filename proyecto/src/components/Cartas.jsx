@@ -39,16 +39,18 @@ const Cartas = () => {
 
   // Fetch favoritos
   const fetchFavorites = useCallback(async () => {
-    try {
-      const response = await fetch(
-        `https://magicarduct.online:3000/api/cartasfavoritas/${userId}`
-      );
-      if (!response.ok) throw new Error("Error en la solicitud");
-      const data = await response.json();
-      setFavorites(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error("Error al obtener favoritos:", error);
-      setFavorites([]);
+    if (userId) {
+      try {
+        const response = await fetch(
+          `https://magicarduct.online:3000/api/cartasfavoritas/${userId}`
+        );
+        if (!response.ok) throw new Error("Error en la solicitud");
+        const data = await response.json();
+        setFavorites(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error al obtener favoritos:", error);
+        setFavorites([]);
+      }
     }
   }, [userId]);
 
@@ -79,24 +81,25 @@ const Cartas = () => {
     const typeQuery = filter.type ? `+type:${filter.type}` : "";
     const editionQuery = filter.edition ? `+set:${filter.edition}` : "";
     const subtypeQuery = filter.subtype ? `+type:${filter.subtype}` : "";
-
-    fetch(
-      `https://api.scryfall.com/cards/search?q=${encodeURIComponent(
-        searchQuery
-      )}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${
-        filter.order
-      }&dir=${filter.dir}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setCards(data.data || []);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching cards:", error);
-        setLoading(false);
-        setCards([]);
-      });
+    if(searchQuery || colorsQuery || cdmQuery || powerQuery || toughnessQuery || typeQuery || editionQuery || subtypeQuery){
+      fetch(
+        `https://api.scryfall.com/cards/search?q=${encodeURIComponent(
+          searchQuery
+        )}${colorsQuery}${cdmQuery}${powerQuery}${toughnessQuery}${typeQuery}${editionQuery}${subtypeQuery}&order=${
+          filter.order
+        }&dir=${filter.dir}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          setCards(data.data || []);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching cards:", error);
+          setLoading(false);
+          setCards([]);
+        });
+    } 
   }, [searchQuery, filter]);
 
   // Fetch sets y subtipos al cargar
@@ -133,12 +136,13 @@ const Cartas = () => {
       setShowModal(!showModal);
     } else {
       setCardToAdd(card);
+      setSelectedDeck(null); // Limpia la selección de mazo al abrir el modal
       setShowModal(true);
     }
-  };
+  };  
 
   const handleDeckSelect = async (deck) => {
-    setSelectedDeck(deck);
+    setSelectedDeck(deck); // Actualiza la selección del mazo
     try {
       const response = await fetch(
         `https://magicarduct.online:3000/api/mazocartas/${deck.idbarajas}`
@@ -147,12 +151,10 @@ const Cartas = () => {
       const cardExistsInDeck = deckCards.some(
         (deckCard) => deckCard.IDcarta === cardToAdd.id
       );
-
+  
       if (cardExistsInDeck) {
-        setShowCardExistsModal(true);
-        setSelectedDeck(null); // Limpiar la selección del mazo
-      } else {
-        setShowModal(false); // Ocultar el modal de selección
+        setShowCardExistsModal(true); // Muestra el modal de error
+        setSelectedDeck(null); // Limpia la selección del mazo si ya contiene la carta
       }
     } catch (error) {
       console.error(
@@ -160,7 +162,7 @@ const Cartas = () => {
         error
       );
     }
-  };
+  };  
 
   const handleAddCardsToDeck = async () => {
     if (!selectedDeck || !cardToAdd) return;
@@ -175,13 +177,14 @@ const Cartas = () => {
         }),
       });
       setShowAddedToDeckModal(true);
-      setAddedDeckName(selectedDeck.nombre); // Establece el nombre del mazo
-      setTimeout(() => setShowAddedToDeckModal(false), 3000); // Ocultar después de 3 segundos
-      setShowModal(false);
+      setAddedDeckName(selectedDeck.nombre); // Muestra el nombre del mazo agregado
+      setTimeout(() => setShowAddedToDeckModal(false), 3000); // Ocultar mensaje después de 3 segundos
+      setSelectedDeck(null); // Limpia la selección del mazo
+      setShowModal(false); // Cierra el modal
     } catch (error) {
       console.error("Error al añadir la carta al mazo:", error);
     }
-  };
+  };  
 
   const addCartaVista = async (card) => {
     try {
@@ -520,7 +523,6 @@ const Cartas = () => {
                   className="w-full h-auto rounded-lg transition-transform transform hover:scale-105"
                   onClick={() => {
                     setSelectedCard(card);
-                    addCartaVista(card);
                   }}
                 />
                 <div className="mt-4">

@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { useUser } from './UserContext';
-import { useNavigate } from 'react-router-dom';
-import { FaPen } from 'react-icons/fa';
-import image1 from '../assets/azul.png';
-import image2 from '../assets/verde.png';
-import image3 from '../assets/negro.png';
-import image4 from '../assets/blanco.png';
-import image5 from '../assets/rojo.png';
-import image6 from '../assets/incoloro.png';
+import React, { useState, useEffect } from "react";
+import { useUser } from "./UserContext";
+import { useNavigate } from "react-router-dom";
+import { FaPen } from "react-icons/fa";
+import image1 from "../assets/azul.png";
+import image2 from "../assets/verde.png";
+import image3 from "../assets/negro.png";
+import image4 from "../assets/blanco.png";
+import image5 from "../assets/rojo.png";
+import image6 from "../assets/incoloro.png";
 
 function Profile() {
   const { userId } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
-    name: '',
-    image: '',
+    name: "",
+    image: "",
     imageNumber: 0,
   });
   const [profile, setProfile] = useState({
-    name: '',
-    email: '',
-    profileImage: 'https://via.placeholder.com/150',
+    name: "",
+    email: "",
+    profileImage: "https://via.placeholder.com/150",
     favoriteCards: [],
     decks: [],
   });
@@ -28,30 +28,32 @@ function Profile() {
   const [decks, setDecks] = useState([]);
   const [favoriteCards, setFavoriteCards] = useState([]);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
 
   const images = [
-    { src: image1, alt: 'Azul' },
-    { src: image2, alt: 'Verde' },
-    { src: image3, alt: 'Negro' },
-    { src: image4, alt: 'Blanco' },
-    { src: image5, alt: 'Rojo' },
-    { src: image6, alt: 'Incoloro' },
+    { src: image1, alt: "Azul" },
+    { src: image2, alt: "Verde" },
+    { src: image3, alt: "Negro" },
+    { src: image4, alt: "Blanco" },
+    { src: image5, alt: "Rojo" },
+    { src: image6, alt: "Incoloro" },
   ];
 
   // Función para obtener las barajas del usuario
   useEffect(() => {
     const fetchDecks = async () => {
       if (!userId) {
-        console.log('No se encontró userId');
+        console.log("No se encontró userId");
         return; // Si no hay usuario, no hacemos nada
       }
       try {
-        const response = await fetch(`https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`);
+        const response = await fetch(
+          `https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`
+        );
         if (response.ok) {
           const data = await response.json();
           setDecks(data); // Almacenar las barajas en el estado
@@ -62,20 +64,23 @@ function Profile() {
         console.error("Error en la petición:", error); // Mostrar error en consola
       }
     };
-  
+
     fetchDecks();
   }, [userId]); // Se ejecuta cuando el userId está disponible
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`https://magicarduct.online:3000/obtener-usuario?userId=${userId}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const response = await fetch(
+          `https://magicarduct.online:3000/obtener-usuario?userId=${userId}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
-          throw new Error('Error al obtener los datos del usuario');
+          throw new Error("Error al obtener los datos del usuario");
         }
 
         const userData = await response.json();
@@ -89,7 +94,7 @@ function Profile() {
 
         setLoading(false);
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
         setLoading(false);
       }
     };
@@ -100,12 +105,14 @@ function Profile() {
   useEffect(() => {
     const fetchDecks = async () => {
       if (!userId) {
-        console.log('No se encontró userId');
+        console.log("No se encontró userId");
         return;
       }
 
       try {
-        const response = await fetch(`https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`);
+        const response = await fetch(
+          `https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`
+        );
         if (response.ok) {
           const data = await response.json();
           setDecks(data);
@@ -123,40 +130,43 @@ function Profile() {
   // Nueva función para obtener las cartas favoritas
   const fetchFavoriteCards = async () => {
     if (!userId) return;
-  
+
     try {
       // Petición a tu backend para obtener las cartas favoritas
-      const response = await fetch(`https://magicarduct.online:3000/api/cartasfavoritas/${userId}`);
+      const response = await fetch(
+        `https://magicarduct.online:3000/api/cartasfavoritas/${userId}`
+      );
       if (!response.ok) {
         throw new Error("Error al obtener cartas favoritas");
       }
-  
+
       const favoriteCards = await response.json(); // Supongamos que es un array de objetos con IDusuario, IDcarta, y numero
       const favoriteCardsData = [];
-  
+
       // Ahora hacemos peticiones a Scryfall para obtener los detalles de cada carta
       for (const card of favoriteCards) {
         const cardId = card.IDcarta; // Extraemos el ID de carta
-        const cardResponse = await fetch(`https://api.scryfall.com/cards/${cardId}`);
+        const cardResponse = await fetch(
+          `https://api.scryfall.com/cards/${cardId}`
+        );
         if (cardResponse.ok) {
           const cardData = await cardResponse.json();
           favoriteCardsData.push({
             id: cardData.id,
             name: cardData.name,
-            imageUrl: cardData.image_uris?.normal || 'https://via.placeholder.com/150', // Placeholder si no hay imagen
+            imageUrl:
+              cardData.image_uris?.normal || "https://via.placeholder.com/150", // Placeholder si no hay imagen
           });
         } else {
           console.error(`Error al obtener la carta con ID ${cardId}`);
         }
       }
-  
+
       setFavoriteCards(favoriteCardsData);
     } catch (error) {
       console.error("Error en la petición:", error);
     }
   };
-  
-  
 
   useEffect(() => {
     fetchFavoriteCards();
@@ -177,22 +187,24 @@ function Profile() {
       case 6:
         return image6;
       default:
-        return 'https://via.placeholder.com/150';
+        return "https://via.placeholder.com/150";
     }
   };
 
   const handleDeleteFavoriteCard = async (cardId) => {
     try {
-      const response = await fetch(`https://magicarduct.online:3000/api/cartasfavoritas/${userId}/${cardId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
+      const response = await fetch(
+        `https://magicarduct.online:3000/api/cartasfavoritas/${userId}/${cardId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (response.ok) {
         console.log("Carta eliminada exitosamente");
-
       } else {
         console.error("Error al eliminar la carta");
       }
@@ -209,19 +221,22 @@ function Profile() {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`https://magicarduct.online:3000/api/usuario/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nombre: editData.name,
-          imageNumber: editData.imageNumber,
-        }),
-      });
+      const response = await fetch(
+        `https://magicarduct.online:3000/api/usuario/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombre: editData.name,
+            imageNumber: editData.imageNumber,
+          }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Error al actualizar el usuario');
+        throw new Error("Error al actualizar el usuario");
       }
 
       const result = await response.json();
@@ -230,12 +245,16 @@ function Profile() {
       setIsEditing(false);
       window.location.reload();
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
   const handleEditProfile = () => {
-    setEditData({ name: profile.name, image: profile.profileImage, imageNumber: getImageNumber(profile.profileImage) });
+    setEditData({
+      name: profile.name,
+      image: profile.profileImage,
+      imageNumber: getImageNumber(profile.profileImage),
+    });
     setIsEditing(true);
   };
 
@@ -268,207 +287,232 @@ function Profile() {
 
   const handleCerrar = () => {
     setIsChangingPassword(false);
-    setNewPassword('');
-    setConfirmPassword('');
+    setNewPassword("");
+    setConfirmPassword("");
   };
 
   const handleSavePassword = async () => {
     if (newPassword === confirmPassword) {
-        // Aquí llamas a tu endpoint de cambio de contraseña
-        try {
-            const response = await fetch(`https://magicarduct.online:3000/api/actualizarpassword/${userId}`, {
-                method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  newPassword: newPassword,
-                }),
-            });
+      // Aquí llamas a tu endpoint de cambio de contraseña
+      try {
+        const response = await fetch(
+          `https://magicarduct.online:3000/api/actualizarpassword/${userId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              newPassword: newPassword,
+            }),
+          }
+        );
 
-            if (response.ok) {
-                alert('Contraseña cambiada exitosamente');
-                // Reinicia los campos y cierra el panel
-                setIsChangingPassword(false);
-                setNewPassword('');
-                setConfirmPassword('');
-            } else {
-                setErrorMessage('Error al cambiar la contraseña. Inténtalo de nuevo.');
-                console.log(response.text());
-            }
-        } catch (error) {
-            setErrorMessage('Error en la conexión. Inténtalo de nuevo.');
+        if (response.ok) {
+          alert("Contraseña cambiada exitosamente");
+          // Reinicia los campos y cierra el panel
+          setIsChangingPassword(false);
+          setNewPassword("");
+          setConfirmPassword("");
+        } else {
+          setErrorMessage(
+            "Error al cambiar la contraseña. Inténtalo de nuevo."
+          );
+          console.log(response.text());
         }
+      } catch (error) {
+        setErrorMessage("Error en la conexión. Inténtalo de nuevo.");
+      }
     } else {
-        setErrorMessage('Las contraseñas no coinciden.');
+      setErrorMessage("Las contraseñas no coinciden.");
     }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-black">
-        <h1 className="text-red-500 text-2xl">Cargando... Espere un momento.</h1>
+      <div className="flex items-center justify-center h-screen bg-[#0b0f14]">
+        <h1 className="text-[#e2e7eb] text-2xl">
+          Cargando... Espere un momento.
+        </h1>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col md:flex-row justify-between p-8 bg-gradient-to-br from-black via-gray-900 to-red-900 min-h-screen">
-      {isEditing && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold text-red-500 mb-4">Editar Perfil</h2>
-            <input
-              type="text"
-              name="name"
-              value={editData.name}
-              onChange={handleChange}
-              placeholder="Nombre"
-              className="block w-full mb-4 p-2 bg-gray-700 text-gray-100 border border-red-500 rounded"
-            />
-            <div className="grid grid-cols-3 gap-4 mb-4 justify-center max-w-sm mx-auto">
-              {images.map((img, index) => (
-                <img
-                  key={index}
-                  src={img.src}
-                  alt={img.alt}
-                  className={`w-16 h-16 rounded-full cursor-pointer border-2 transition-transform duration-200 ease-in-out transform hover:scale-105 ${
-                    editData.image === img.src ? 'border-red-500' : 'border-transparent'
-                  }`}
-                  onClick={() => {
-                    setEditData((prev) => ({
-                      ...prev,
-                      image: img.src,
-                      imageNumber: index + 1,
-                    }));
-                  }}
-                />
-              ))}
+    <div className="flex justify-center bg-[#0b0f14] min-h-screen">
+      <div className="w-full max-w-[1200px] p-8 flex flex-col space-y-8 md:space-y-0 md:flex-row md:space-x-8">
+        {isEditing && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+            <div className="bg-[#12181E] p-6 rounded-lg shadow-lg w-96">
+              <h2 className="text-xl font-bold text-[#e2e7eb] mb-4">
+                Editar Perfil
+              </h2>
+              <input
+                type="text"
+                name="name"
+                value={editData.name}
+                onChange={handleChange}
+                placeholder="Nombre"
+                className="block w-full mb-4 p-2 text-black border-[2px] border-[rgba(255,255,255,0.1)] rounded"
+              />
+              <div className="grid grid-cols-3 gap-4 mb-4 justify-center max-w-sm mx-auto">
+                {images.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img.src}
+                    alt={img.alt}
+                    className={`w-16 h-16 rounded-full cursor-pointer border-2 transition-transform duration-200 ease-in-out transform hover:scale-105 ${
+                      editData.image === img.src
+                        ? "border-[#9ebbd6]"
+                        : "border-transparent"
+                    }`}
+                    onClick={() => {
+                      setEditData((prev) => ({
+                        ...prev,
+                        image: img.src,
+                        imageNumber: index + 1,
+                      }));
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="flex justify-end">
+                <button
+                  onClick={handleSave}
+                  className="bg-[#2a5880] text-white px-4 py-2 rounded hover:bg-[#244b6d] mr-2"
+                >
+                  Guardar
+                </button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                >
+                  Cancelar
+                </button>
+              </div>
             </div>
-
-
-            <div className="flex justify-end">
-              <button
-                onClick={handleSave}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 mr-2"
-              >
-                Guardar
-              </button>
-              <button
-                onClick={() => setIsEditing(false)}
-                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-
-      <div className="text-left shadow-lg p-4 rounded-lg bg-black border border-red-500 relative">
-        <img
-          src={profile.profileImage}
-          alt="Imagen de perfil"
-          className="w-12 h-12 rounded-full mx-auto mb-2 border-2 border-red-500"
-        />
-        <button
-          onClick={handleEditProfile}
-          className="absolute top-2 right-2 text-red-500 hover:text-red-300"
-        >
-          <FaPen />
-        </button>
-        <h2 className="text-lg font-bold text-red-500 text-center">{profile.name}</h2>
-        <p className="text-gray-200 text-center">{profile.email}</p>
-        {/* Botón para cambiar la contraseña */}
-        <button 
-          onClick={handleChangePassword} 
-          className="mt-4 px-6 py-3 text-red-600 font-semibold rounded-lg transition-transform transform hover:scale-105 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
-        >
-          Cambiar contraseña
-        </button>
-        {/* Panel para cambiar la contraseña */}
-        {isChangingPassword && (
-          <div className="mt-4 p-4 border border-gray-300 rounded-lg">
-            <h3 className="text-lg font-semibold">Cambiar Contraseña</h3>
-            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-            <input
-              type="password"
-              placeholder="Nueva contraseña"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="mt-2 w-full p-2 border border-gray-300 rounded-md"
-            />
-            <input
-              type="password"
-              placeholder="Repetir nueva contraseña"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="mt-2 w-full p-2 border border-gray-300 rounded-md"
-            />
-            <button 
-              onClick={handleSavePassword}
-              className="mt-4 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
-            >
-              Guardar
-            </button>
-            <button 
-              onClick={handleCerrar}
-              className="mt-4 ml-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
-            >
-              Cerrar
-            </button>
           </div>
         )}
-      </div>
-
-      <div className="flex-grow md:ml-40 p-8 space-y-8">
-        <div className="bg-black p-6 rounded-lg shadow-md border border-red-500">
-          <h3 className="text-xl font-semibold mb-4 text-red-500">Mazos</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {decks.length > 0 ? (
-              decks.map((deck) => (
-                <div
-                  key={deck.idbarajas} // Asegúrate de que cada _id sea único
-                  className="bg-gray-800 p-4 rounded-lg cursor-pointer hover:bg-gray-700"
-                  onClick={() => handleDeckClick(deck.idbarajas)}
+  
+        {/* Perfil */}
+        <div className="flex-shrink-0 w-full md:w-1/3 bg-[#12181E] p-6 rounded-lg shadow-lg border-[2px] border-[rgba(255,255,255,0.1)] flex flex-col items-center">
+          <img
+            src={profile.profileImage}
+            alt="Imagen de perfil"
+            className="w-24 h-24 rounded-full mb-4 border-2 border-[rgba(255,255,255,0.1)]"
+          />
+          <button
+            onClick={handleEditProfile}
+            className="absolute top-4 right-4 text-[#e2e7eb] hover:text-[#babec2]"
+          >
+            <FaPen />
+          </button>
+          <h2 className="text-xl font-bold text-[#9ebbd6] text-center">
+            {profile.name}
+          </h2>
+          <p className="text-[#e2e7eb] text-center">{profile.email}</p>
+          <button
+            onClick={handleChangePassword}
+            className="mt-6 px-6 py-3 bg-[#2a5880] text-[#e2e7eb] font-semibold rounded-lg transition-transform transform hover:scale-105 hover:text-[#3587cf] focus:outline-none focus:ring-2 focus:ring-[#3587cf]"
+          >
+            Cambiar contraseña
+          </button>
+          {isChangingPassword && (
+            <div className="mt-4 p-4 border border-gray-300 rounded-lg w-full">
+              <h3 className="text-lg font-semibold text-[#e2e7eb]">Cambiar Contraseña</h3>
+              {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+              <input
+                type="password"
+                placeholder="Nueva contraseña"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="mt-2 w-full p-2 border border-gray-300 rounded-md"
+              />
+              <input
+                type="password"
+                placeholder="Repetir nueva contraseña"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="mt-2 w-full p-2 border border-gray-300 rounded-md"
+              />
+              <div className="flex justify-end mt-4 space-x-2">
+                <button
+                  onClick={handleSavePassword}
+                  className="px-4 py-2 bg-[#3587cf] text-white font-semibold rounded-lg transition-colors hover:bg-[#244b6d] focus:outline-none focus:ring-2 focus:ring-[#9ebbd6]"
                 >
-                  <h4 className="text-gray-200">{deck.nombre}</h4>
-                  <p className="text-gray-200">{deck.formato}</p>
-                  <p className="text-gray-200">{deck.descripcion}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400">No tienes mazos creados.</p>
-            )}
-          </div>
+                  Guardar
+                </button>
+                <button
+                  onClick={handleCerrar}
+                  className="px-4 py-2 bg-[#244b6d] text-white font-semibold rounded-lg transition-colors hover:bg-[#2a5880] focus:outline-none focus:ring-2 focus:ring-[#9ebbd6]"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-
-        <div className="bg-black p-6 rounded-lg shadow-md border border-red-500">
-          <h3 className="text-xl font-semibold mb-4 text-red-500">Cartas Favoritas</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {favoriteCards.length > 0 ? (
-              favoriteCards.map((card) => (
-                <div key={card.id} className="bg-gray-800 p-4 rounded-lg relative">
-                  <img src={card.imageUrl} alt={card.name} className="w-full h-auto mb-2" />
-                  <h4 className="text-gray-200">{card.name}</h4>
-                  <button
-                    onClick={() => handleDeleteFavoriteCard(card.id)}
-                    className="absolute top-2 right-2 text-red-500 hover:text-red-700 focus:outline-none"
-                    title="Eliminar carta favorita"
+  
+        {/* Mazos y Cartas Favoritas */}
+        <div className="flex-grow bg-[#12181E] p-6 rounded-lg shadow-lg border-[2px] border-[rgba(255,255,255,0.1)] flex flex-col space-y-8">
+          {/* Mazos */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4 text-[#3587cf]">Mazos</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {decks.length > 0 ? (
+                decks.map((deck) => (
+                  <div
+                    key={deck.idbarajas}
+                    className="bg-gray-800 p-4 rounded-lg cursor-pointer hover:bg-gray-700"
+                    onClick={() => handleDeckClick(deck.idbarajas)}
                   >
-                    ❤️
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400">No hay cartas favoritas.</p>
-            )}
+                    <h4 className="text-[#e2e7eb]">{deck.nombre}</h4>
+                    <p className="text-[#e2e7eb]">{deck.formato}</p>
+                    <p className="text-[#e2e7eb]">{deck.descripcion}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400">No tienes mazos creados.</p>
+              )}
+            </div>
+          </div>
+  
+          {/* Cartas Favoritas */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4 text-[#3587cf]">
+              Cartas Favoritas
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {favoriteCards.length > 0 ? (
+                favoriteCards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="bg-gray-800 p-4 rounded-lg relative"
+                  >
+                    <img
+                      src={card.imageUrl}
+                      alt={card.name}
+                      className="w-full h-auto mb-2"
+                    />
+                    <h4 className="text-[#e2e7eb]">{card.name}</h4>
+                    <button
+                      onClick={() => handleDeleteFavoriteCard(card.id)}
+                      className="absolute top-2 right-2 text-[#3587cf] hover:text-[#244b6d] focus:outline-none"
+                      title="Eliminar carta favorita"
+                    >
+                      ❤️
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400">No hay cartas favoritas.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
-  );
+  );  
 }
 
 export default Profile;

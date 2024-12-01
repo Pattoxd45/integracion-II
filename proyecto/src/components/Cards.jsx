@@ -154,9 +154,11 @@ const Cards = () => {
                           className="w-full h-full object-cover rounded-lg"
                         />
                       ) : (
-                        <p className="text-white text-center">
-                          Imagen no disponible
-                        </p>
+                        <img
+                          src={`${process.env.PUBLIC_URL}/Cartas2.png`}
+                          alt="Imagen no disponible"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                       )}
                     </div>
                     <p className="mt-2 text-white font-bold text-center">
