@@ -81,7 +81,7 @@ const Cartas = () => {
     const typeQuery = filter.type ? `+type:${filter.type}` : "";
     const editionQuery = filter.edition ? `+set:${filter.edition}` : "";
     const subtypeQuery = filter.subtype ? `+type:${filter.subtype}` : "";
-    if(searchQuery){
+    if(searchQuery || colorsQuery || cdmQuery || powerQuery || toughnessQuery || typeQuery || editionQuery || subtypeQuery){
       fetch(
         `https://api.scryfall.com/cards/search?q=${encodeURIComponent(
           searchQuery
