@@ -30,8 +30,6 @@ const Cards = () => {
         if (response.ok && data.length > 0) {
           const uniqueCards = filterUniqueCards(data); // Filtrar cartas únicas
           fetchCardImages(uniqueCards);
-        } else {
-          console.log("No se encontraron cartas vistas para este usuario");
         }
       } catch (error) {
         console.error("Error al obtener cartas vistas:", error);

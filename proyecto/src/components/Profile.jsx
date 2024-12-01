@@ -8,12 +8,14 @@ import image3 from '../assets/negro.png';
 import image4 from '../assets/blanco.png';
 import image5 from '../assets/rojo.png';
 import image6 from '../assets/incoloro.png';
+import defaultImage from '../assets/azul.png';
 
 function Profile() {
   const { userId } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     name: '',
+    email: '',
     image: '',
     imageNumber: 0,
   });
@@ -80,6 +82,7 @@ function Profile() {
 
         const userData = await response.json();
         const profileImage = getProfileImage(userData.image);
+        
         setProfile((prevProfile) => ({
           ...prevProfile,
           name: userData.userName,
@@ -98,86 +101,71 @@ function Profile() {
   }, [userId]);
 
   useEffect(() => {
-    const fetchDecks = async () => {
-      if (!userId) {
-        console.log('No se encontró userId');
-        return;
-      }
-
+    const fetchFavoriteCards = async () => {
+      if (!userId) return;
+  
       try {
-        const response = await fetch(`https://magicarduct.online:3000/api/barajasdeusuaio2/${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setDecks(data);
-        } else {
-          console.error("Error al obtener las barajas");
+        // Petición a tu backend para obtener las cartas favoritas
+        const response = await fetch(`https://magicarduct.online:3000/api/cartasfavoritas/${userId}`);
+  
+        if (response.status === 404) {
+          // Si la respuesta es 404, manejarla sin lanzar error
+          console.warn("No se encontraron cartas favoritas para este usuario.");
+          setFavoriteCards([]); // Setear una lista vacía
+          return;
         }
+  
+        if (!response.ok) {
+          throw new Error("Error al obtener cartas favoritas");
+        }
+  
+        const favoriteCards = await response.json(); // Suponiendo que es un array de objetos con IDusuario, IDcarta, y número
+        const favoriteCardsData = [];
+  
+        // Peticiones a Scryfall para obtener los detalles de cada carta
+        for (const card of favoriteCards) {
+          const cardId = card.IDcarta; // Extraemos el ID de carta
+          const cardResponse = await fetch(`https://api.scryfall.com/cards/${cardId}`);
+  
+          if (cardResponse.ok) {
+            const cardData = await cardResponse.json();
+            favoriteCardsData.push({
+              id: cardData.id,
+              name: cardData.name,
+              imageUrl: cardData.image_uris?.normal || 'https://via.placeholder.com/150', // Placeholder si no hay imagen
+            });
+          } else {
+            console.warn(`Error al obtener la carta con ID ${cardId}`);
+          }
+        }
+  
+        setFavoriteCards(favoriteCardsData);
       } catch (error) {
+        // Muestra el error solo si es necesario
         console.error("Error en la petición:", error);
       }
     };
-
-    fetchDecks();
-  }, [userId]);
-
-  // Nueva función para obtener las cartas favoritas
-  const fetchFavoriteCards = async () => {
-    if (!userId) return;
   
-    try {
-      // Petición a tu backend para obtener las cartas favoritas
-      const response = await fetch(`https://magicarduct.online:3000/api/cartasfavoritas/${userId}`);
-      if (!response.ok) {
-        throw new Error("Error al obtener cartas favoritas");
-      }
-  
-      const favoriteCards = await response.json(); // Supongamos que es un array de objetos con IDusuario, IDcarta, y numero
-      const favoriteCardsData = [];
-  
-      // Ahora hacemos peticiones a Scryfall para obtener los detalles de cada carta
-      for (const card of favoriteCards) {
-        const cardId = card.IDcarta; // Extraemos el ID de carta
-        const cardResponse = await fetch(`https://api.scryfall.com/cards/${cardId}`);
-        if (cardResponse.ok) {
-          const cardData = await cardResponse.json();
-          favoriteCardsData.push({
-            id: cardData.id,
-            name: cardData.name,
-            imageUrl: cardData.image_uris?.normal || 'https://via.placeholder.com/150', // Placeholder si no hay imagen
-          });
-        } else {
-          console.error(`Error al obtener la carta con ID ${cardId}`);
-        }
-      }
-  
-      setFavoriteCards(favoriteCardsData);
-    } catch (error) {
-      console.error("Error en la petición:", error);
-    }
-  };
-  
-  
-
-  useEffect(() => {
     fetchFavoriteCards();
   }, [userId]);
+  
 
   const getProfileImage = (userId) => {
     switch (userId) {
-      case 1:
+      case '1':
         return image1;
-      case 2:
+      case '2':
         return image2;
-      case 3:
+      case '3':
         return image3;
-      case 4:
+      case '4':
         return image4;
-      case 5:
+      case '5':
         return image5;
-      case 6:
+      case '6':
         return image6;
       default:
-        return 'https://via.placeholder.com/150';
+        return defaultImage;
     }
   };
 
@@ -192,7 +180,6 @@ function Profile() {
   
       if (response.ok) {
         console.log("Carta eliminada exitosamente");
-
       } else {
         console.error("Error al eliminar la carta");
       }
@@ -216,7 +203,8 @@ function Profile() {
         },
         body: JSON.stringify({
           nombre: editData.name,
-          imageNumber: editData.imageNumber,
+          correo: editData.email,
+          imageNumber: getImageNumber(editData.image),
         }),
       });
 
@@ -235,7 +223,7 @@ function Profile() {
   };
 
   const handleEditProfile = () => {
-    setEditData({ name: profile.name, image: profile.profileImage, imageNumber: getImageNumber(profile.profileImage) });
+    setEditData({ name: profile.name, email: profile.email, imageNumber: getImageNumber(profile.profileImage) });
     setIsEditing(true);
   };
 
@@ -254,7 +242,7 @@ function Profile() {
       case image6:
         return 6;
       default:
-        return 0;
+        return 1;
     }
   };
 
@@ -338,7 +326,7 @@ function Profile() {
                   onClick={() => {
                     setEditData((prev) => ({
                       ...prev,
-                      image: img.src,
+                      image: img.src, // Actualiza el valor de editData.image
                       imageNumber: index + 1,
                     }));
                   }}
