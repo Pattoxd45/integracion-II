@@ -8,12 +8,14 @@ import image3 from "../assets/negro.png";
 import image4 from "../assets/blanco.png";
 import image5 from "../assets/rojo.png";
 import image6 from "../assets/incoloro.png";
+import defaultImage from "../assets/azul.png";
 
 function Profile() {
   const { userId } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     name: "",
+    email: "",
     image: "",
     imageNumber: 0,
   });
@@ -85,6 +87,7 @@ function Profile() {
 
         const userData = await response.json();
         const profileImage = getProfileImage(userData.image);
+
         setProfile((prevProfile) => ({
           ...prevProfile,
           name: userData.userName,
@@ -174,20 +177,20 @@ function Profile() {
 
   const getProfileImage = (userId) => {
     switch (userId) {
-      case 1:
+      case "1":
         return image1;
-      case 2:
+      case "2":
         return image2;
-      case 3:
+      case "3":
         return image3;
-      case 4:
+      case "4":
         return image4;
-      case 5:
+      case "5":
         return image5;
-      case 6:
+      case "6":
         return image6;
       default:
-        return "https://via.placeholder.com/150";
+        return defaultImage;
     }
   };
 
@@ -230,7 +233,8 @@ function Profile() {
           },
           body: JSON.stringify({
             nombre: editData.name,
-            imageNumber: editData.imageNumber,
+            correo: editData.email,
+            imageNumber: getImageNumber(editData.image),
           }),
         }
       );
@@ -270,7 +274,7 @@ function Profile() {
   const handleEditProfile = () => {
     setEditData({
       name: profile.name,
-      image: profile.profileImage,
+      email: profile.email,
       imageNumber: getImageNumber(profile.profileImage),
     });
     setIsEditing(true);

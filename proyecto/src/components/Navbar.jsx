@@ -207,11 +207,13 @@ const Navbar = () => {
               Cartas
             </Link>
           </li>
-          <li className="hover:opacity-70 transition">
-            <Link to="/decks" onClick={handleNav}>
-              Barajas
-            </Link>
-          </li>
+          {userId && ( // Condición para mostrar "Barajas" solo si el usuario ha iniciado sesión
+            <li className="hover:opacity-70 transition">
+              <Link to="/decks" onClick={handleNav}>
+                Barajas
+              </Link>
+            </li>
+          )}
           <li className="hover:opacity-70 transition">
             <Link to="/noticias" onClick={handleNav}>
               Noticias
